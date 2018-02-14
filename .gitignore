@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+Debug
+.vs
+*.suo
+__vm
+/.vs/TeensyGrooveBox/v15/.suo
