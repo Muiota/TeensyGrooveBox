@@ -8,7 +8,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
-#include <synth_simple_drum.h>
+//#include <synth_simple_drum.h>
 
 
 

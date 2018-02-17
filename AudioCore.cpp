@@ -11,7 +11,7 @@ AudioSynthSimpleDrum     drum3;          //xy=219.0104217529297,207.000001668930
 AudioSynthSimpleDrum     drum1;          //xy=226.0104217529297,94.00000166893005
 AudioSynthSimpleDrum     drum4;          //xy=259.0104217529297,271.00000166893005
 AudioPlaySerialflashRaw  playFlashRaw1;  //xy=278.0104217529297,415.00000166893005
-AudioInputI2S            audioInput;           //xy=453.0104293823242,533.0104303359985
+AudioInputI2S            audioInput;             //xy=438.01043701171875,442.0104398727417
 AudioMixer4              mixer1;         //xy=532.0104217529297,162.00000166893005
 AudioMixer4              mixer2;         //xy=538.0104217529297,248.00000166893005
 AudioMixer4              mixer3;         //xy=736.0104789733887,223.0000114440918
@@ -26,8 +26,9 @@ AudioConnection          patchCord7(audioInput, 1, mixer3, 3);
 AudioConnection          patchCord8(mixer1, 0, mixer3, 0);
 AudioConnection          patchCord9(mixer2, 0, mixer3, 1);
 AudioConnection          patchCord10(mixer3, 0, audioOutput, 1);
-AudioControlSGTL5000     sgtl5000_1;     //xy=855.010498046875,513.0000400543213
+AudioControlSGTL5000     audioShield;     //xy=526.0105514526367,506.00001335144043
 										 // GUItool: end automatically generated code
+
 
 AudioCoreClass::AudioCoreClass()
 {
@@ -43,7 +44,7 @@ void AudioCoreClass::init()
 
 	//next = millis() + 1000;
 
-//	AudioNoInterrupts(); //todo what is it
+//	AudioNoInterrupts(); //swith off library
 
 	drum1.frequency(60);
 	drum1.length(1500);
@@ -68,20 +69,12 @@ void AudioCoreClass::init()
 	//mixer3.gain(2, 1.0f);
 	//mixer3.gain(3, 1.0f);
 
-	if (Serial) {
-		Serial.println("drum complete");
-	}
+	audioShield.enable();
+	audioShield.inputSelect(AUDIO_INPUT_LINEIN);
+	audioShield.volume(0.6f);
 
-	sgtl5000_1.enable();
-	sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
-	sgtl5000_1.volume(0.6f);
 
-	if (Serial) {
-		Serial.println("sgtl5000_1 enabled");
-	}
-
-//	AudioInterrupts(); //todo what is it
-	Serial.println("init end");
+//	AudioInterrupts(); //swith on library
 }
 
 void AudioCoreClass::drum1On()
@@ -106,6 +99,6 @@ void AudioCoreClass::drum4On()
 
 void AudioCoreClass::setVolume(float x)
 {
-	sgtl5000_1.volume(x);
+	audioShield.volume(x);
 }
 
