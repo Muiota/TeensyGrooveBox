@@ -21,13 +21,16 @@
     <ClInclude Include="__vm\.TeensyGrooveBox.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioCoreClass.h">
+    <ClInclude Include="AudioCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioCoreClass.cpp">
+    <ClCompile Include="AudioCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="AudioSheme.txt" />
   </ItemGroup>
 </Project>
