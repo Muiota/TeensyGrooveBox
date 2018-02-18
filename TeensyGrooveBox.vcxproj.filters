@@ -24,9 +24,21 @@
     <ClInclude Include="AudioCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DisplayCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HardwareCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HardwareCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

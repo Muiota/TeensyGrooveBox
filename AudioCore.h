@@ -25,7 +25,7 @@ class AudioCoreClass
 	void drum4On();
 	void setVolume(float x);
 };
-
+extern AudioCoreClass AudioCore;
 
 #endif
 
