@@ -365,7 +365,9 @@ void loop() {
 
 //	Serial.print(digitalRead(24));
 //	Serial.println("----------");
-
+	if (Serial) {
+		Serial.println(AudioProcessorUsage());
+	}
 
 	delay(10);
 }
