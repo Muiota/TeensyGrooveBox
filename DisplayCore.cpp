@@ -85,9 +85,9 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int value)
 	tft.print(value);
 }
 
-void DisplayCoreClass::printLn(const char * msg, uint16_t color)
+void DisplayCoreClass::printLn(const char * msg, bool isError)
 {
-	tft.setTextColor(color);
+	tft.setTextColor(isError ? ILI9341_RED : ILI9341_GREEN);
 	tft.println(msg);
 }
 
