@@ -189,12 +189,12 @@ void setup() {
 	pinMode(36, INPUT_PULLUP);
 	pinMode(24, INPUT_PULLUP);
 
-	pinMode(13, OUTPUT);  // use the p13 LED as debugging
+	//pinMode(13, OUTPUT);  // use the p13 LED as debugging
 	pinMode(39, OUTPUT);
 	pinMode(15, OUTPUT);
 	pinMode(8, OUTPUT);
 
-	digitalWrite(13, LOW);
+	//digitalWrite(13, LOW);
 
 	
 	enc_one.write(0.6 * 400);

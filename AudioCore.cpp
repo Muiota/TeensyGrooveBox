@@ -6,28 +6,30 @@
 
 
 // GUItool: begin automatically generated code
-AudioSynthSimpleDrum     drum2;          //xy=194.0104217529297,141.00000166893005
-AudioSynthSimpleDrum     drum3;          //xy=219.0104217529297,207.00000166893005
-AudioSynthSimpleDrum     drum1;          //xy=226.0104217529297,94.00000166893005
-AudioSynthSimpleDrum     drum4;          //xy=259.0104217529297,271.00000166893005
-AudioPlaySerialflashRaw  playFlashRaw1;  //xy=278.0104217529297,415.00000166893005
-AudioInputI2S            audioInput;             //xy=438.01043701171875,442.0104398727417
-AudioMixer4              mixer1;         //xy=532.0104217529297,162.00000166893005
-AudioMixer4              mixer2;         //xy=538.0104217529297,248.00000166893005
-AudioMixer4              mixer3;         //xy=736.0104789733887,223.0000114440918
-AudioOutputI2S           audioOutput;           //xy=900.0105819702148,151.00002670288086
+AudioSynthSimpleDrum     drum2;          //xy=155.0104217529297,139.00000166893005
+AudioSynthSimpleDrum     drum3;          //xy=180.0104217529297,205.00000166893005
+AudioSynthSimpleDrum     drum1;          //xy=187.0104217529297,92.00000166893005
+AudioSynthSimpleDrum     drum4;          //xy=220.0104217529297,269.00000166893005
+AudioPlaySerialflashRaw  playFlashRaw1;  //xy=239.0104217529297,413.00000166893005
+AudioInputI2S            audioInput;     //xy=399.0104217529297,440.00000166893005
+AudioMixer4              mixer1;         //xy=493.0104217529297,160.00000166893005
+AudioMixer4              mixer2;         //xy=499.0104217529297,246.00000166893005
+AudioMixer4              masterMixerL;         //xy=718.0104827880859,255.00001907348633
+AudioOutputI2S           audioOutput;    //xy=861.0104217529297,149.00000166893005
 AudioConnection          patchCord1(drum2, 0, mixer1, 1);
 AudioConnection          patchCord2(drum3, 0, mixer1, 2);
 AudioConnection          patchCord3(drum1, 0, mixer1, 0);
 AudioConnection          patchCord4(drum4, 0, mixer1, 3);
 AudioConnection          patchCord5(playFlashRaw1, 0, mixer2, 0);
-AudioConnection          patchCord6(audioInput, 0, audioOutput, 0);
-AudioConnection          patchCord7(audioInput, 1, mixer3, 3);
-AudioConnection          patchCord8(mixer1, 0, mixer3, 0);
-AudioConnection          patchCord9(mixer2, 0, mixer3, 1);
-AudioConnection          patchCord10(mixer3, 0, audioOutput, 1);
-AudioControlSGTL5000     audioShield;     //xy=526.0105514526367,506.00001335144043
+AudioConnection          patchCord6(audioInput, 0, masterMixerL, 2);
+AudioConnection          patchCord7(audioInput, 1, masterMixerL, 3);
+AudioConnection          patchCord8(mixer1, 0, masterMixerL, 0);
+AudioConnection          patchCord9(mixer2, 0, masterMixerL, 1);
+AudioConnection          patchCord10(masterMixerL, 0, audioOutput, 1);
+AudioConnection          patchCord11(masterMixerL, 0, audioOutput, 0);
+AudioControlSGTL5000     audioShield;    //xy=487.0104217529297,504.00000166893005
 										 // GUItool: end automatically generated code
+
 
 
 AudioCoreClass::AudioCoreClass()
