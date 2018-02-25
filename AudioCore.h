@@ -24,6 +24,8 @@ class AudioCoreClass
 	void drum3On();
 	void drum4On();
 	void setVolume(float x);
+	float getPeakL();
+	float getPeakR();
 };
 extern AudioCoreClass AudioCore;
 

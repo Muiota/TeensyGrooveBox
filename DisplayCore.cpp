@@ -85,6 +85,21 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int value)
 	tft.print(value);
 }
 
+void DisplayCoreClass::drawMeter(uint8_t channel, float l, float r)
+{
+	uint8_t x = channel * 18 + 15;
+	uint8_t y = 128;
+	uint8_t height = 90;
+	tft.drawRect(x, y, 14, height, BORDER_COLOR);
+
+	uint8_t levelHeight = height - 4;
+	uint8_t levelL = levelHeight ; // bottom
+	uint8_t levelR = levelHeight + r * (y + 2 - levelHeight); // bottom
+	tft.fillRect(x + 2, levelL, 4, levelHeight, ILI9341_GREEN);
+	tft.fillRect(x + 8, levelR, 4, levelHeight, ILI9341_GREEN);
+	//tft.fillRect(channel * 16 + 16, 128, 14, 90, BORDER_COLOR);
+}
+
 void DisplayCoreClass::printLn(const char * msg, bool isError)
 {
 	tft.setTextColor(isError ? ILI9341_RED : ILI9341_GREEN);
