@@ -14,8 +14,10 @@ void EngineClass::update()
 {
 	if (_hardwareTimer >= 100) {
 		_hardwareTimer = 0;
-		auto usage = AudioProcessorUsageMax();
+		auto usageCPU = AudioProcessorUsageMax();
+		auto usageMemory = AudioMemoryUsageMax();
 		AudioProcessorUsageMaxReset();
+		AudioMemoryUsageMaxReset();
 		for (uint8_t i = 0; i <= 15; i++) {
 			auto value = HardwareCore.seqButtonRead(i);
 			if (_current[i] != value)
@@ -108,14 +110,11 @@ void EngineClass::update()
 
 		//	Serial.print(seqButtonRead(24));
 		//	Serial.println("----------");
-		if (Serial) {
-			Serial.print(usage);
-			Serial.print("   ");
-			Serial.println();
-		}
+	
+		DisplayCore.drawUsage(usageCPU, usageMemory);
 
-		DisplayCore.drawMeter(2, AudioCore.getPeakL(), AudioCore.getPeakR());
-		DisplayCore.drawMeter(3, AudioCore.getPeakL(), AudioCore.getPeakR());
+		DisplayCore.drawMeter(16, AudioCore.getPeakL(), AudioCore.getPeakR());
+		
 
 	}
 }

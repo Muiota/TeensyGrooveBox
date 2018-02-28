@@ -20,6 +20,8 @@ uint16_t OFF_COLOR = 0x20A1;
 uint16_t INFO_COLOR = ILI9341_CYAN;
 uint16_t SUCCESS_COLOR = ILI9341_GREEN;
 
+const uint16_t METER_HEIGHT = 90;
+
 void DisplayCoreClass::init()
 {
 	tft.begin();
@@ -42,12 +44,12 @@ void DisplayCoreClass::drawSequenceButton(uint8_t pin, bool value)
 void DisplayCoreClass::drawEncoder(uint8_t encoder, int value)
 {
 	uint16_t x = 148 + 64 * encoder;
-	uint16_t y = 32;
+	uint16_t y = 52;
 
 	tft.fillCircle(x, y, 14, OFF_COLOR);
 	tft.setTextColor(MAIN_COLOR);
-	tft.drawRect(x - 16, 66, 32, 15, BORDER_COLOR);
-	tft.fillRect(x - 14, 68, 28, 11, OFF_COLOR);
+	tft.drawRect(x - 16, y+ 34, 32, 15, BORDER_COLOR);
+	tft.fillRect(x - 14, y+ 36, 28, 11, OFF_COLOR);
 
 
 	auto radians = value * PI / 62 + PI / 6 * 4;
@@ -80,23 +82,64 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int value)
 			shift = 2;
 		}
 	}
-	tft.setCursor(154 + 64 * encoder - shift * 7, 68);
+	tft.setCursor(154 + 64 * encoder - shift * 7, y+ 36);
 	tft.setTextColor(INFO_COLOR);
 	tft.print(value);
 }
 
+void DisplayCoreClass::drawMeterSide(float l, uint16_t x, uint16_t y)
+{
+	uint16_t levelHeight = METER_HEIGHT - 4;
+	uint16_t levelL = l* levelHeight ; // bottom
+	
+	uint16_t xL = x + 2;
+	uint16_t yB = y + 2;
+	uint16_t hL = levelHeight - levelL;
+
+	uint16_t levelHeightW = yB + 0.3 * levelHeight;
+	uint16_t levelHeightD = yB + 0.1 * levelHeight;
+
+	tft.fillRect(xL, yB, 4, hL, ILI9341_BLACK);
+	uint16_t cursorL = yB + hL;
+	if (cursorL < levelHeightD)
+	{
+		uint16_t hD = levelHeightD - cursorL;
+		tft.fillRect(xL, cursorL, 4, hD, ILI9341_RED);
+		cursorL = cursorL+ hD;
+		hD = levelHeightW - levelHeightD;
+				
+		tft.fillRect(xL, cursorL, 4, hD, ILI9341_YELLOW);
+		cursorL = cursorL + hD;
+		hD = yB + levelHeight - levelHeightW;
+		tft.fillRect(xL, cursorL, 4, hD, ILI9341_GREEN);
+	} else if (cursorL < levelHeightW)
+	{
+		uint16_t hD = levelHeightW - cursorL;
+		tft.fillRect(xL, cursorL, 4, hD, ILI9341_YELLOW);		
+		cursorL = cursorL + hD;
+		hD = yB + levelHeight - levelHeightW;
+		tft.fillRect(xL, cursorL, 4, hD, ILI9341_GREEN);
+	}  else
+	{
+		tft.fillRect(xL, cursorL, 4, levelL, ILI9341_GREEN);
+	}
+}
+
 void DisplayCoreClass::drawMeter(uint8_t channel, float l, float r)
 {
-	uint8_t x = channel * 18 + 15;
-	uint8_t y = 128;
-	uint8_t height = 90;
-	tft.drawRect(x, y, 14, height, BORDER_COLOR);
+	uint16_t x = channel * 18 + 15;
+	uint16_t y = 128;	
+	tft.drawRect(x, y, 14, METER_HEIGHT, BORDER_COLOR);
+	drawMeterSide(l, x, y);
+	drawMeterSide(r, x + 6, y);
 
-	uint8_t levelHeight = height - 4;
-	uint8_t levelL = levelHeight ; // bottom
-	uint8_t levelR = levelHeight + r * (y + 2 - levelHeight); // bottom
-	tft.fillRect(x + 2, levelL, 4, levelHeight, ILI9341_GREEN);
-	tft.fillRect(x + 8, levelR, 4, levelHeight, ILI9341_GREEN);
+//	uint16_t levelR = r* levelHeight; // bottom
+//	uint16_t xR = x + 8;
+//	tft.fillRect(xR, yB, 4, levelHeight - levelR, ILI9341_BLACK);
+
+	
+
+//	tft.fillRect(xR, yB + levelHeight - levelR, 4, levelR, ILI9341_GREEN);
 	//tft.fillRect(channel * 16 + 16, 128, 14, 90, BORDER_COLOR);
 }
 
@@ -104,6 +147,20 @@ void DisplayCoreClass::printLn(const char * msg, bool isError)
 {
 	tft.setTextColor(isError ? ILI9341_RED : ILI9341_GREEN);
 	tft.println(msg);
+}
+
+void DisplayCoreClass::drawUsage(double cpu, double memory)
+{
+	uint16_t x = 240;
+	uint16_t y = 3;
+	tft.fillRect(x, y, 86, 12, OFF_COLOR);
+	tft.setCursor(x+1, y+1);
+	tft.setTextColor(MAIN_COLOR);
+	tft.print(cpu);
+
+	tft.setCursor(x +44, y + 1);
+	tft.setTextColor(MAIN_COLOR);
+	tft.print(memory);
 }
 
 
