@@ -44,7 +44,7 @@ void HardwareCoreClass::init()
 
 	mcp2.pullUp(0, HIGH);  // turn on a 100K pullup internally
 
-	enc_one.write(0.6 * 400);
+	enc_three.write(0.6 * 400);
 
 
 	SPI.setMOSI(SDCARD_MOSI_PIN);

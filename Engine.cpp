@@ -4,9 +4,29 @@
 
 #include "Engine.h"
 
+String songs[50];
+uint8_t SONG_COUNT = 0;
+uint8_t CURRENT_SONG = 0;
+uint8_t _lastSong = -1;
+bool _pressed[40];
 void EngineClass::init()
 {
+	Serial.println("Load songs");
+	File rootdir = SD.open("/DATA/TRACKS/");	
+	while (1) {
+		// open a file from the SD card
+		File f = rootdir.openNextFile();
+		if (!f) break;		
+		songs[SONG_COUNT] = f.name();
+		SONG_COUNT++;		
+		f.close();
+	}
+	rootdir.close();
 
+	for (int i = 0; i< SONG_COUNT; i++)
+	{
+		Serial.println("file: " + songs[i]);
+	}
 
 }
 
@@ -83,14 +103,14 @@ void EngineClass::update()
 				switch (i)
 				{
 				case 0:
-					AudioCore.setVolume(static_cast<float>(one_value_r) / 100);
+					
 
 					break;
 				case 1:
 					//drum2.frequency(30 + one_value_r);
 					break;
 				case 2:
-
+					AudioCore.setVolume(static_cast<float>(one_value_r) / 100);
 					break;
 				}
 
@@ -105,7 +125,44 @@ void EngineClass::update()
 
 		for (int i = 31; i <= 36; i++) {
 			uint8_t value = digitalRead(i);
-			//	Serial.print(value);
+				if (value == 0)
+				{
+					
+					if (!_pressed[i])
+					{
+						_pressed[i] = true;
+						switch (i)
+						{
+						case 31:
+							if (AudioCore.wavIsPlaying())
+							{
+								Serial.print("Stop");
+								AudioCore.stopWav();
+							}
+							break;
+						case 32:
+							if (!AudioCore.wavIsPlaying())
+							{
+								CURRENT_SONG = (CURRENT_SONG + 1) % SONG_COUNT;
+							}
+
+							break;
+						case 33:
+							if (!AudioCore.wavIsPlaying())
+							{
+								Serial.print("Start");
+								auto song = songs[CURRENT_SONG];
+								AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
+							}
+							break;
+						}
+					}
+					
+				}
+				else
+				{					
+					_pressed[i] = false;
+				}
 		}
 
 		//	Serial.print(seqButtonRead(24));
@@ -114,8 +171,22 @@ void EngineClass::update()
 		DisplayCore.drawUsage(usageCPU, usageMemory);
 
 		DisplayCore.drawMeter(16, AudioCore.getPeakL(), AudioCore.getPeakR());
-		
+		DisplayCore.drawMeter(10, AudioCore.getWavPeakL(), AudioCore.getWavPeakR());
 
+		auto leftCh = AudioCore.getPeakAudioInputL();
+		DisplayCore.drawMeter(11, leftCh, leftCh);
+		auto rightCh = AudioCore.getPeakAudioInputR();
+		DisplayCore.drawMeter(12, rightCh, rightCh);
+
+		
+		DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
+	
+		if (CURRENT_SONG != _lastSong)
+		{
+			auto song = songs[CURRENT_SONG];
+			DisplayCore.drawSongName(String(CURRENT_SONG)  + " " + song.substring(0, song.length() - 4));
+			_lastSong = CURRENT_SONG;
+		}
 	}
 }
 

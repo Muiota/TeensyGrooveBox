@@ -19,6 +19,8 @@ class DisplayCoreClass
 	void drawMeter(uint8_t channel, float l, float r);
 	void printLn(const char* msg, bool isError);
 	void drawUsage(double usage, double memory);
+	void drawSongName(const String& song);
+	void drawSongStatus(bool wav_is_playing);
 };
 
 extern DisplayCoreClass DisplayCore;

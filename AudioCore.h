@@ -26,6 +26,14 @@ class AudioCoreClass
 	void setVolume(float x);
 	float getPeakL();
 	float getPeakR();
+	float getWavPeakL();
+	float getWavPeakR();
+	float getPeakAudioInputL();
+	float getPeakAudioInputR();
+	bool wavIsPlaying();
+
+	void playWav(const char * song);
+	void stopWav();
 };
 extern AudioCoreClass AudioCore;
 

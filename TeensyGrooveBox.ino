@@ -38,6 +38,7 @@ void setup() {
 	DisplayCore.drawEncoder(0, 0);
 	DisplayCore.drawEncoder(1, 0);
 	DisplayCore.drawEncoder(2, 0);
+	Engine.init();
 
 }
 

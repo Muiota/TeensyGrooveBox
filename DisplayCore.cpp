@@ -163,6 +163,23 @@ void DisplayCoreClass::drawUsage(double cpu, double memory)
 	tft.print(memory);
 }
 
+void DisplayCoreClass::drawSongName(const String& song)
+{
+	uint16_t x = 3;
+	uint16_t y = 50;
+	tft.fillRect(x, y, 107, 12, OFF_COLOR);
+	tft.setCursor(x + 1, y + 1);
+	tft.setTextColor(MAIN_COLOR);
+	tft.print(song);
+}
+
+void DisplayCoreClass::drawSongStatus(bool wav_is_playing)
+{
+	uint16_t x = 100;
+	uint16_t y = 52;
+	tft.fillRect(x, y, 8, 8, wav_is_playing ? ILI9341_GREEN: OFF_COLOR);
+}
+
 
 DisplayCoreClass DisplayCore;
 
