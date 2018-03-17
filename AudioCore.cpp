@@ -121,12 +121,18 @@ void AudioCoreClass::init()
 	audioShield.inputSelect(AUDIO_INPUT_LINEIN);
 	audioShield.volume(0.6f);
 
-	biquadWavAL.setLowpass(0, 12000, 0.707);
-	biquadWavAR.setLowpass(0, 12000, 0.707);
+
 	biquadInputL.setHighpass(0, 100, 0.707);
 	biquadInputR.setHighpass(0, 200, 0.707);
 //	AudioInterrupts(); //swith on library
 }
+
+void AudioCoreClass::setWavLowpass(float frequency, float q) {
+
+	biquadWavAL.setLowpass(0, frequency, q);
+	biquadWavAR.setLowpass(0, frequency, q);
+}
+
 
 void AudioCoreClass::drum1On()
 {

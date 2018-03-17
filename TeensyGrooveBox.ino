@@ -35,9 +35,9 @@ void setup() {
 		DisplayCore.drawSequenceButton(i, false);
 	}
 
-	DisplayCore.drawEncoder(0, 0);
-	DisplayCore.drawEncoder(1, 0);
-	DisplayCore.drawEncoder(2, 0);
+	DisplayCore.drawEncoder(0, 0, "2");
+	DisplayCore.drawEncoder(1, 0, "1");
+	DisplayCore.drawEncoder(2, 0, "Master");
 	Engine.init();
 
 }

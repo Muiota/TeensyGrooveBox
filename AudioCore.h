@@ -19,6 +19,7 @@ class AudioCoreClass
  public:
 	AudioCoreClass();
 	void init();
+	void setWavLowpass(float frequency, float q);
 	void drum1On();
 	void drum2On();
 	void drum3On();

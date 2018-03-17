@@ -41,15 +41,23 @@ void DisplayCoreClass::drawSequenceButton(uint8_t pin, bool value)
 	tft.fillRect(2 + 32 + pin * 18, 240 - 18, 12, 12, value ? MAIN_COLOR : OFF_COLOR);
 }
 
-void DisplayCoreClass::drawEncoder(uint8_t encoder, int value)
+void DisplayCoreClass::drawEncoder(uint8_t encoder, int value, String title)
 {
+	
+
+
 	uint16_t x = 148 + 64 * encoder;
-	uint16_t y = 52;
+	uint16_t y = 68;
+
+	tft.fillRect(x - 24, y - 45, 48, 14, OFF_COLOR);
+	tft.setCursor(x - 24, y - 44);
+	tft.setTextColor(INFO_COLOR);
+	tft.print(title);
 
 	tft.fillCircle(x, y, 14, OFF_COLOR);
 	tft.setTextColor(MAIN_COLOR);
-	tft.drawRect(x - 16, y+ 34, 32, 15, BORDER_COLOR);
-	tft.fillRect(x - 14, y+ 36, 28, 11, OFF_COLOR);
+	tft.drawRect(x - 26, y+ 34, 52, 15, BORDER_COLOR);
+	tft.fillRect(x - 24, y+ 36, 48, 11, OFF_COLOR);
 
 
 	auto radians = value * PI / 62 + PI / 6 * 4;
@@ -82,7 +90,7 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int value)
 			shift = 2;
 		}
 	}
-	tft.setCursor(154 + 64 * encoder - shift * 7, y+ 36);
+	tft.setCursor(x  + 16 - shift * 7, y+ 36);
 	tft.setTextColor(INFO_COLOR);
 	tft.print(value);
 }
@@ -127,9 +135,10 @@ void DisplayCoreClass::drawMeterSide(float l, uint16_t x, uint16_t y)
 
 void DisplayCoreClass::drawMeter(uint8_t channel, float l, float r)
 {
-	uint16_t x = channel * 18 + 15;
-	uint16_t y = 128;	
-	tft.drawRect(x, y, 14, METER_HEIGHT, BORDER_COLOR);
+	uint16_t x = channel * 32 + 15;
+	uint16_t y = 128;
+	tft.fillRect(x + 14, y + 2, 14, METER_HEIGHT - 4, OFF_COLOR);
+	tft.drawRect(x, y, 30, METER_HEIGHT, BORDER_COLOR);
 	drawMeterSide(l, x, y);
 	drawMeterSide(r, x + 6, y);
 

@@ -4,11 +4,20 @@
 
 #include "Engine.h"
 
-String songs[50];
+String songs[60];
 uint8_t SONG_COUNT = 0;
 uint8_t CURRENT_SONG = 0;
 uint8_t _lastSong = -1;
 bool _pressed[40];
+float _wavFrequency = 12000;
+float _wavQ = 0.707;
+enum edit_mode {
+	MASTER,
+	WAV,
+	LEFT_CHANNEL,
+	RIGHT_CHANNEL
+};
+edit_mode _mode = MASTER;
 void EngineClass::init()
 {
 	Serial.println("Load songs");
@@ -27,7 +36,7 @@ void EngineClass::init()
 	{
 		Serial.println("file: " + songs[i]);
 	}
-
+	AudioCore.setWavLowpass(_wavFrequency, _wavQ);
 }
 
 void EngineClass::update()
@@ -75,27 +84,28 @@ void EngineClass::update()
 			}
 		}
 
-		//Serial.print(" ");
+		//Serial.print(" ");		
 		for (uint8_t i = 0; i <= 2; i++) {
-			auto one_value = HardwareCore.readEncoder(i);
-			auto needUpdate = false;
-			if (one_value < 0)
+			int32_t encoderValue = HardwareCore.readEncoder(i);	
+			bool needUpdate = false;
+			if (encoderValue < 0)
 			{
-				one_value = 0;
+				encoderValue = 0;
 				needUpdate = true;
 
 			}
-			else if (one_value > 400)
+			else if (encoderValue > 400)
 			{
-				one_value = 400;
+				encoderValue = 400;
 				needUpdate = true;
 			}
 
 			if (needUpdate)
 			{
-				HardwareCore.writeEncoder(i, one_value);
+				HardwareCore.writeEncoder(i, encoderValue);
+				Serial.write("update " + i);				
 			}
-			uint8_t one_value_r = one_value / 4;
+			uint8_t one_value_r = encoderValue / 4;
 
 			if (one_value_r != _currentEncoder[i])
 			{
@@ -107,15 +117,15 @@ void EngineClass::update()
 
 					break;
 				case 1:
-					//drum2.frequency(30 + one_value_r);
+					AudioCore.setWavLowpass(static_cast<float>(one_value_r * 200), _wavQ);
 					break;
 				case 2:
 					AudioCore.setVolume(static_cast<float>(one_value_r) / 100);
 					break;
 				}
 
-				DisplayCore.drawEncoder(i, one_value_r);
-				digitalWrite(39, one_value_r);
+				DisplayCore.drawEncoder(i, one_value_r, "MASTER");
+				//digitalWrite(39, one_value_r);
 				//		seqLedWrite(8, two_value);
 				//	seqLedWrite(15, three_value);
 				_currentEncoder[i] = one_value_r;
@@ -170,13 +180,13 @@ void EngineClass::update()
 	
 		DisplayCore.drawUsage(usageCPU, usageMemory);
 
-		DisplayCore.drawMeter(16, AudioCore.getPeakL(), AudioCore.getPeakR());
-		DisplayCore.drawMeter(10, AudioCore.getWavPeakL(), AudioCore.getWavPeakR());
+		DisplayCore.drawMeter(8, AudioCore.getPeakL(), AudioCore.getPeakR());
+		DisplayCore.drawMeter(4, AudioCore.getWavPeakL(), AudioCore.getWavPeakR());
 
 		auto leftCh = AudioCore.getPeakAudioInputL();
-		DisplayCore.drawMeter(11, leftCh, leftCh);
+		DisplayCore.drawMeter(5, leftCh, leftCh);
 		auto rightCh = AudioCore.getPeakAudioInputR();
-		DisplayCore.drawMeter(12, rightCh, rightCh);
+		DisplayCore.drawMeter(6, rightCh, rightCh);
 
 		
 		DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());

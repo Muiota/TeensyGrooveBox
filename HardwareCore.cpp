@@ -97,10 +97,13 @@ void HardwareCoreClass::writeEncoder(uint8_t encoder, int32_t value)
 	{
 	case 0:
 		enc_one.write(value);
+		break;
 	case 1:
 		enc_two.write(value);
+		break;
 	case 2:
 		enc_three.write(value);
+		break;
 	}
 }
 
