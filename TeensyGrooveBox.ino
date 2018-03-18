@@ -34,10 +34,7 @@ void setup() {
 	for (uint8_t i = 0; i <= 15; i++) {
 		DisplayCore.drawSequenceButton(i, false);
 	}
-
-	DisplayCore.drawEncoder(0, 0, "2");
-	DisplayCore.drawEncoder(1, 0, "1");
-	DisplayCore.drawEncoder(2, 0, "Master");
+	
 	Engine.init();
 
 }

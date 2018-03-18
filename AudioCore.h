@@ -16,7 +16,7 @@ class AudioCoreClass
 {
  protected:
 
- public:
+ public:	
 	AudioCoreClass();
 	void init();
 	void setWavLowpass(float frequency, float q);
@@ -24,7 +24,7 @@ class AudioCoreClass
 	void drum2On();
 	void drum3On();
 	void drum4On();
-	void setVolume(float x);
+	static void setMasterVolume(float x);
 	float getPeakL();
 	float getPeakR();
 	float getWavPeakL();

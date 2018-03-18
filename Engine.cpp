@@ -8,16 +8,50 @@ String songs[60];
 uint8_t SONG_COUNT = 0;
 uint8_t CURRENT_SONG = 0;
 uint8_t _lastSong = -1;
-bool _pressed[40];
-float _wavFrequency = 12000;
-float _wavQ = 0.707;
+
+
+typedef struct {
+	float masterVolume = 0.6f;
+} MasterSettings;
+
+typedef struct {
+	float volume = 1.0f;
+	float frequency = 12000.0f;
+	float q = 0.707f;
+} WavSettings;
+
+
+typedef struct {
+	MasterSettings master;	
+	WavSettings wav;
+} Settings;
+
+
+Settings settings;
 enum edit_mode {
-	MASTER,
-	WAV,
-	LEFT_CHANNEL,
-	RIGHT_CHANNEL
+	MASTER = 0,
+	WAV = 1,
+	LEFT_CHANNEL = 2,
+	RIGHT_CHANNEL = 3
 };
 edit_mode _mode = MASTER;
+
+void EngineClass::drawMode()
+{
+	DisplayCore.drawEncoderTitle(0, "", false);
+	DisplayCore.drawEncoderTitle(1, "", false);
+	DisplayCore.drawEncoderTitle(2, "", false);
+
+	DisplayCore.drawEncoderTitle(1, "LP FQ", true);
+	HardwareCore.setEncoderParam(1, setWavLowpass, "LP FQ", 100, 20000, 100, settings.wav.frequency);
+	DisplayCore.drawEncoderTitle(2, "MASTER", true);
+	HardwareCore.setEncoderParam(2, setMasterVolume, "MASTER", 0, 1, 0.01, settings.master.masterVolume);
+	DisplayCore.drawMeterTitle(8, _mode == MASTER);
+	DisplayCore.drawMeterTitle(4, _mode == WAV);
+	DisplayCore.drawMeterTitle(5, _mode == LEFT_CHANNEL);
+	DisplayCore.drawMeterTitle(6, _mode == RIGHT_CHANNEL);
+}
+
 void EngineClass::init()
 {
 	Serial.println("Load songs");
@@ -36,7 +70,54 @@ void EngineClass::init()
 	{
 		Serial.println("file: " + songs[i]);
 	}
-	AudioCore.setWavLowpass(_wavFrequency, _wavQ);
+	AudioCore.setMasterVolume(settings.master.masterVolume);
+	drawMode();	
+
+	HardwareCore.setButtonParam(GREEN, startWavTrack);
+	HardwareCore.setButtonParam(BLACK, stopWavTrack);
+	HardwareCore.setButtonParam(BROWN, changeWavTrack);
+}
+
+void EngineClass::startWavTrack()
+{
+	if (!AudioCore.wavIsPlaying())
+	{
+		Serial.print("Start");
+		auto song = songs[CURRENT_SONG];
+		AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
+	}
+}
+
+void EngineClass::stopWavTrack()
+{
+	if (AudioCore.wavIsPlaying())
+	{
+		Serial.print("Stop");
+		AudioCore.stopWav();
+	}
+}
+
+void EngineClass::changeWavTrack()
+{
+	if (!AudioCore.wavIsPlaying())
+	{
+		CURRENT_SONG = (CURRENT_SONG + 1) % SONG_COUNT;
+	}
+}
+
+
+void EngineClass::setWavLowpass(int encoder, int value)
+{
+	settings.wav.frequency = static_cast<float>(value / 100);
+	DisplayCore.drawEncoder(encoder, settings.wav.frequency, 20000);
+	AudioCore.setWavLowpass(settings.wav.frequency, settings.wav.q);
+}
+
+void EngineClass::setMasterVolume(int encoder, int value)
+{	
+	settings.master.masterVolume = static_cast<float>(value) / 100;
+	DisplayCore.drawEncoder(encoder, value, 100);
+	AudioCore.setMasterVolume(settings.master.masterVolume);
 }
 
 void EngineClass::update()
@@ -47,6 +128,9 @@ void EngineClass::update()
 		auto usageMemory = AudioMemoryUsageMax();
 		AudioProcessorUsageMaxReset();
 		AudioMemoryUsageMaxReset();
+
+		HardwareCore.update();
+
 		for (uint8_t i = 0; i <= 15; i++) {
 			auto value = HardwareCore.seqButtonRead(i);
 			if (_current[i] != value)
@@ -85,95 +169,10 @@ void EngineClass::update()
 		}
 
 		//Serial.print(" ");		
-		for (uint8_t i = 0; i <= 2; i++) {
-			int32_t encoderValue = HardwareCore.readEncoder(i);	
-			bool needUpdate = false;
-			if (encoderValue < 0)
-			{
-				encoderValue = 0;
-				needUpdate = true;
-
-			}
-			else if (encoderValue > 400)
-			{
-				encoderValue = 400;
-				needUpdate = true;
-			}
-
-			if (needUpdate)
-			{
-				HardwareCore.writeEncoder(i, encoderValue);
-				Serial.write("update " + i);				
-			}
-			uint8_t one_value_r = encoderValue / 4;
-
-			if (one_value_r != _currentEncoder[i])
-			{
-
-				switch (i)
-				{
-				case 0:
-					
-
-					break;
-				case 1:
-					AudioCore.setWavLowpass(static_cast<float>(one_value_r * 200), _wavQ);
-					break;
-				case 2:
-					AudioCore.setVolume(static_cast<float>(one_value_r) / 100);
-					break;
-				}
-
-				DisplayCore.drawEncoder(i, one_value_r, "MASTER");
-				//digitalWrite(39, one_value_r);
-				//		seqLedWrite(8, two_value);
-				//	seqLedWrite(15, three_value);
-				_currentEncoder[i] = one_value_r;
-			}
-		}
+	
 
 
-		for (int i = 31; i <= 36; i++) {
-			uint8_t value = digitalRead(i);
-				if (value == 0)
-				{
-					
-					if (!_pressed[i])
-					{
-						_pressed[i] = true;
-						switch (i)
-						{
-						case 31:
-							if (AudioCore.wavIsPlaying())
-							{
-								Serial.print("Stop");
-								AudioCore.stopWav();
-							}
-							break;
-						case 32:
-							if (!AudioCore.wavIsPlaying())
-							{
-								CURRENT_SONG = (CURRENT_SONG + 1) % SONG_COUNT;
-							}
-
-							break;
-						case 33:
-							if (!AudioCore.wavIsPlaying())
-							{
-								Serial.print("Start");
-								auto song = songs[CURRENT_SONG];
-								AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
-							}
-							break;
-						}
-					}
-					
-				}
-				else
-				{					
-					_pressed[i] = false;
-				}
-		}
+		
 
 		//	Serial.print(seqButtonRead(24));
 		//	Serial.println("----------");

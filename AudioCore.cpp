@@ -118,9 +118,8 @@ void AudioCoreClass::init()
 	//mixer3.gain(3, 1.0f);
 
 	audioShield.enable();
-	audioShield.inputSelect(AUDIO_INPUT_LINEIN);
-	audioShield.volume(0.6f);
-
+	audioShield.inputSelect(AUDIO_INPUT_LINEIN);	
+	
 
 	biquadInputL.setHighpass(0, 100, 0.707);
 	biquadInputR.setHighpass(0, 200, 0.707);
@@ -154,7 +153,7 @@ void AudioCoreClass::drum4On()
 	drum4.noteOn();
 }
 
-void AudioCoreClass::setVolume(float x)
+ void AudioCoreClass::setMasterVolume(float x)
 {
 	audioShield.volume(x);
 }

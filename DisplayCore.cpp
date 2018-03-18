@@ -11,6 +11,9 @@
 #define TFT_MOSI     7
 #define TFT_SCLK    14
 #define TFT_MISO    12
+
+
+
 ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
 
 uint16_t MAIN_COLOR = 0xD320; //    /* 255, 165,   0 */
@@ -41,26 +44,45 @@ void DisplayCoreClass::drawSequenceButton(uint8_t pin, bool value)
 	tft.fillRect(2 + 32 + pin * 18, 240 - 18, 12, 12, value ? MAIN_COLOR : OFF_COLOR);
 }
 
-void DisplayCoreClass::drawEncoder(uint8_t encoder, int value, String title)
+
+void DisplayCoreClass::drawEncoderTitle(uint8_t encoder, String title, bool isActive)
 {
-	
-
-
 	uint16_t x = 148 + 64 * encoder;
 	uint16_t y = 68;
 
-	tft.fillRect(x - 24, y - 45, 48, 14, OFF_COLOR);
+	tft.fillRect(x - 32, y - 48, 63, 104, ILI9341_BLACK);
+
+	if (!isActive)
+	{
+		return;
+	}
+
+	tft.fillRect(x - 32, y - 45, 63, 14, OFF_COLOR);
 	tft.setCursor(x - 24, y - 44);
 	tft.setTextColor(INFO_COLOR);
 	tft.print(title);
 
+	tft.drawRect(x - 26, y + 34, 52, 15, BORDER_COLOR);
+
+	tft.drawCircle(x, y, 21, ILI9341_BLACK);
+	tft.drawCircle(x, y, 20, ILI9341_BLACK);
+	tft.drawCircle(x, y, 19, BORDER_COLOR_DARK);
+	tft.drawCircle(x, y, 30, BORDER_COLOR_DARK);
+
+}
+
+
+void DisplayCoreClass::drawEncoder(uint8_t encoder, uint32_t value, uint32_t max)
+{
+
+	uint16_t x = 148 + 64 * encoder;
+	uint16_t y = 68;
+
 	tft.fillCircle(x, y, 14, OFF_COLOR);
-	tft.setTextColor(MAIN_COLOR);
-	tft.drawRect(x - 26, y+ 34, 52, 15, BORDER_COLOR);
+	tft.setTextColor(MAIN_COLOR);	
 	tft.fillRect(x - 24, y+ 36, 48, 11, OFF_COLOR);
-
-
-	auto radians = value * PI / 62 + PI / 6 * 4;
+	auto valueGauge = value * 100 / max;
+	auto radians = valueGauge * PI / 62 + PI / 6 * 4;
 	auto px = x + 13 * cos(radians);
 	auto py = y + 13 * sin(radians);
 	tft.drawLine(x, y, px, py, MAIN_COLOR);
@@ -73,27 +95,27 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int value, String title)
 		auto py1 = y + 20 * sin(r);
 		auto px2 = x + 28 * cos(r);
 		auto py2 = y + 28 * sin(r);
-		auto color = i <= value ? MAIN_COLOR : OFF_COLOR;
+		auto color = i <= valueGauge ? MAIN_COLOR : OFF_COLOR;
 		tft.drawLine(px1, py1, px2, py2, color);
 	}
-	tft.drawCircle(x, y, 21, ILI9341_BLACK);
-	tft.drawCircle(x, y, 20, ILI9341_BLACK);
-	tft.drawCircle(x, y, 19, BORDER_COLOR_DARK);
-	tft.drawCircle(x, y, 30, BORDER_COLOR_DARK);
+	
 
-	uint8_t shift = 0;
-	if (value >= 10)
-	{
-		shift = 1;
-		if (value >= 100)
-		{
-			shift = 2;
-		}
-	}
-	tft.setCursor(x  + 16 - shift * 7, y+ 36);
+	uint8_t shift = countDigits(value);	
+	tft.setCursor(x  + 23 - shift * 7, y+ 36);
 	tft.setTextColor(INFO_COLOR);
 	tft.print(value);
 }
+
+uint8_t DisplayCoreClass::countDigits(int num) {
+	uint8_t count = 1;
+	num = num / 10;
+	while (num) {
+		count++;
+		num = num / 10;		
+	}
+	return count;
+}
+
 
 void DisplayCoreClass::drawMeterSide(float l, uint16_t x, uint16_t y)
 {
@@ -133,23 +155,21 @@ void DisplayCoreClass::drawMeterSide(float l, uint16_t x, uint16_t y)
 	}
 }
 
-void DisplayCoreClass::drawMeter(uint8_t channel, float l, float r)
+
+void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
 {
 	uint16_t x = channel * 32 + 15;
 	uint16_t y = 128;
 	tft.fillRect(x + 14, y + 2, 14, METER_HEIGHT - 4, OFF_COLOR);
-	tft.drawRect(x, y, 30, METER_HEIGHT, BORDER_COLOR);
+	tft.drawRect(x, y, 30, METER_HEIGHT, isActive ? ILI9341_CYAN : BORDER_COLOR);	
+}
+
+void DisplayCoreClass::drawMeter(uint8_t channel,  float l, float r)
+{
+	uint16_t x = channel * 32 + 15;
+	uint16_t y = 128;
 	drawMeterSide(l, x, y);
 	drawMeterSide(r, x + 6, y);
-
-//	uint16_t levelR = r* levelHeight; // bottom
-//	uint16_t xR = x + 8;
-//	tft.fillRect(xR, yB, 4, levelHeight - levelR, ILI9341_BLACK);
-
-	
-
-//	tft.fillRect(xR, yB + levelHeight - levelR, 4, levelR, ILI9341_GREEN);
-	//tft.fillRect(channel * 16 + 16, 128, 14, 90, BORDER_COLOR);
 }
 
 void DisplayCoreClass::printLn(const char * msg, bool isError)
