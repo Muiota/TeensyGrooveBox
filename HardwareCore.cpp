@@ -92,9 +92,9 @@ void HardwareCoreClass::init()
 	pinMode(35, INPUT_PULLUP); //encoder 0 button
 	_currentButton[ENCODER0].pin = 35;
 	pinMode(36, INPUT_PULLUP); //encoder 2 button
-	_currentButton[ENCODER1].pin = 36;
+	_currentButton[ENCODER2].pin = 36;
 	pinMode(24, INPUT_PULLUP);  //encoder 1 button
-	_currentButton[ENCODER2].pin = 24;
+	_currentButton[ENCODER1].pin = 24;
 
 	//pinMode(13, OUTPUT);  // use the p13 LED as debugging
 	pinMode(39, OUTPUT); // encoder 0 led
@@ -120,19 +120,31 @@ void HardwareCoreClass::seqLedWrite(uint8_t led_pin, bool value)
 	mcp2.digitalWrite(15 - led_pin, value);
 }
 
+
+void HardwareCoreClass::resetEncoders()
+{
+	for (uint8_t i = 0; i <= 2; i++) {
+		HardwareEncoder* item = &_currentEncoder[i];
+		item->callback = emptyEncoderCallback;
+		item->title = "";
+		item->lastValue = 0;
+		writeEncoder(i, item->lastValue);
+	}
+}
+
 void HardwareCoreClass::setEncoderParam(uint8_t encoder, 
 	EncoderCallback callback, String title,
 	float min, float max, float step, float currentValue)
 {
 
 	HardwareEncoder* item = &_currentEncoder[encoder];	
-	item->step = static_cast<uint32_t>(step * 100);		
-	item->callback = callback;
+	item->step = static_cast<uint32_t>(step * 100);			
 	item->title = title;
 	item->min = static_cast<uint32_t>(min* 400 / item->step);
 	item->max = static_cast<uint32_t>(max* 400 / item->step);
 	item->lastValue = static_cast<uint32_t>(currentValue * 400 / item->step);
 	writeEncoder(encoder, item->lastValue);
+	item->callback = callback;
 	item->callback(encoder, item->lastValue / 4 * item->step);
 	Serial.print("enc max ");
 	Serial.print(item->max);

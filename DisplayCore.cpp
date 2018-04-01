@@ -164,7 +164,7 @@ void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
 	tft.drawRect(x, y, 30, METER_HEIGHT, isActive ? ILI9341_CYAN : BORDER_COLOR);	
 }
 
-void DisplayCoreClass::drawMeter(uint8_t channel,  float l, float r)
+void DisplayCoreClass::drawMeter(uint16_t channel,  float l, float r)
 {
 	uint16_t x = channel * 32 + 15;
 	uint16_t y = 128;
@@ -207,6 +207,13 @@ void DisplayCoreClass::drawSongStatus(bool wav_is_playing)
 	uint16_t x = 100;
 	uint16_t y = 52;
 	tft.fillRect(x, y, 8, 8, wav_is_playing ? ILI9341_GREEN: OFF_COLOR);
+}
+
+void DisplayCoreClass::drawMuteMaster(bool isMute)
+{
+	uint16_t x = 307;
+	uint16_t y = 105;
+	tft.fillRect(x, y, 8, 8, isMute ? ILI9341_RED : OFF_COLOR);
 }
 
 

@@ -34,6 +34,7 @@ class HardwareCoreClass
 	void init();
 	bool seqButtonRead(uint8_t button_pin);
 	void seqLedWrite(uint8_t led_pin, bool value);
+	void resetEncoders();
 	void setEncoderParam(uint8_t encoder, EncoderCallback callback,
 		String title, float min, float max, float step, float currenctValue);
 	void setButtonParam(uint8_t button, ButtonCallback callback);
