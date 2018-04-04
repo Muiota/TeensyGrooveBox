@@ -72,7 +72,7 @@ void DisplayCoreClass::drawEncoderTitle(uint8_t encoder, String title, bool isAc
 }
 
 
-void DisplayCoreClass::drawEncoder(uint8_t encoder, uint32_t value, uint32_t max)
+void DisplayCoreClass::drawEncoder(uint8_t encoder, int32_t value, int32_t max, bool isBoth )
 {
 
 	uint16_t x = 148 + 64 * encoder;
@@ -82,26 +82,74 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, uint32_t value, uint32_t max
 	tft.setTextColor(MAIN_COLOR);	
 	tft.fillRect(x - 24, y+ 36, 48, 11, OFF_COLOR);
 	auto valueGauge = value * 100 / max;
-	auto radians = valueGauge * PI / 62 + PI / 6 * 4;
-	auto px = x + 13 * cos(radians);
-	auto py = y + 13 * sin(radians);
-	tft.drawLine(x, y, px, py, MAIN_COLOR);
 
-
-	for (uint8_t i = 0; i < 100; i = i + 3)
+	if (isBoth)
 	{
-		auto r = i * PI / 62 + PI / 6 * 4;
-		auto px1 = x + 20 * cos(r);
-		auto py1 = y + 20 * sin(r);
-		auto px2 = x + 28 * cos(r);
-		auto py2 = y + 28 * sin(r);
-		auto color = i <= valueGauge ? MAIN_COLOR : OFF_COLOR;
-		tft.drawLine(px1, py1, px2, py2, color);
+		int8_t positive = valueGauge > 0 ? 1: -1;
+		auto radians = positive* valueGauge * PI / 124.0;
+		auto px = x + 13 * sin(radians)* positive;
+		auto py = y - 13 * cos(radians);
+		tft.drawLine(x, y, px, py, MAIN_COLOR);
+
+
+		for (int8_t i = -100; i < 100; i = i + 6)
+		{
+			bool pos = i >= 0 ? 1 : -1;
+			auto r = pos * i * PI / 124.0;
+			auto px1 = x + 20 * sin(r)*pos;
+			auto py1 = y - 20 * cos(r);
+			auto px2 = x + 28 * sin(r) *pos;
+			auto py2 = y - 28 * cos(r);
+			auto color = OFF_COLOR;
+			if (positive == 1)
+			{
+				if (i >= 0 && i <= valueGauge)
+				{
+					color = MAIN_COLOR;
+				}
+			} else 
+			{
+				Serial.println(valueGauge);
+				Serial.println("=");
+				Serial.println(i);
+				Serial.println("-");
+				if (i <= 0 && i >= valueGauge)
+				{
+					color = MAIN_COLOR;
+				}
+			}
+
+			
+			tft.drawLine(px1, py1, px2, py2, color);
+		}
 	}
-	
+	else
+	{
+
+		auto radians =  valueGauge * PI / 62 + PI / 6 * 4;
+		auto px = x + 13 * cos(radians);
+		auto py = y + 13 * sin(radians);
+		tft.drawLine(x, y, px, py, MAIN_COLOR);
+
+
+		for (uint8_t i = 0; i < 100; i = i + 3)
+		{
+			auto r =  i * PI / 62 + PI / 6 * 4;
+			auto px1 = x + 20 * cos(r);
+			auto py1 = y + 20 * sin(r);
+			auto px2 = x + 28 * cos(r);
+			auto py2 = y + 28 * sin(r);
+			auto color = i <= valueGauge ? MAIN_COLOR : OFF_COLOR;
+			tft.drawLine(px1, py1, px2, py2, color);
+		}
+	}
 
 	uint8_t shift = countDigits(value);	
-	tft.setCursor(x  + 23 - shift * 7, y+ 36);
+	uint8_t exShift = 0;
+	if (value < 0) {
+		exShift = 4;
+	}
+	tft.setCursor(x  + 23 - shift * 7 - exShift, y+ 36);
 	tft.setTextColor(INFO_COLOR);
 	tft.print(value);
 }

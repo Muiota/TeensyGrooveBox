@@ -14,7 +14,7 @@ class DisplayCoreClass
  public:
 	static void init();
 	static void drawSequenceButton(uint8_t pin, bool value);
-	static void drawEncoder(uint8_t encoder, uint32_t value, uint32_t max);
+	static void drawEncoder(uint8_t encoder, int32_t value, int32_t max, bool isBoth = false);
 	static void drawEncoderTitle(uint8_t encoder, String title, bool isActive);
 	static uint8_t countDigits(int num);
 	static void drawMeterSide(float l, uint16_t x, uint16_t y);

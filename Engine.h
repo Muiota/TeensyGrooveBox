@@ -37,8 +37,13 @@ class EngineClass
 	static void stopWavTrack();
 	static void changeWavTrack();
 	static void changeMode();
+	static void changeEditType();
 	static void setWavLowpass(int encoder, int value);
 	static void setLeftInputHighpass(int encoder, int value);
+	static void setLeftInputBalance(int encoder, int value);
+	static void setWavBalance(int encoder, int value);	
+	static void setRightInputBalance(int encoder, int value);
+	static void setReverbBalance(int encoder, int value);	
 	static void setRightInputHighpass(int encoder, int value);
 	static void setReverbHighpass(int encoder, int value);
 	static void setMasterVolume(int encoder, int value);

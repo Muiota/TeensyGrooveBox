@@ -40,7 +40,7 @@ typedef struct {
 	int32_t lastValue = 0;
 	int32_t min = 0;
 	int32_t max = 400;
-	uint32_t step = 1;
+	int32_t step = 1;
 	String title = "UNSIGN";
 	EncoderCallback callback = emptyEncoderCallback;
 } HardwareEncoder;
@@ -138,11 +138,11 @@ void HardwareCoreClass::setEncoderParam(uint8_t encoder,
 {
 
 	HardwareEncoder* item = &_currentEncoder[encoder];	
-	item->step = static_cast<uint32_t>(step * 100);			
+	item->step = static_cast<int32_t>(step * 100);			
 	item->title = title;
-	item->min = static_cast<uint32_t>(min* 400 / item->step);
-	item->max = static_cast<uint32_t>(max* 400 / item->step);
-	item->lastValue = static_cast<uint32_t>(currentValue * 400 / item->step);
+	item->min = static_cast<int32_t>(min* 400 / item->step);
+	item->max = static_cast<int32_t>(max* 400 / item->step);
+	item->lastValue = static_cast<int32_t>(currentValue * 400 / item->step);
 	writeEncoder(encoder, item->lastValue);
 	item->callback = callback;
 	item->callback(encoder, item->lastValue / 4 * item->step);

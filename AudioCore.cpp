@@ -4,10 +4,30 @@
 
 #include "AudioCore.h"
 
+float WAVESHAPE_EXAMPLE[17] = {
+	-0.588,
+	-0.579,
+	-0.549,
+	-0.488,
+	-0.396,
+	-0.320,
+	-0.228,
+	-0.122,
+	0,
+	0.122,
+	0.228,
+	0.320,
+	0.396,
+	0.488,
+	0.549,
+	0.579,
+	0.588
+};
 
 // GUItool: begin automatically generated code
-AudioInputI2S            audioInput;     //xy=577.5103530883789,942.9999694824219
+AudioInputI2S            audioInput;     //xy=499.51036071777344,939.0000495910645
 AudioPlaySdWav           playSdWavA;     //xy=616.5103988647461,730.0000114440918
+AudioEffectWaveshaper    waveshapeInputL;     //xy=628.1770629882812,1031.0103435516357
 AudioPlaySerialflashRaw  playFlashRaw1;  //xy=656.5103759765625,619.9999694824219
 AudioSynthSimpleDrum     drum2;          //xy=672.5103759765625,417.9999694824219
 AudioFilterBiquad        biquadfreeverbs;        //xy=684.5103492736816,818.0103569030762
@@ -42,45 +62,46 @@ AudioAnalyzePeak         peakAudioOutputR; //xy=1674.5103759765625,951.999969482
 AudioAnalyzePeak         peakAudioOutputL; //xy=1675.5103759765625,909.9999694824219
 AudioOutputI2S           audioOutput;    //xy=1684.5103759765625,735.9999694824219
 AudioConnection          patchCord1(audioInput, 0, biquadInputL, 0);
-AudioConnection          patchCord2(audioInput, 1, biquadInputR, 0);
+AudioConnection          patchCord2(audioInput, 1, waveshapeInputL, 0);
 AudioConnection          patchCord3(playSdWavA, 0, biquadWavAL, 0);
 AudioConnection          patchCord4(playSdWavA, 1, biquadWavAR, 0);
-AudioConnection          patchCord5(playFlashRaw1, 0, mixer2, 0);
-AudioConnection          patchCord6(drum2, 0, mixer1, 1);
-AudioConnection          patchCord7(biquadfreeverbs, fxfreeverbs);
-AudioConnection          patchCord8(drum3, 0, mixer1, 2);
-AudioConnection          patchCord9(drum1, 0, mixer1, 0);
-AudioConnection          patchCord10(drum4, 0, mixer1, 3);
-AudioConnection          patchCord11(biquadInputR, peakAudioInputR);
-AudioConnection          patchCord12(biquadInputR, 0, mixerGroupL0, 1);
-AudioConnection          patchCord13(biquadInputR, 0, mixerGroupR0, 1);
-AudioConnection          patchCord14(biquadInputR, biquadfreeverbs);
-AudioConnection          patchCord15(biquadInputL, peakAudioInputL);
-AudioConnection          patchCord16(biquadInputL, 0, mixerGroupL0, 0);
-AudioConnection          patchCord17(biquadInputL, 0, mixerGroupR0, 0);
-AudioConnection          patchCord18(biquadWavAR, 0, mixerGroupR0, 3);
-AudioConnection          patchCord19(biquadWavAR, peakWavR);
-AudioConnection          patchCord20(biquadWavAL, 0, mixerGroupL0, 3);
-AudioConnection          patchCord21(biquadWavAL, peakWavL);
-AudioConnection          patchCord22(fxfreeverbs, 0, mixerGroupL1, 0);
-AudioConnection          patchCord23(fxfreeverbs, 0, peakfreeverbsL, 0);
-AudioConnection          patchCord24(fxfreeverbs, 1, mixerGroupR1, 0);
-AudioConnection          patchCord25(fxfreeverbs, 1, peakfreeverbsR, 0);
-AudioConnection          patchCord26(mixer1, 0, mixerGroupL0, 2);
-AudioConnection          patchCord27(mixer1, 0, mixerGroupR0, 2);
-AudioConnection          patchCord28(mixer1, peakAudio01);
-AudioConnection          patchCord29(mixerGroupL0, 0, masterMixerL, 0);
-AudioConnection          patchCord30(mixerGroupL1, 0, masterMixerL, 1);
-AudioConnection          patchCord31(mixerGroupL2, 0, masterMixerL, 2);
-AudioConnection          patchCord32(mixerGroupL3, 0, masterMixerL, 3);
-AudioConnection          patchCord33(mixerGroupR0, 0, masterMixerR, 0);
-AudioConnection          patchCord34(mixerGroupR1, 0, masterMixerR, 1);
-AudioConnection          patchCord35(mixerGroupR2, 0, masterMixerR, 2);
-AudioConnection          patchCord36(mixerGroupR3, 0, masterMixerR, 3);
-AudioConnection          patchCord37(masterMixerL, 0, audioOutput, 0);
-AudioConnection          patchCord38(masterMixerL, peakAudioOutputL);
-AudioConnection          patchCord39(masterMixerR, 0, audioOutput, 1);
-AudioConnection          patchCord40(masterMixerR, peakAudioOutputR);
+AudioConnection          patchCord5(waveshapeInputL, biquadInputR);
+AudioConnection          patchCord6(playFlashRaw1, 0, mixer2, 0);
+AudioConnection          patchCord7(drum2, 0, mixer1, 1);
+AudioConnection          patchCord8(biquadfreeverbs, fxfreeverbs);
+AudioConnection          patchCord9(drum3, 0, mixer1, 2);
+AudioConnection          patchCord10(drum1, 0, mixer1, 0);
+AudioConnection          patchCord11(drum4, 0, mixer1, 3);
+AudioConnection          patchCord12(biquadInputR, peakAudioInputR);
+AudioConnection          patchCord13(biquadInputR, 0, mixerGroupL0, 1);
+AudioConnection          patchCord14(biquadInputR, 0, mixerGroupR0, 1);
+AudioConnection          patchCord15(biquadInputR, biquadfreeverbs);
+AudioConnection          patchCord16(biquadInputL, peakAudioInputL);
+AudioConnection          patchCord17(biquadInputL, 0, mixerGroupL0, 0);
+AudioConnection          patchCord18(biquadInputL, 0, mixerGroupR0, 0);
+AudioConnection          patchCord19(biquadWavAR, 0, mixerGroupR0, 3);
+AudioConnection          patchCord20(biquadWavAR, peakWavR);
+AudioConnection          patchCord21(biquadWavAL, 0, mixerGroupL0, 3);
+AudioConnection          patchCord22(biquadWavAL, peakWavL);
+AudioConnection          patchCord23(fxfreeverbs, 0, mixerGroupL1, 0);
+AudioConnection          patchCord24(fxfreeverbs, 0, peakfreeverbsL, 0);
+AudioConnection          patchCord25(fxfreeverbs, 1, mixerGroupR1, 0);
+AudioConnection          patchCord26(fxfreeverbs, 1, peakfreeverbsR, 0);
+AudioConnection          patchCord27(mixer1, 0, mixerGroupL0, 2);
+AudioConnection          patchCord28(mixer1, 0, mixerGroupR0, 2);
+AudioConnection          patchCord29(mixer1, peakAudio01);
+AudioConnection          patchCord30(mixerGroupL0, 0, masterMixerL, 0);
+AudioConnection          patchCord31(mixerGroupL1, 0, masterMixerL, 1);
+AudioConnection          patchCord32(mixerGroupL2, 0, masterMixerL, 2);
+AudioConnection          patchCord33(mixerGroupL3, 0, masterMixerL, 3);
+AudioConnection          patchCord34(mixerGroupR0, 0, masterMixerR, 0);
+AudioConnection          patchCord35(mixerGroupR1, 0, masterMixerR, 1);
+AudioConnection          patchCord36(mixerGroupR2, 0, masterMixerR, 2);
+AudioConnection          patchCord37(mixerGroupR3, 0, masterMixerR, 3);
+AudioConnection          patchCord38(masterMixerL, 0, audioOutput, 0);
+AudioConnection          patchCord39(masterMixerL, peakAudioOutputL);
+AudioConnection          patchCord40(masterMixerR, 0, audioOutput, 1);
+AudioConnection          patchCord41(masterMixerR, peakAudioOutputR);
 AudioControlSGTL5000     audioShield;    //xy=1680.5103759765625,782.9999694824219
 										 // GUItool: end automatically generated code
 
@@ -169,11 +190,11 @@ void AudioCoreClass::init()
 	biquadInputL.setHighpass(0, 100, 0.707);
 	biquadInputR.setHighpass(0, 200, 0.707);
 
-	biquadfreeverbs.setHighpass(0, 300, 0.707);
+	biquadfreeverbs.setLowpass(0, 2000, 0.707);
 	fxfreeverbs.damping(1);
 	fxfreeverbs.roomsize(0.1);
 	fxfreeverbs.update();
-	
+	waveshapeInputL.shape(WAVESHAPE_EXAMPLE, 17);
 //	AudioInterrupts(); //swith on library
 }
 
@@ -196,7 +217,7 @@ void AudioCoreClass::setRightInputBiquad(float frequency, float q) {
 
 void AudioCoreClass::setReverbBiquad(float frequency, float q) {
 
-	biquadfreeverbs.setHighpass(0, frequency, q);
+	biquadfreeverbs.setLowpass(0, frequency, q);
 }
 
 
@@ -240,28 +261,59 @@ void AudioCoreClass::drum4On()
 	 }
  }
 
- void AudioCoreClass::setWavVolume(float x)
+ void AudioCoreClass::setWavVolume(float vol, float balance)
  {	 
-	 mixerGroupL0.gain(3, x);
-	 mixerGroupR0.gain(3, x);
+	 setBalancedVolume(3, vol, balance);
  }
 
- void AudioCoreClass::setLeftInputVolume(float x)
+ void AudioCoreClass::setLeftInputVolume(float vol, float balance)
  {
-	 mixerGroupL0.gain(0, x);
-	 mixerGroupR0.gain(0, x);
+	 setBalancedVolume(0, vol, balance);
  }
 
- void AudioCoreClass::setRightInputVolume(float x)
- {
-	 mixerGroupL0.gain(1, x);
-	 mixerGroupR0.gain(1, x);
- }
+void AudioCoreClass::setBalancedVolume(uint8_t channel,  float vol, float balance)
+{
+	if (balance == 0)
+	{
+		mixerGroupL0.gain(channel, vol);
+		mixerGroupR0.gain(channel, vol);
+	}
+	else if (balance > 0)
+	{
+		mixerGroupL0.gain(channel, vol);
+		mixerGroupR0.gain(channel, vol * (1.0 - balance));
 
- void AudioCoreClass::setReverbVolume(float x)
+	}
+	else
+	{
+		mixerGroupR0.gain(channel, vol);
+		mixerGroupL0.gain(channel, vol * (1.0 + balance));
+	}
+}
+
+ void AudioCoreClass::setRightInputVolume(float vol, float balance)
  {
-	 mixerGroupL1.gain(0, x);
-	 mixerGroupR1.gain(0, x);
+	 setBalancedVolume(1, vol, balance);
+}
+
+ void AudioCoreClass::setReverbVolume(float vol, float balance)
+ {
+	 if (balance == 0)
+	 {
+		 mixerGroupL1.gain(0, vol);
+		 mixerGroupR1.gain(0, vol);
+	 }
+	 else if (balance > 0)
+	 {
+		 mixerGroupL1.gain(0, vol);
+		 mixerGroupR1.gain(0, vol * (1.0 - balance));
+
+	 }
+	 else
+	 {
+		 mixerGroupR1.gain(0, vol);
+		 mixerGroupL1.gain(0, vol * (1.0 + balance));
+	 }
  }
  
 
