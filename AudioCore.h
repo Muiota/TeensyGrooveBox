@@ -21,6 +21,7 @@ class AudioCoreClass
  public:	
 	AudioCoreClass();
 	void init();
+	static void setReverbRoom(float damping, float roomsize);
 	static void setWavBiquad(float frequency, float q);
 	static void setLeftInputBiquad(float frequency, float q);
 	static void setRightInputBiquad(float frequency, float q);

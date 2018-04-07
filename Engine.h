@@ -8,17 +8,28 @@
 #include "HardwareCore.h"
 #include "AudioCore.h"
 
+
 typedef struct {
+	int editMode = 0;	
+} BaseSettings;
+
+typedef struct : BaseSettings {
 	float masterVolume = 0.6f;
 } MasterSettings;
 
-typedef struct {
+typedef struct : BaseSettings {
 	float volume = 1.0f;
 	float balance = 0.0f;
 	float frequency = 12000.0f;
 	float q = 0.707f;
 } ChannelSettings;
 
+
+
+typedef struct : ChannelSettings {	
+	float roomsize = 0.1f;
+	float damping = 1.0f;	
+} FxReverbChannelSettings;
 
 class EngineClass
 {
@@ -28,7 +39,8 @@ class EngineClass
 	
  public:
 	static void updateModeLinks();	
-	static void saveChannelPart(JsonObject& mixer, String channelName,  ChannelSettings& setting);
+	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName,  ChannelSettings& setting);
+	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);	
 	static void saveSettings();
 	static void loadSettings();
 	static void init();
@@ -44,6 +56,8 @@ class EngineClass
 	static void setWavBalance(int encoder, int value);	
 	static void setRightInputBalance(int encoder, int value);
 	static void setReverbBalance(int encoder, int value);	
+	static void setReverbDamping(int encoder, int value);
+	static void setReverbRoomsize(int encoder, int value);
 	static void setRightInputHighpass(int encoder, int value);
 	static void setReverbHighpass(int encoder, int value);
 	static void setMasterVolume(int encoder, int value);

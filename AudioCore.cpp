@@ -183,19 +183,26 @@ void AudioCoreClass::init()
 	mixerGroupR3.gain(3, 0);
 
 
-	audioShield.enable();
-	audioShield.inputSelect(AUDIO_INPUT_LINEIN);	
 	
+	
+	audioShield.enable();
+	audioShield.inputSelect(AUDIO_INPUT_LINEIN);		
+	audioShield.adcHighPassFilterDisable();
 
 	biquadInputL.setHighpass(0, 100, 0.707);
 	biquadInputR.setHighpass(0, 200, 0.707);
 
 	biquadfreeverbs.setLowpass(0, 2000, 0.707);
-	fxfreeverbs.damping(1);
-	fxfreeverbs.roomsize(0.1);
+	
 	fxfreeverbs.update();
 	waveshapeInputL.shape(WAVESHAPE_EXAMPLE, 17);
 //	AudioInterrupts(); //swith on library
+}
+
+void AudioCoreClass::setReverbRoom(float damping, float roomsize)
+{
+	fxfreeverbs.damping(damping);
+	fxfreeverbs.roomsize(roomsize);
 }
 
 
@@ -249,16 +256,7 @@ void AudioCoreClass::drum4On()
 
  void AudioCoreClass::enhanceBass(bool enable)
  {
-	 if (enable)
-	 {
-		 audioShield.audioPostProcessorEnable();
-		 audioShield.enhanceBassEnable();
-		 audioShield.enhanceBass(0.5, 0.4, 0, 2);
-	 }
-	 else
-	 {
-		 audioShield.enhanceBassDisable();
-	 }
+	
  }
 
  void AudioCoreClass::setWavVolume(float vol, float balance)

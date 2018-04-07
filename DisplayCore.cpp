@@ -212,7 +212,7 @@ void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
 	tft.drawRect(x, y, 30, METER_HEIGHT, isActive ? ILI9341_CYAN : BORDER_COLOR);	
 }
 
-void DisplayCoreClass::drawMeter(uint16_t channel,  float l, float r)
+void DisplayCoreClass::drawMeter(uint16_t channel,  float r, float l)
 {
 	uint16_t x = channel * 32 + 15;
 	uint16_t y = 128;

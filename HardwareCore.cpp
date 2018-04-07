@@ -132,6 +132,21 @@ void HardwareCoreClass::resetEncoders()
 	}
 }
 
+/*
+ void myfunction(struct hello * p) {
+    printf("value1 is %d\n", p->value1);
+    p->value2 = 777;
+}
+
+int main(void) {
+    instance.value1 = 1;
+    instance.value2 = 2;
+
+    myfunction(&instance);
+ *
+ */
+
+
 void HardwareCoreClass::setEncoderParam(uint8_t encoder, 
 	EncoderCallback callback, String title,
 	float min, float max, float step, float currentValue)

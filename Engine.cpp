@@ -19,7 +19,7 @@ typedef struct {
 	ChannelSettings wav;
 	ChannelSettings leftInput;
 	ChannelSettings rightInput;
-	ChannelSettings fxReverb;
+	FxReverbChannelSettings fxReverb;
 } MixerSettings;
 
 
@@ -36,11 +36,16 @@ enum edit_cnannel_mode {
 	EDIT_CHANNEL_MODE_BALANCE = 1,	
 };
 
+enum edit_fx_reverb_mode {
+	EDIT_FX_REVERB_MODE_EQ = 0,
+	EDIT_FX_REVERB_MODE_BALANCE = 1,
+	EDIT_FX_REVERB_MODE_ROOM = 2		
+};
+
 
 MixerSettings _mixerSettings;
 int _currentMode = EDIT_CHANNEL_MASTER;
-int _currentEditType = EDIT_CHANNEL_MODE_EQ;
-
+BaseSettings* _currenctSettings = &_mixerSettings.master;
 void EngineClass::updateModeLinks()
 {
 	HardwareCore.resetEncoders();
@@ -51,18 +56,19 @@ void EngineClass::updateModeLinks()
 	switch (_currentMode)
 	{
 		case EDIT_CHANNEL_MASTER:
+		_currenctSettings = &_mixerSettings.master;
 		DisplayCore.drawEncoderTitle(2, "MASTER", true);
 		HardwareCore.setEncoderParam(2, setMasterVolume, "MASTER", 0, 1, 0.01, _mixerSettings.master.masterVolume);
 		break;
 		case EDIT_CHANNEL_WAV:
 		
-
-			switch (_currentEditType)
+			_currenctSettings = &_mixerSettings.wav;
+			switch (_mixerSettings.wav.editMode)
 			{
 			case EDIT_CHANNEL_MODE_EQ:
 
 				DisplayCore.drawEncoderTitle(1, "LP FQ", true);
-				HardwareCore.setEncoderParam(1, setWavLowpass, "LP FQ", 100, 20000, 100, _mixerSettings.wav.frequency);
+				HardwareCore.setEncoderParam(1, setWavLowpass, "LP FQ", 100, 20000, 50, _mixerSettings.wav.frequency);
 				break;
 			case EDIT_CHANNEL_MODE_BALANCE:
 
@@ -76,13 +82,13 @@ void EngineClass::updateModeLinks()
 			HardwareCore.setEncoderParam(2, setWavVolume, "W VOL", 0, 1, 0.01, _mixerSettings.wav.volume);
 			break;
 		case EDIT_CHANNEL_LEFT_CHANNEL:
-
-			switch (_currentEditType)
+			_currenctSettings = &_mixerSettings.leftInput;
+			switch (_mixerSettings.leftInput.editMode)
 			{
 			case EDIT_CHANNEL_MODE_EQ:
 
 				DisplayCore.drawEncoderTitle(1, "HP FQ", true);
-				HardwareCore.setEncoderParam(1, setLeftInputHighpass, "HP FQ", 100, 20000, 100, _mixerSettings.leftInput.frequency);
+				HardwareCore.setEncoderParam(1, setLeftInputHighpass, "HP FQ", 100, 20000, 50, _mixerSettings.leftInput.frequency);
 				break;
 			case EDIT_CHANNEL_MODE_BALANCE:
 
@@ -95,13 +101,13 @@ void EngineClass::updateModeLinks()
 			HardwareCore.setEncoderParam(2, setLeftInputVolume, "L VOL", 0, 1, 0.01, _mixerSettings.leftInput.volume);
 			break;
 		case EDIT_CHANNEL_RIGHT_CHANNEL:
-			
-			switch (_currentEditType)
+			_currenctSettings = &_mixerSettings.rightInput;
+			switch (_mixerSettings.rightInput.editMode)
 			{
 			case EDIT_CHANNEL_MODE_EQ:
 
 				DisplayCore.drawEncoderTitle(1, "HP FQ", true);
-				HardwareCore.setEncoderParam(1, setRightInputHighpass, "HP FQ", 100, 20000, 100, _mixerSettings.rightInput.frequency);
+				HardwareCore.setEncoderParam(1, setRightInputHighpass, "HP FQ", 100, 20000, 50, _mixerSettings.rightInput.frequency);
 				break;
 			case EDIT_CHANNEL_MODE_BALANCE:
 
@@ -115,23 +121,28 @@ void EngineClass::updateModeLinks()
 			HardwareCore.setEncoderParam(2, setRightInputVolume, "R VOL", 0, 1, 0.01, _mixerSettings.rightInput.volume);
 			break;
 		case EDIT_CHANNEL_FX_REVERB:
+			_currenctSettings = &_mixerSettings.fxReverb;
 			
-			
-			switch (_currentEditType)
+			switch (_mixerSettings.fxReverb.editMode)
 			{
-			case EDIT_CHANNEL_MODE_EQ:
+			case EDIT_FX_REVERB_MODE_EQ:
 				DisplayCore.drawEncoderTitle(1, "HP FQ", true);
-				HardwareCore.setEncoderParam(1, setReverbHighpass, "HP FQ", 100, 20000, 100, _mixerSettings.fxReverb.frequency);
+				HardwareCore.setEncoderParam(1, setReverbHighpass, "HP FQ", 100, 20000, 50, _mixerSettings.fxReverb.frequency);
 				break;
-			case EDIT_CHANNEL_MODE_BALANCE:
+			case EDIT_FX_REVERB_MODE_BALANCE:
 
 				DisplayCore.drawEncoderTitle(1, "BAL", true);
 				HardwareCore.setEncoderParam(1, setReverbBalance, "BAL", -1, 1, 0.05, _mixerSettings.fxReverb.balance);
 				break;
+			case EDIT_FX_REVERB_MODE_ROOM:
+				DisplayCore.drawEncoderTitle(0, "DAMP", true);
+				HardwareCore.setEncoderParam(0, setReverbDamping, "DAMP", 0, 1, 0.01, _mixerSettings.fxReverb.damping);
+				DisplayCore.drawEncoderTitle(1, "ROOM", true);
+				HardwareCore.setEncoderParam(1, setReverbRoomsize, "ROOM", 0, 1, 0.01, _mixerSettings.fxReverb.roomsize);
+				break;
 			}
-		
-		
-		DisplayCore.drawEncoderTitle(2, "REVER", true);
+				
+	    	DisplayCore.drawEncoderTitle(2, "REVER", true);
 			HardwareCore.setEncoderParam(2, setReverbVolume, "R VOL", 0, 1, 0.01, _mixerSettings.fxReverb.volume);
 			break;
 	}
@@ -145,13 +156,22 @@ void EngineClass::updateModeLinks()
 	DisplayCore.drawMeterTitle(6, _currentMode == EDIT_CHANNEL_RIGHT_CHANNEL);
 }
 
-void EngineClass::saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting)
+JsonObject& EngineClass::saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting)
 {
 	JsonObject& channel = mixer.createNestedObject(channelName);
 	channel["volume"] = setting.volume;
 	channel["balance"] = setting.balance;
 	channel["frequency"] = setting.frequency;
 	channel["q"] = setting.q;
+	return channel;
+}
+
+
+void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting)
+{
+	JsonObject& channel =  saveChannelPart(mixer, channelName, setting);	
+	channel["damping"] = setting.damping;
+	channel["roomsize"] = setting.roomsize;	
 }
 
 void EngineClass::saveSettings()
@@ -171,7 +191,7 @@ void EngineClass::saveSettings()
 	saveChannelPart(mixer, "wav", _mixerSettings.wav);
 	saveChannelPart(mixer, "leftInput", _mixerSettings.leftInput);
 	saveChannelPart(mixer, "rightInput", _mixerSettings.rightInput);
-	saveChannelPart(mixer, "fxReverb", _mixerSettings.fxReverb);
+	saveChannelPartFxReverb(mixer, "fxReverb", _mixerSettings.fxReverb);
 	
 	/*JsonArray& data = mixer.createNestedArray("data");
 	data.add(48.756080);
@@ -233,6 +253,8 @@ void EngineClass::loadSettings()
 		_mixerSettings.fxReverb.frequency = fxReverb["frequency"];
 		_mixerSettings.fxReverb.q = fxReverb["q"];
 		_mixerSettings.fxReverb.balance = fxReverb["balance"];
+		_mixerSettings.fxReverb.damping = fxReverb["damping"];
+		_mixerSettings.fxReverb.roomsize = fxReverb["roomsize"];
 
 		Serial.println("Settings loaded");
 	}
@@ -275,6 +297,7 @@ void EngineClass::init()
 	AudioCore.setLeftInputBiquad(_mixerSettings.rightInput.frequency, _mixerSettings.rightInput.q);
 	AudioCore.setReverbVolume(_mixerSettings.fxReverb.volume, _mixerSettings.fxReverb.balance);
 	AudioCore.setReverbBiquad(_mixerSettings.fxReverb.frequency, _mixerSettings.fxReverb.q);
+	AudioCore.setReverbRoom(_mixerSettings.fxReverb.damping, _mixerSettings.fxReverb.roomsize);
 	updateModeLinks();	
 
 	HardwareCore.setButtonParam(GREEN, startWavTrack);
@@ -339,7 +362,15 @@ void EngineClass::changeMode()
 
 void EngineClass::changeEditType()
 {
-	_currentEditType = (_currentEditType + 1) % 2;
+	uint8_t maxMode = 2;
+	switch (_currentMode)
+	{
+	case EDIT_CHANNEL_FX_REVERB:
+		maxMode = 3;
+		break;
+	}
+	
+	_currenctSettings->editMode = (_currenctSettings->editMode + 1) % maxMode;
 	updateModeLinks();
 }
 
@@ -387,6 +418,20 @@ void EngineClass::setReverbBalance(int encoder, int value)
 	_mixerSettings.fxReverb.balance = static_cast<float>(value / 100.0);
 	DisplayCore.drawEncoder(encoder, value, 100, true);
 	AudioCore.setReverbVolume(_mixerSettings.fxReverb.volume, _mixerSettings.fxReverb.balance);
+}
+
+void EngineClass::setReverbDamping(int encoder, int value)
+{
+	_mixerSettings.fxReverb.damping = static_cast<float>(value / 100.0);
+	DisplayCore.drawEncoder(encoder, value, 100);
+	AudioCore.setReverbRoom(_mixerSettings.fxReverb.damping, _mixerSettings.fxReverb.roomsize);
+}
+
+void EngineClass::setReverbRoomsize(int encoder, int value)
+{
+	_mixerSettings.fxReverb.roomsize = static_cast<float>(value / 100.0);
+	DisplayCore.drawEncoder(encoder, value, 100);
+	AudioCore.setReverbRoom(_mixerSettings.fxReverb.damping, _mixerSettings.fxReverb.roomsize);
 }
 
 
