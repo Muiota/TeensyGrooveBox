@@ -257,6 +257,13 @@ void DisplayCoreClass::drawSongStatus(bool wav_is_playing)
 	tft.fillRect(x, y, 8, 8, wav_is_playing ? ILI9341_GREEN: OFF_COLOR);
 }
 
+void DisplayCoreClass::drawRecordStatus(bool isRecording)
+{
+	uint16_t x = 90;
+	uint16_t y = 52;
+	tft.fillRect(x, y, 8, 8, isRecording ? ILI9341_RED : OFF_COLOR);
+}
+
 void DisplayCoreClass::drawMuteMaster(bool isMute)
 {
 	uint16_t x = 307;

@@ -24,6 +24,7 @@ class DisplayCoreClass
 	static void drawUsage(double usage, double memory);
 	static void drawSongName(const String& song);
 	static void drawSongStatus(bool wav_is_playing);
+	static void drawRecordStatus(bool isRecording);	
 	static void drawMuteMaster(bool b);
 };
 

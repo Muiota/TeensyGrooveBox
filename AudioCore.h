@@ -17,7 +17,7 @@
 class AudioCoreClass
 {
  protected:
-	 static void setBalancedVolume(uint8_t channel, float vol, float balance);
+	 static void setBalancedVolume(uint8_t channel, float vol, float balance);	
  public:	
 	AudioCoreClass();
 	void init();
@@ -31,7 +31,7 @@ class AudioCoreClass
 	static void drum3On();
 	static void drum4On();
 	static void setMasterVolume(float x);
-	void enhanceBass(bool enable);
+	static void enhanceBass(bool enable);
 	static void setWavVolume(float vol, float balance);
 	static void setLeftInputVolume(float vol, float balance);
 
@@ -46,9 +46,16 @@ class AudioCoreClass
 	static float getPeakAudioInputL();
 	static float getPeakAudioInputR();
 	static bool wavIsPlaying();
+	static bool isRecording();
+	static bool startRecording(const char * song);
+	static void continueRecording();
+	static void stopRecording();
+	
 
 	static void playWav(const char * song);
+	static void playRaw(const char * song);
 	static void stopWav();
+
 };
 extern AudioCoreClass AudioCore;
 

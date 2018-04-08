@@ -528,19 +528,29 @@ void EngineClass::update()
 					case 3:
 						AudioCore.drum4On();
 
-						break;
+						break;					
 					case 4:
 						//   playFlashRaw1.play("LIBS/DRUMS/KIT_1_ACOUSTIC_CLOSE/K1CLOSE_CIHAT_01.RAW");
+						break;
+					case 5:
+						AudioCore.startRecording("TEST.RAW");
+
+						break;
+					case 6:
+						AudioCore.stopRecording();
+						break;
+					case 7:
+						AudioCore.playRaw("TEST.RAW");
 						break;
 					}
 
 
 				}
 				_current[i] = value;
-				HardwareCore.seqLedWrite(i, value);
+				HardwareCore.seqLedWrite(i, value);				
 			}
 		}
-
+		
 		//Serial.print(" ");		
 	
 
@@ -565,6 +575,7 @@ void EngineClass::update()
 
 		
 		DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
+		DisplayCore.drawRecordStatus(AudioCore.isRecording());
 	
 		if (CURRENT_SONG != _lastSong)
 		{
@@ -573,6 +584,7 @@ void EngineClass::update()
 			_lastSong = CURRENT_SONG;
 		}
 	}
+	AudioCore.continueRecording();
 }
 
 
