@@ -249,6 +249,16 @@ void DisplayCoreClass::drawSongName(const String& song)
 	tft.setTextColor(MAIN_COLOR);
 	tft.print(song);
 }
+void DisplayCoreClass::drawSongDetails(const String& song)
+{
+	uint16_t x = 3;
+	uint16_t y = 70;
+	tft.fillRect(x, y, 107, 12, OFF_COLOR);
+	tft.setCursor(x + 1, y + 1);
+	tft.setTextColor(MAIN_COLOR);
+	tft.print(song);
+}
+
 
 void DisplayCoreClass::drawSongStatus(bool wav_is_playing)
 {
@@ -257,11 +267,25 @@ void DisplayCoreClass::drawSongStatus(bool wav_is_playing)
 	tft.fillRect(x, y, 8, 8, wav_is_playing ? ILI9341_GREEN: OFF_COLOR);
 }
 
-void DisplayCoreClass::drawRecordStatus(bool isRecording)
+void DisplayCoreClass::drawRecordStatus(record_status status, uint16_t shift)
 {
 	uint16_t x = 90;
-	uint16_t y = 52;
-	tft.fillRect(x, y, 8, 8, isRecording ? ILI9341_RED : OFF_COLOR);
+	uint16_t y = 52+ shift;
+	uint16_t color;
+	switch (status)
+	{
+	case RECORD_STATUS_NONE:
+		color = OFF_COLOR;
+		break;
+	case RECORD_STATUS_RECORD:
+		color = ILI9341_RED;		
+		break;
+	case RECORD_STATUS_PLAY:
+		color = ILI9341_GREEN;
+		break;
+	}
+
+	tft.fillRect(x, y, 8, 8, color);
 }
 
 void DisplayCoreClass::drawMuteMaster(bool isMute)

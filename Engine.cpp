@@ -7,11 +7,10 @@
 String songs[60];
 bool _muteMaster;
 uint8_t SONG_COUNT = 0;
-uint8_t CURRENT_SONG = 0;
+uint8_t _currentSong = 0;
 uint8_t _lastSong = -1;
 
-
-
+record_status _recordStatus = RECORD_STATUS_NONE;
 
 
 typedef struct {
@@ -331,8 +330,17 @@ void EngineClass::startWavTrack()
 	if (!AudioCore.wavIsPlaying())
 	{
 		Serial.print("Start");
-		auto song = songs[CURRENT_SONG];
+		auto song = songs[_currentSong];
 		AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
+		switch (_recordStatus)
+		{
+		case RECORD_STATUS_RECORD:
+			AudioCore.startRecording(_currentSong);
+			break;
+		case RECORD_STATUS_PLAY:
+			AudioCore.playLastRecorderInputRaw();
+			break;
+		}
 	}
 }
 
@@ -342,6 +350,15 @@ void EngineClass::stopWavTrack()
 	{
 		Serial.print("Stop");
 		AudioCore.stopWav();
+		switch (_recordStatus)
+		{
+		case RECORD_STATUS_RECORD:
+			AudioCore.stopRecording();
+			break;
+		case RECORD_STATUS_PLAY:
+			AudioCore.stopLastRecorderInputRaw();
+			break;
+		}
 	}
 }
 
@@ -349,7 +366,7 @@ void EngineClass::changeWavTrack()
 {
 	if (!AudioCore.wavIsPlaying())
 	{
-		CURRENT_SONG = (CURRENT_SONG + 1) % SONG_COUNT;
+		_currentSong = (_currentSong + 1) % SONG_COUNT;
 	}
 }
 
@@ -533,14 +550,21 @@ void EngineClass::update()
 						//   playFlashRaw1.play("LIBS/DRUMS/KIT_1_ACOUSTIC_CLOSE/K1CLOSE_CIHAT_01.RAW");
 						break;
 					case 5:
-						AudioCore.startRecording("TEST.RAW");
-
+						//
+						_recordStatus = static_cast<record_status>((_recordStatus + 1) % 3);
 						break;
-					case 6:
-						AudioCore.stopRecording();
+					case 6:						
+						//AudioCore.stopRecording();
 						break;
 					case 7:
-						AudioCore.playRaw("TEST.RAW");
+						/*if (!AudioCore.isLastRecorderInputPlaying())
+						{
+							AudioCore.playLastRecorderInputRaw();
+						}
+						else
+						{
+							AudioCore.stopLastRecorderInputRaw();
+						} */
 						break;
 					}
 
@@ -572,19 +596,19 @@ void EngineClass::update()
 		DisplayCore.drawMeter(6, rightCh, rightCh);
 
 		
-
-		
 		DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
-		DisplayCore.drawRecordStatus(AudioCore.isRecording());
+	//	DisplayCore.drawRecordStatus(AudioCore.getRecorderStatus(), 0);
+		//DisplayCore.drawRecordStatus(_recordStatus, 20);
 	
-		if (CURRENT_SONG != _lastSong)
+		if (_currentSong != _lastSong)
 		{
-			auto song = songs[CURRENT_SONG];
-			DisplayCore.drawSongName(String(CURRENT_SONG)  + " " + song.substring(0, song.length() - 4));
-			_lastSong = CURRENT_SONG;
+			auto song = songs[_currentSong];
+			DisplayCore.drawSongName(String(_currentSong)  + " " + song.substring(0, song.length() - 4));
+	//		DisplayCore.drawSongDetails(String(AudioCore.getMaxRecordedTracks(_currentSong)));
+			_lastSong = _currentSong;
 		}
 	}
-	AudioCore.continueRecording();
+	//AudioCore.continueRecording();
 }
 
 

@@ -4,9 +4,9 @@
 
 #include "AudioCore.h"
 
-File frecL;
-File frecR;
-bool _isRecording;
+//File _fileRec;
+//String _lastFileNameRec = "";
+record_status _recorderStatus;
 
 float WAVESHAPE_EXAMPLE[17] = {
 	-0.588,
@@ -29,98 +29,88 @@ float WAVESHAPE_EXAMPLE[17] = {
 };
 
 
+
 // GUItool: begin automatically generated code
-AudioInputI2S            audioInput;     //xy=87.5,785.1667623519897
-AudioEffectGate          noiseGateR;          //xy=237.49998474121094,830.8333578109741
-AudioEffectGate          noiseGateL;          //xy=239.16664123535156,745.8333425521851
-AudioRecordQueue         queueRecordL;         //xy=329.4167060852051,655.5001573562622
-AudioRecordQueue         queueRecordR;         //xy=368.41680908203125,935.5001344680786
-AudioPlaySdWav           playSdWavA;     //xy=421.50008392333984,497.500093460083
-AudioEffectWaveshaper    waveShapeInputR; //xy=446.5001220703125,832.5001640319824
-AudioFilterBiquad        biquadInputR;   //xy=622.5002975463867,831.5001621246338
-AudioFilterBiquad        biquadInputL;   //xy=624.0002975463867,748.0001583099365
-AudioFilterBiquad        biquadWavAL;    //xy=647.5002212524414,459.0001335144043
-AudioFilterBiquad        biquadWavAR;    //xy=649.0002212524414,519.0001358985901
-AudioFilterBiquad        biquadfreeverbs; //xy=687.0001602172852,665.5001220703125
-AudioSynthSimpleDrum     drum1;          //xy=689.5001525878906,217.50012397766113
-AudioSynthSimpleDrum     drum2;          //xy=697.5001525878906,277.00014209747314
-AudioSynthSimpleDrum     drum3;          //xy=700.0001602172852,330.5001220703125
-AudioSynthSimpleDrum     drum4;          //xy=700.0001564025879,384.5001211166382
-AudioPlaySdRaw           playTestRaw;     //xy=701.6667022705078,125.00000762939453
-AudioAnalyzePeak         peakWavR;       //xy=836.0001754760742,578.0001616477966
-AudioAnalyzePeak         peakWavL;       //xy=836.5001754760742,471.5001287460327
-AudioEffectFreeverbStereo fxfreeverbs;    //xy=859.0001602172852,665.5001220703125
-AudioMixer4              mixer1;         //xy=906.0001602172852,300.5001220703125
-AudioAnalyzePeak         peakfreeverbsR; //xy=1088.000244140625,767.5001602172852
-AudioAnalyzePeak         peakfreeverbsL; //xy=1090.0001602172852,722.5001220703125
-AudioAnalyzePeak         peakAudio01;    //xy=1092.0001602172852,238.5001220703125
-AudioAnalyzePeak         peakAudioInputL; //xy=1090.000244140625,820.0001630783081
-AudioAnalyzePeak         peakAudioInputR; //xy=1094.000244140625,868.500165939331
-AudioMixer4              mixerGroupL0;   //xy=1300.5002555847168,361.50012588500977
-AudioMixer4              mixerGroupL1;   //xy=1300.5002555847168,428.50012588500977
-AudioMixer4              mixerGroupL2;   //xy=1300.5002555847168,495.50012588500977
-AudioMixer4              mixerGroupL3;   //xy=1300.5002555847168,564.5001258850098
-AudioMixer4              mixerGroupR0;   //xy=1300.5002555847168,635.5001258850098
-AudioMixer4              mixerGroupR1;   //xy=1300.5002555847168,703.5001258850098
-AudioMixer4              mixerGroupR2;   //xy=1300.5002555847168,772.5001258850098
-AudioMixer4              mixerGroupR3;   //xy=1300.5002555847168,839.5001258850098
-AudioMixer4              masterMixerL;   //xy=1537.5002555847168,569.5001258850098
-AudioMixer4              masterMixerR;   //xy=1537.5002555847168,640.5001258850098
-AudioAnalyzePeak         peakAudioOutputR; //xy=1714.5002555847168,818.5001258850098
-AudioAnalyzePeak         peakAudioOutputL; //xy=1715.5002555847168,776.5001258850098
-AudioOutputI2S           audioOutput;    //xy=1724.5002555847168,602.5001258850098
+AudioInputI2S            audioInput;     //xy=527.3334579467773,899.3333873748779
+AudioEffectGate          noiseGateR;     //xy=707.3333129882812,949.3333129882812
+AudioEffectGate          noiseGateL;     //xy=708.3333129882812,863.3333129882812
+AudioPlaySdWav           playSdWavA;     //xy=867.3333129882812,615.3333129882812
+AudioEffectWaveshaper    waveShapeInputR; //xy=892.3333129882812,950.3333129882812
+AudioFilterBiquad        biquadInputR;   //xy=1068.3333129882812,949.3333129882812
+AudioFilterBiquad        biquadInputL;   //xy=1070.3333129882812,866.3333129882812
+AudioFilterBiquad        biquadWavAL;    //xy=1093.3333129882812,577.3333129882812
+AudioFilterBiquad        biquadWavAR;    //xy=1095.3333129882812,637.3333129882812
+AudioFilterBiquad        biquadfreeverbs; //xy=1133.3333129882812,783.3333129882812
+AudioSynthSimpleDrum     drum1;          //xy=1135.3333129882812,335.33331298828125
+AudioSynthSimpleDrum     drum2;          //xy=1143.3333129882812,395.33331298828125
+AudioSynthSimpleDrum     drum3;          //xy=1146.3333129882812,448.33331298828125
+AudioSynthSimpleDrum     drum4;          //xy=1146.3333129882812,502.33331298828125
+AudioAnalyzePeak         peakWavL;       //xy=1282.3333129882812,589.3333129882812
+AudioAnalyzePeak         peakWavR;       //xy=1282.3333129882812,696.3333129882812
+AudioEffectFreeverbStereo fxfreeverbs;    //xy=1305.3333129882812,783.3333129882812
+AudioMixer4              mixer1;         //xy=1352.3333129882812,418.33331298828125
+AudioAnalyzePeak         peakfreeverbsR; //xy=1534.3333129882812,885.3333129882812
+AudioAnalyzePeak         peakfreeverbsL; //xy=1536.3333129882812,840.3333129882812
+AudioAnalyzePeak         peakAudio01;    //xy=1538.3333129882812,356.33331298828125
+AudioAnalyzePeak         peakAudioInputL; //xy=1536.3333129882812,938.3333129882812
+AudioAnalyzePeak         peakAudioInputR; //xy=1540.3333129882812,986.3333129882812
+AudioMixer4              mixerGroupL0;   //xy=1746.3333129882812,479.33331298828125
+AudioMixer4              mixerGroupL1;   //xy=1746.3333129882812,546.3333129882812
+AudioMixer4              mixerGroupL2;   //xy=1746.3333129882812,613.3333129882812
+AudioMixer4              mixerGroupL3;   //xy=1746.3333129882812,682.3333129882812
+AudioMixer4              mixerGroupR0;   //xy=1746.3333129882812,753.3333129882812
+AudioMixer4              mixerGroupR1;   //xy=1746.3333129882812,821.3333129882812
+AudioMixer4              mixerGroupR2;   //xy=1746.3333129882812,890.3333129882812
+AudioMixer4              mixerGroupR3;   //xy=1746.3333129882812,957.3333129882812
+AudioMixer4              masterMixerL;   //xy=1983.3333129882812,687.3333129882812
+AudioMixer4              masterMixerR;   //xy=1983.3333129882812,758.3333129882812
+AudioAnalyzePeak         peakAudioOutputR; //xy=2160.3333129882812,936.3333129882812
+AudioAnalyzePeak         peakAudioOutputL; //xy=2161.3333129882812,894.3333129882812
+AudioOutputI2S           audioOutput;    //xy=2170.3333129882812,720.3333129882812
 AudioConnection          patchCord1(audioInput, 0, noiseGateL, 0);
 AudioConnection          patchCord2(audioInput, 1, noiseGateR, 0);
 AudioConnection          patchCord3(noiseGateR, waveShapeInputR);
-AudioConnection          patchCord4(noiseGateR, queueRecordR);
-AudioConnection          patchCord5(noiseGateL, biquadInputL);
-AudioConnection          patchCord6(noiseGateL, queueRecordL);
-AudioConnection          patchCord7(playSdWavA, 0, biquadWavAL, 0);
-AudioConnection          patchCord8(playSdWavA, 1, biquadWavAR, 0);
-AudioConnection          patchCord9(waveShapeInputR, biquadInputR);
-AudioConnection          patchCord10(biquadInputR, peakAudioInputR);
-AudioConnection          patchCord11(biquadInputR, 0, mixerGroupL0, 1);
-AudioConnection          patchCord12(biquadInputR, 0, mixerGroupR0, 1);
-AudioConnection          patchCord13(biquadInputR, biquadfreeverbs);
-AudioConnection          patchCord14(biquadInputL, peakAudioInputL);
-AudioConnection          patchCord15(biquadInputL, 0, mixerGroupL0, 0);
-AudioConnection          patchCord16(biquadInputL, 0, mixerGroupR0, 0);
-AudioConnection          patchCord17(biquadWavAL, 0, mixerGroupL0, 3);
-AudioConnection          patchCord18(biquadWavAL, peakWavL);
-AudioConnection          patchCord19(biquadWavAR, 0, mixerGroupR0, 3);
-AudioConnection          patchCord20(biquadWavAR, peakWavR);
-AudioConnection          patchCord21(biquadfreeverbs, fxfreeverbs);
-AudioConnection          patchCord22(drum1, 0, mixer1, 0);
-AudioConnection          patchCord23(drum2, 0, mixer1, 1);
-AudioConnection          patchCord24(drum3, 0, mixer1, 2);
-AudioConnection          patchCord25(drum4, 0, mixer1, 3);
-AudioConnection          patchCord26(playTestRaw, 0, mixerGroupL1, 1);
-AudioConnection          patchCord27(fxfreeverbs, 0, mixerGroupL1, 0);
-AudioConnection          patchCord28(fxfreeverbs, 0, peakfreeverbsL, 0);
-AudioConnection          patchCord29(fxfreeverbs, 1, mixerGroupR1, 0);
-AudioConnection          patchCord30(fxfreeverbs, 1, peakfreeverbsR, 0);
-AudioConnection          patchCord31(mixer1, 0, mixerGroupL0, 2);
-AudioConnection          patchCord32(mixer1, 0, mixerGroupR0, 2);
-AudioConnection          patchCord33(mixer1, peakAudio01);
-AudioConnection          patchCord34(mixerGroupL0, 0, masterMixerL, 0);
-AudioConnection          patchCord35(mixerGroupL1, 0, masterMixerL, 1);
-AudioConnection          patchCord36(mixerGroupL2, 0, masterMixerL, 2);
-AudioConnection          patchCord37(mixerGroupL3, 0, masterMixerL, 3);
-AudioConnection          patchCord38(mixerGroupR0, 0, masterMixerR, 0);
-AudioConnection          patchCord39(mixerGroupR1, 0, masterMixerR, 1);
-AudioConnection          patchCord40(mixerGroupR2, 0, masterMixerR, 2);
-AudioConnection          patchCord41(mixerGroupR3, 0, masterMixerR, 3);
-AudioConnection          patchCord42(masterMixerL, 0, audioOutput, 0);
-AudioConnection          patchCord43(masterMixerL, peakAudioOutputL);
-AudioConnection          patchCord44(masterMixerR, 0, audioOutput, 1);
-AudioConnection          patchCord45(masterMixerR, peakAudioOutputR);
-AudioControlSGTL5000     audioShield;    //xy=1720.5002555847168,649.5001258850098
+AudioConnection          patchCord4(noiseGateL, biquadInputL);
+AudioConnection          patchCord5(playSdWavA, 0, biquadWavAL, 0);
+AudioConnection          patchCord6(playSdWavA, 1, biquadWavAR, 0);
+AudioConnection          patchCord7(waveShapeInputR, biquadInputR);
+AudioConnection          patchCord8(biquadInputR, peakAudioInputR);
+AudioConnection          patchCord9(biquadInputR, 0, mixerGroupL0, 1);
+AudioConnection          patchCord10(biquadInputR, 0, mixerGroupR0, 1);
+AudioConnection          patchCord11(biquadInputR, biquadfreeverbs);
+AudioConnection          patchCord12(biquadInputL, peakAudioInputL);
+AudioConnection          patchCord13(biquadInputL, 0, mixerGroupL0, 0);
+AudioConnection          patchCord14(biquadInputL, 0, mixerGroupR0, 0);
+AudioConnection          patchCord15(biquadWavAL, 0, mixerGroupL0, 3);
+AudioConnection          patchCord16(biquadWavAL, peakWavL);
+AudioConnection          patchCord17(biquadWavAR, 0, mixerGroupR0, 3);
+AudioConnection          patchCord18(biquadWavAR, peakWavR);
+AudioConnection          patchCord19(biquadfreeverbs, fxfreeverbs);
+AudioConnection          patchCord20(drum1, 0, mixer1, 0);
+AudioConnection          patchCord21(drum2, 0, mixer1, 1);
+AudioConnection          patchCord22(drum3, 0, mixer1, 2);
+AudioConnection          patchCord23(drum4, 0, mixer1, 3);
+AudioConnection          patchCord24(fxfreeverbs, 0, mixerGroupL1, 0);
+AudioConnection          patchCord25(fxfreeverbs, 0, peakfreeverbsL, 0);
+AudioConnection          patchCord26(fxfreeverbs, 1, mixerGroupR1, 0);
+AudioConnection          patchCord27(fxfreeverbs, 1, peakfreeverbsR, 0);
+AudioConnection          patchCord28(mixer1, 0, mixerGroupL0, 2);
+AudioConnection          patchCord29(mixer1, 0, mixerGroupR0, 2);
+AudioConnection          patchCord30(mixer1, peakAudio01);
+AudioConnection          patchCord31(mixerGroupL0, 0, masterMixerL, 0);
+AudioConnection          patchCord32(mixerGroupL1, 0, masterMixerL, 1);
+AudioConnection          patchCord33(mixerGroupL2, 0, masterMixerL, 2);
+AudioConnection          patchCord34(mixerGroupL3, 0, masterMixerL, 3);
+AudioConnection          patchCord35(mixerGroupR0, 0, masterMixerR, 0);
+AudioConnection          patchCord36(mixerGroupR1, 0, masterMixerR, 1);
+AudioConnection          patchCord37(mixerGroupR2, 0, masterMixerR, 2);
+AudioConnection          patchCord38(mixerGroupR3, 0, masterMixerR, 3);
+AudioConnection          patchCord39(masterMixerL, 0, audioOutput, 0);
+AudioConnection          patchCord40(masterMixerL, peakAudioOutputL);
+AudioConnection          patchCord41(masterMixerR, 0, audioOutput, 1);
+AudioConnection          patchCord42(masterMixerR, peakAudioOutputR);
+AudioControlSGTL5000     audioShield;    //xy=2166.3333129882812,767.3333129882812
 										 // GUItool: end automatically generated code
-
-
-
-
-
 
 
 AudioCoreClass::AudioCoreClass()
@@ -166,7 +156,7 @@ void AudioCoreClass::init()
 	masterMixerL.gain(2, 0);
 	masterMixerL.gain(3, 0);
 	
-	//mixerGroupL1.gain(1, 0);
+	mixerGroupL1.gain(1, 0);
 	mixerGroupL1.gain(2, 0);
 	mixerGroupL1.gain(3, 0);
 
@@ -197,8 +187,6 @@ void AudioCoreClass::init()
 	mixerGroupR3.gain(2, 0);
 	mixerGroupR3.gain(3, 0);
 
-
-	
 	
 	audioShield.enable();
 	audioShield.inputSelect(AUDIO_INPUT_LINEIN);		
@@ -411,9 +399,40 @@ void AudioCoreClass::playWav(const char * song)
 	playSdWavA.play(song);
 }
 
-void AudioCoreClass::playRaw(const char * song)
+void AudioCoreClass::playLastRecorderInputRaw()
 {
-	playTestRaw.play(song);
+
+/*	if (!_lastFileNameRec.equals("") )
+	{
+		if (SD.exists(_lastFileNameRec.c_str()))
+		{
+			//playTestRawL.play(_lastFileNameRec.c_str());
+			_recorderStatus = RECORD_STATUS_PLAY;
+		}
+		if (SD.exists(_lastFileNameRecR.c_str()))
+		{
+			playTestRawR.play(_lastFileNameRecR.c_str());
+			_recorderStatus = RECORD_STATUS_PLAY;
+		}
+	} */
+}
+
+void AudioCoreClass::stopLastRecorderInputRaw()
+{
+	/*if (playTestRawL.isPlaying())
+	{
+		playTestRawL.stop();
+	}
+	if (playTestRawR.isPlaying())
+	{
+		playTestRawR.stop();
+	}*/
+	_recorderStatus = RECORD_STATUS_NONE;
+}
+
+bool AudioCoreClass::isLastRecorderInputPlaying()
+{
+	return false;// playTestRawL.isPlaying() || playTestRawR.isPlaying();
 }
 
 void AudioCoreClass::stopWav()
@@ -426,72 +445,101 @@ bool AudioCoreClass::wavIsPlaying()
 	return playSdWavA.isPlaying();
 }
 
-bool AudioCoreClass::isRecording()
+record_status AudioCoreClass::getRecorderStatus()
 {
-	return _isRecording;
+	return _recorderStatus;
 }
 
-bool AudioCoreClass::startRecording(const char * song) {
-	if (_isRecording)
+String AudioCoreClass::getRecordFileName(String prefix, uint8_t songNum, uint16_t version)
+{
+	return "/DATA/" + prefix + "_" + String(songNum, DEC) + "_" + String(version, DEC) + ".RAW";
+}
+
+uint16_t AudioCoreClass::getMaxRecordedTracks(uint8_t songNum) {
+	uint16_t _version = 0;
+	/*do
+	{
+		_version++;
+		//_lastFileNameRec = getRecordFileName("B", songNum, _version).c_str();
+		Serial.println(_lastFileNameRec);		
+	} while (SD.exists(_lastFileNameRec.c_str())); */
+	return _version;
+}
+
+
+bool AudioCoreClass::startRecording(uint8_t songNum) {
+	if (_recorderStatus == RECORD_STATUS_RECORD)
 	{
 		stopRecording();
 	}
 	Serial.println("startRecording");
-	if (SD.exists(song)) {
-		// The SD library writes new data to the end of the
-		// file, so to start a new recording, the old file
-		// must be deleted before new data is written.
-		SD.remove(song);
+	getMaxRecordedTracks(songNum);
+		 
+	/*if (SD.exists(_lastFileNameRecL)) {
+		SD.remove(_lastFileNameRecL);
 	}
-	frecL = SD.open(song, FILE_WRITE);
-	if (frecL) {
-		queueRecordR.begin();				
-		_isRecording = true;
+	if (SD.exists(_lastFileNameRecR)) {
+		SD.remove(_lastFileNameRecR);
+	}*/
+	//Serial.println("file: " + _lastFileNameRec);
+//	_fileRec = SD.open(_lastFileNameRec.c_str(), FILE_WRITE);
+	
+
+	if (false) {
+		//queueRecordR.begin();				
+	//	queueRecordL.begin();
+		_recorderStatus = RECORD_STATUS_RECORD;
 		return true;
 	}
 	return false;
 }
 
 void AudioCoreClass::continueRecording() {
-	if (_isRecording &&  queueRecordR.available() >= 2) {
-		byte buffer[512];
-		// Fetch 2 blocks from the audio library and copy
-		// into a 512 byte buffer.  The Arduino SD library
-		// is most efficient when full 512 byte sector size
-		// writes are used.
-		memcpy(buffer, queueRecordR.readBuffer(), 256);
-		queueRecordR.freeBuffer();
-		memcpy(buffer + 256, queueRecordR.readBuffer(), 256);
-		queueRecordR.freeBuffer();
-		// write all 512 bytes to the SD card
-		elapsedMicros usec = 0;
-		frecL.write(buffer, 512);
-		// Uncomment these lines to see how long SD writes
-		// are taking.  A pair of audio blocks arrives every
-		// 5802 microseconds, so hopefully most of the writes
-		// take well under 5802 us.  Some will take more, as
-		// the SD library also must write to the FAT tables
-		// and the SD card controller manages media erase and
-		// wear leveling.  The queue1 object can buffer
-		// approximately 301700 us of audio, to allow time
-		// for occasional high SD card latency, as long as
-		// the average write time is under 5802 us.
-		//Serial.print("SD write, us=");
-		//Serial.println(usec);
+	if (_recorderStatus == RECORD_STATUS_RECORD)
+	{ 
+		/*if (queueRecordR.available() >= 2) {
+			byte buffer[512];
+			// Fetch 2 blocks from the audio library and copy
+			// into a 512 byte buffer.  The Arduino SD library
+			// is most efficient when full 512 byte sector size
+			// writes are used.
+			memcpy(buffer, queueRecordR.readBuffer(), 256);
+			queueRecordR.freeBuffer();
+			memcpy(buffer + 256, queueRecordR.readBuffer(), 256);
+			queueRecordR.freeBuffer();
+			// write all 512 bytes to the SD card
+			elapsedMicros usec = 0;
+			_fileRec.write(buffer, 512);
+			// Uncomment these lines to see how long SD writes
+			// are taking.  A pair of audio blocks arrives every
+			// 5802 microseconds, so hopefully most of the writes
+			// take well under 5802 us.  Some will take more, as
+			// the SD library also must write to the FAT tables
+			// and the SD card controller manages media erase and
+			// wear leveling.  The queue1 object can buffer
+			// approximately 301700 us of audio, to allow time
+			// for occasional high SD card latency, as long as
+			// the average write time is under 5802 us.
+			//Serial.print("SD write, us=");
+			//Serial.println(usec);
+		} */
 	}
 }
 
 void AudioCoreClass::stopRecording() {
-	Serial.println("stopRecording");
-	queueRecordR.end();
-	if (_isRecording) {
-		while (queueRecordR.available() > 0) {
-			frecL.write((byte*)queueRecordR.readBuffer(), 256);
-			queueRecordR.freeBuffer();
-		}
-		frecL.close();
+	Serial.println("StopRecording");
+//	queueRecordL.end();
+	/*queueRecordR.end();
+	// flush buffer
+	while ( queueRecordR.available() > 0) {
+	//	queueRecordL.readBuffer();
+	//	queueRecordL.freeBuffer();
+		queueRecordR.readBuffer();
+		queueRecordR.freeBuffer();
 	}
-	_isRecording = false;
+	_fileRec.close(); // close file	
+	_recorderStatus = RECORD_STATUS_NONE;
+	*/
 }
 
 

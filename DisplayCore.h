@@ -5,6 +5,7 @@
 
 #include <ILI9341_t3.h>
 #include <font_Arial.h>
+#include "AudioCore.h"
 
 class DisplayCoreClass
 {
@@ -23,8 +24,9 @@ class DisplayCoreClass
 	static void printLn(const char* msg, bool isError);
 	static void drawUsage(double usage, double memory);
 	static void drawSongName(const String& song);
+	static void drawSongDetails(const String& song);	
 	static void drawSongStatus(bool wav_is_playing);
-	static void drawRecordStatus(bool isRecording);	
+	static void drawRecordStatus(record_status status, uint16_t shift);
 	static void drawMuteMaster(bool b);
 };
 
