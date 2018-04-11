@@ -277,6 +277,7 @@ void AudioCoreClass::drum4On()
 
 void AudioCoreClass::setBalancedVolume(uint8_t channel,  float vol, float balance)
 {
+	Serial.println(String(channel)+" "+ String(vol)+" "+ String(balance));
 	if (balance == 0)
 	{
 		mixerGroupL0.gain(channel, vol);

@@ -108,11 +108,7 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int32_t value, int32_t max, 
 					color = MAIN_COLOR;
 				}
 			} else 
-			{
-				Serial.println(valueGauge);
-				Serial.println("=");
-				Serial.println(i);
-				Serial.println("-");
+			{		
 				if (i <= 0 && i >= valueGauge)
 				{
 					color = MAIN_COLOR;

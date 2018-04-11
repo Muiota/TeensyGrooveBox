@@ -293,7 +293,7 @@ void EngineClass::init()
 	AudioCore.setLeftInputVolume(_mixerSettings.leftInput.volume, _mixerSettings.leftInput.balance);
 	AudioCore.setLeftInputBiquad(_mixerSettings.leftInput.frequency, _mixerSettings.leftInput.q);
 	AudioCore.setRightInputVolume(_mixerSettings.rightInput.volume, _mixerSettings.rightInput.balance);
-	AudioCore.setLeftInputBiquad(_mixerSettings.rightInput.frequency, _mixerSettings.rightInput.q);
+	AudioCore.setRightInputBiquad(_mixerSettings.rightInput.frequency, _mixerSettings.rightInput.q);
 	AudioCore.setReverbVolume(_mixerSettings.fxReverb.volume, _mixerSettings.fxReverb.balance);
 	AudioCore.setReverbBiquad(_mixerSettings.fxReverb.frequency, _mixerSettings.fxReverb.q);
 	AudioCore.setReverbRoom(_mixerSettings.fxReverb.damping, _mixerSettings.fxReverb.roomsize);
@@ -498,7 +498,7 @@ void EngineClass::setRightInputVolume(int encoder, int value)
 {
 	_mixerSettings.rightInput.volume = static_cast<float>(value) / 100;
 	DisplayCore.drawEncoder(encoder, value, 100);
-	AudioCore.setRightInputVolume(_mixerSettings.rightInput.volume, _mixerSettings.leftInput.balance);
+	AudioCore.setRightInputVolume(_mixerSettings.rightInput.volume, _mixerSettings.rightInput.balance);
 }
 
 void EngineClass::setReverbVolume(int encoder, int value)
