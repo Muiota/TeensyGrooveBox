@@ -4,6 +4,13 @@
 
 #include "Engine.h"
 
+// Load drivers
+SnoozeDigital digitalSnooze;// this is the pin wakeup driver
+							// configures the lc's 5v data buffer (OUTPUT, LOW) for low power
+
+							// install driver into SnoozeBlock
+SnoozeBlock config_teensy3x(digitalSnooze);
+
 String songs[60];
 bool _muteMaster;
 uint8_t SONG_COUNT = 0;
@@ -520,7 +527,7 @@ void EngineClass::update()
 		AudioMemoryUsageMaxReset();
 
 		HardwareCore.update();
-
+	
 		for (uint8_t i = 0; i <= 15; i++) {
 			auto value = HardwareCore.seqButtonRead(i);
 			if (_current[i] != value)
@@ -556,15 +563,10 @@ void EngineClass::update()
 					case 6:						
 						//AudioCore.stopRecording();
 						break;
-					case 7:
-						/*if (!AudioCore.isLastRecorderInputPlaying())
-						{
-							AudioCore.playLastRecorderInputRaw();
-						}
-						else
-						{
-							AudioCore.stopLastRecorderInputRaw();
-						} */
+					case 15:
+					SLEEP:
+						delay(1000);
+						goto SLEEP;
 						break;
 					}
 
