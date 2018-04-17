@@ -590,11 +590,38 @@ void EngineClass::update()
 
 		DisplayCore.drawMeter(8, AudioCore.getPeakL(), AudioCore.getPeakR());
 		DisplayCore.drawMeter(2, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
-		DisplayCore.drawMeter(4, AudioCore.getWavPeakL(), AudioCore.getWavPeakR());
+
+
+		auto wavPeakL = AudioCore.getWavPeakL();
+
+		bool isWavPeakLed = wavPeakL > 0.2;
+		if (_lastIsWavPeakLed != isWavPeakLed)
+		{
+			_lastIsWavPeakLed = isWavPeakLed;
+			HardwareCore.seqLedWrite(12, isWavPeakLed);			
+		}
+
+		DisplayCore.drawMeter(4, wavPeakL, AudioCore.getWavPeakR());
 
 		auto leftCh = AudioCore.getPeakAudioInputL();
+
+		bool isLeftChPeakLed = leftCh > 0.2;
+		if (_lastIsLeftChPeakLed != isLeftChPeakLed)
+		{
+			_lastIsLeftChPeakLed = isLeftChPeakLed;
+			HardwareCore.seqLedWrite(13, isLeftChPeakLed);
+		}
+
 		DisplayCore.drawMeter(5, leftCh, leftCh);
 		auto rightCh = AudioCore.getPeakAudioInputR();
+
+		bool isRightChPeakLed = rightCh > 0.2;
+		if (_lastIsRightChPeakLed != isRightChPeakLed)
+		{
+			_lastIsRightChPeakLed = isRightChPeakLed;
+			HardwareCore.seqLedWrite(14, isRightChPeakLed);
+		}
+
 		DisplayCore.drawMeter(6, rightCh, rightCh);
 
 		
