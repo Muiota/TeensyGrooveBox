@@ -1,3 +1,8 @@
+#include "Channel.h"
+#include "Enums.h"
+#include "InputLeft.h"
+#include "WavePlayer.h"
+#include "Mixer.h"
 #include "Engine.h"
 
 bool isDebug = true;
@@ -34,7 +39,7 @@ void setup() {
 	for (uint8_t i = 0; i <= 15; i++) {
 		DisplayCore.drawSequenceButton(i, false);
 	}
-	
+	DisplayCore.clearAll();
 	Engine.init();
 
 }

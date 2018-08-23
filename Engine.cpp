@@ -5,11 +5,8 @@
 #include "Engine.h"
 
 // Load drivers
-SnoozeDigital digitalSnooze;// this is the pin wakeup driver
-							// configures the lc's 5v data buffer (OUTPUT, LOW) for low power
+current_view_mode _viewMode = MAIN_MIXER; //По умолчанию режим микшера
 
-							// install driver into SnoozeBlock
-SnoozeBlock config_teensy3x(digitalSnooze);
 
 String songs[60];
 bool _muteMaster;
@@ -17,9 +14,9 @@ uint8_t SONG_COUNT = 0;
 uint8_t _currentSong = 0;
 uint8_t _lastSong = -1;
 
-record_status _recordStatus = RECORD_STATUS_NONE;
 
 
+//Каналы
 typedef struct {
 	MasterSettings master;	
 	ChannelSettings wav;
@@ -29,24 +26,7 @@ typedef struct {
 } MixerSettings;
 
 
-enum edit_channel {
-	EDIT_CHANNEL_MASTER = 0,
-	EDIT_CHANNEL_FX_REVERB = 1,
-	EDIT_CHANNEL_WAV = 2,
-	EDIT_CHANNEL_LEFT_CHANNEL = 3,
-	EDIT_CHANNEL_RIGHT_CHANNEL = 4,
-};
 
-enum edit_cnannel_mode {
-	EDIT_CHANNEL_MODE_EQ = 0,
-	EDIT_CHANNEL_MODE_BALANCE = 1,	
-};
-
-enum edit_fx_reverb_mode {
-	EDIT_FX_REVERB_MODE_EQ = 0,
-	EDIT_FX_REVERB_MODE_BALANCE = 1,
-	EDIT_FX_REVERB_MODE_ROOM = 2		
-};
 
 
 MixerSettings _mixerSettings;
@@ -339,7 +319,7 @@ void EngineClass::startWavTrack()
 		Serial.print("Start");
 		auto song = songs[_currentSong];
 		AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
-		switch (_recordStatus)
+		/*switch (_recordStatus)
 		{
 		case RECORD_STATUS_RECORD:
 			AudioCore.startRecording(_currentSong);
@@ -347,7 +327,7 @@ void EngineClass::startWavTrack()
 		case RECORD_STATUS_PLAY:
 			AudioCore.playLastRecorderInputRaw();
 			break;
-		}
+		}*/
 	}
 }
 
@@ -357,7 +337,7 @@ void EngineClass::stopWavTrack()
 	{
 		Serial.print("Stop");
 		AudioCore.stopWav();
-		switch (_recordStatus)
+	/*	switch (_recordStatus)
 		{
 		case RECORD_STATUS_RECORD:
 			AudioCore.stopRecording();
@@ -365,7 +345,7 @@ void EngineClass::stopWavTrack()
 		case RECORD_STATUS_PLAY:
 			AudioCore.stopLastRecorderInputRaw();
 			break;
-		}
+		}*/
 	}
 }
 
@@ -525,57 +505,26 @@ void EngineClass::update()
 		auto usageMemory = AudioMemoryUsageMax();
 		AudioProcessorUsageMaxReset();
 		AudioMemoryUsageMaxReset();
+		DisplayCore.drawUsage(usageCPU, usageMemory);
 
-		HardwareCore.update();
-	
-		for (uint8_t i = 0; i <= 15; i++) {
-			auto value = HardwareCore.seqButtonRead(i);
-			if (_current[i] != value)
-			{
-				DisplayCore.drawSequenceButton(i, value);
-				if (value)
-				{
-					switch (i)
-					{
-					case 0:
-						AudioCore.drum1On();
+		HardwareCore.update(); //Обновить состояние кнопок
 
-						break;
-					case 1:
-						AudioCore.drum2On();
+		switch (_viewMode)
+		{
+		case MAIN_MIXER:
+			Mixer.handle();
+			break;
+		case EDIT_CHANNEL:
+			break;
+		case EDIT_PARAMETERS:
+			break;
+		default:
 
-						break;
-					case 2:
-						AudioCore.drum3On();
-
-						break;
-					case 3:
-						AudioCore.drum4On();
-
-						break;					
-					case 4:
-						//   playFlashRaw1.play("LIBS/DRUMS/KIT_1_ACOUSTIC_CLOSE/K1CLOSE_CIHAT_01.RAW");
-						break;
-					case 5:
-						//
-						_recordStatus = static_cast<record_status>((_recordStatus + 1) % 3);
-						break;
-					case 6:						
-						//AudioCore.stopRecording();
-						break;
-					case 15:
-					SLEEP:
-						delay(1000);
-						goto SLEEP;
-						break;
-					}
-
-
-				}
-				_current[i] = value;
-				HardwareCore.seqLedWrite(i, value);				
-			}
+			break;
 		}
+
+
+	
 		
 		//Serial.print(" ");		
 	
@@ -586,7 +535,7 @@ void EngineClass::update()
 		//	Serial.print(seqButtonRead(24));
 		//	Serial.println("----------");
 	
-		DisplayCore.drawUsage(usageCPU, usageMemory);
+	
 
 		DisplayCore.drawMeter(8, AudioCore.getPeakL(), AudioCore.getPeakR());
 		DisplayCore.drawMeter(2, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());

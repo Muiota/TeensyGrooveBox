@@ -48,7 +48,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\TeensyGrooveBox;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\ILI9341_t3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Audio;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\SPI;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\SD;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\SerialFlash;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\i2c_t3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_MCP23017;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Encoder;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Snooze;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Users\Muiota\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\util;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\utils;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;$(ProjectDir)C:\Program Files (x86)\Arduino\hardware\tools\arm\arm-none-eabi\include;C:\Program Files (x86)\Arduino\hardware\teensy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\TeensyGrooveBox;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\ILI9341_t3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Audio;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\SPI;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\SD;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\SerialFlash;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\i2c_t3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_MCP23017;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Encoder;C:\Program Files (x86)\Arduino\libraries;C:\Users\Muiota\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\util;C:\Program Files (x86)\Arduino\hardware\tools\arm\arm-none-eabi\include;C:\Program Files (x86)\Arduino\hardware\tools\arm\lib\gcc\arm-none-eabi\5.4.1\include;C:\Program Files (x86)\Arduino\hardware\teensy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.TeensyGrooveBox.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__HARDWARE_MK66fx1m0__;__HARDWARE_MK66FX1M0__;_VMDEBUG=1;__MK66FX1M0__;TEENSYDUINO=140;ARDUINO=10805;F_CPU=180000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -81,16 +81,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioCore.h" />
+    <ClInclude Include="Channel.h" />
     <ClInclude Include="DisplayCore.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="Enums.h" />
     <ClInclude Include="HardwareCore.h" />
+    <ClInclude Include="InputLeft.h" />
+    <ClInclude Include="Mixer.h" />
+    <ClInclude Include="WavePlayer.h" />
     <ClInclude Include="__vm\.TeensyGrooveBox.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioCore.cpp" />
+    <ClCompile Include="Channel.cpp" />
     <ClCompile Include="DisplayCore.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Enums.cpp" />
     <ClCompile Include="HardwareCore.cpp" />
+    <ClCompile Include="InputLeft.cpp" />
+    <ClCompile Include="Mixer.cpp" />
+    <ClCompile Include="WavePlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="AudioSheme.txt" />

@@ -4,12 +4,12 @@
 #define _ENGINE_h
 
 #include "c:\Program Files (x86)\Arduino\libraries\ArduinoJson\ArduinoJson.h"
+#include "Enums.h"
 #include "DisplayCore.h"
 #include "HardwareCore.h"
 #include "AudioCore.h"
-#include <Snooze.h>
-
-
+#include "Mixer.h"
+#include "WavePlayer.h"
 
 
 
@@ -35,11 +35,38 @@ typedef struct : ChannelSettings {
 	float damping = 1.0f;	
 } FxReverbChannelSettings;
 
+enum edit_channel { //todo расширить
+	EDIT_CHANNEL_MASTER = 0,
+	EDIT_CHANNEL_FX_REVERB = 1,
+	EDIT_CHANNEL_WAV = 2,
+	EDIT_CHANNEL_LEFT_CHANNEL = 3,
+	EDIT_CHANNEL_RIGHT_CHANNEL = 4,
+};
+
+enum edit_cnannel_mode {
+	EDIT_CHANNEL_MODE_EQ = 0, //Еквалайзер 
+	EDIT_CHANNEL_MODE_BALANCE = 1, //Баланс
+};
+
+enum edit_fx_reverb_mode {
+	EDIT_FX_REVERB_MODE_EQ = 0, //Редактирование эквалайзера
+	EDIT_FX_REVERB_MODE_BALANCE = 1, //Редактирование баланса
+	EDIT_FX_REVERB_MODE_ROOM = 2 //Редактирование остального
+};
+
+enum current_view_mode {
+	MAIN_MIXER = 0, //Режим микшера
+	EDIT_PARAMETERS = 1, //Настройки канала
+	EDIT_CHANNEL = 2 //Редактирование инструмента
+};
+
+
+
 class EngineClass
 {
  protected:
 	 elapsedMillis _hardwareTimer;
-	 bool _current[16];
+	
 	 bool _lastIsWavPeakLed;
 	bool _lastIsLeftChPeakLed;
 	bool _lastIsRightChPeakLed;

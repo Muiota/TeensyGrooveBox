@@ -28,6 +28,7 @@ class DisplayCoreClass
 	static void drawSongStatus(bool wav_is_playing);
 	static void drawRecordStatus(record_status status, uint16_t shift);
 	static void drawMuteMaster(bool b);
+	static void clearAll();
 };
 
 extern DisplayCoreClass DisplayCore;

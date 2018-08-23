@@ -291,6 +291,11 @@ void DisplayCoreClass::drawMuteMaster(bool isMute)
 	tft.fillRect(x, y, 8, 8, isMute ? ILI9341_RED : OFF_COLOR);
 }
 
+void DisplayCoreClass::clearAll()
+{
+	tft.fillScreen(ILI9341_BLACK);	
+}
+
 
 DisplayCoreClass DisplayCore;
 
