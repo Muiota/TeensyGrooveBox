@@ -6,6 +6,8 @@
 #include <ILI9341_t3.h>
 #include <font_Arial.h>
 #include "AudioCore.h"
+#include "base.c" 
+#include "knobs.c" //the picture
 
 class DisplayCoreClass
 {
@@ -29,6 +31,7 @@ class DisplayCoreClass
 	static void drawRecordStatus(record_status status, uint16_t shift);
 	static void drawMuteMaster(bool b);
 	static void clearAll();
+	static void drawMixerBackground();
 };
 
 extern DisplayCoreClass DisplayCore;

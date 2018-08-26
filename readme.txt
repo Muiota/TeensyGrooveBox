@@ -1,0 +1,1 @@
+http://www.rinkydinkelectronics.com/t_imageconverter565.php -- создание иконок

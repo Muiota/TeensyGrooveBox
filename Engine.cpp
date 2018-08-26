@@ -8,13 +8,13 @@
 current_view_mode _viewMode = MAIN_MIXER; //По умолчанию режим микшера
 
 
-String songs[60];
+String songs[160];
 bool _muteMaster;
 uint8_t SONG_COUNT = 0;
 uint8_t _currentSong = 0;
 uint8_t _lastSong = -1;
-
-
+int _currentMode;
+uint8_t _counter = 10;
 
 //Каналы
 typedef struct {
@@ -30,7 +30,7 @@ typedef struct {
 
 
 MixerSettings _mixerSettings;
-int _currentMode = EDIT_CHANNEL_MASTER;
+
 BaseSettings* _currenctSettings = &_mixerSettings.master;
 void EngineClass::updateModeLinks()
 {
@@ -135,11 +135,7 @@ void EngineClass::updateModeLinks()
 
 	
 
-	DisplayCore.drawMeterTitle(8, _currentMode == EDIT_CHANNEL_MASTER);
-	DisplayCore.drawMeterTitle(2, _currentMode == EDIT_CHANNEL_FX_REVERB);
-	DisplayCore.drawMeterTitle(4, _currentMode == EDIT_CHANNEL_WAV);
-	DisplayCore.drawMeterTitle(5, _currentMode == EDIT_CHANNEL_LEFT_CHANNEL);
-	DisplayCore.drawMeterTitle(6, _currentMode == EDIT_CHANNEL_RIGHT_CHANNEL);
+
 }
 
 JsonObject& EngineClass::saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting)
@@ -150,6 +146,12 @@ JsonObject& EngineClass::saveChannelPart(JsonObject& mixer, String channelName, 
 	channel["frequency"] = setting.frequency;
 	channel["q"] = setting.q;
 	return channel;
+}
+
+
+int EngineClass::getCurrentMode()
+{
+	return _currentMode;
 }
 
 
@@ -293,6 +295,7 @@ void EngineClass::init()
 	HardwareCore.setButtonParam(ENCODER2, changeMode);
 	HardwareCore.setButtonParam(ENCODER1, changeEditType);
 	HardwareCore.setButtonParam(ENCODER0, muteMaster);
+	_currentMode = EDIT_CHANNEL_MASTER;
 }
 
 
@@ -360,6 +363,7 @@ void EngineClass::changeWavTrack()
 
 void EngineClass::changeMode()
 {
+	
 	_currentMode = (_currentMode + 1) % 5;
 	updateModeLinks();
 }
@@ -501,11 +505,16 @@ void EngineClass::update()
 {
 	if (_hardwareTimer >= 100) {
 		_hardwareTimer = 0;
-		auto usageCPU = AudioProcessorUsageMax();
-		auto usageMemory = AudioMemoryUsageMax();
-		AudioProcessorUsageMaxReset();
-		AudioMemoryUsageMaxReset();
-		DisplayCore.drawUsage(usageCPU, usageMemory);
+		if (_counter++ >= 10)
+		{
+			_counter = 0;
+			auto usageCPU = AudioProcessorUsageMax();
+			auto usageMemory = AudioMemoryUsageMax();
+			AudioProcessorUsageMaxReset();
+			AudioMemoryUsageMaxReset();
+			DisplayCore.drawUsage(usageCPU, usageMemory);
+		}
+		
 
 		HardwareCore.update(); //Обновить состояние кнопок
 
@@ -535,56 +544,14 @@ void EngineClass::update()
 		//	Serial.print(seqButtonRead(24));
 		//	Serial.println("----------");
 	
-	
-
-		DisplayCore.drawMeter(8, AudioCore.getPeakL(), AudioCore.getPeakR());
-		DisplayCore.drawMeter(2, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
-
-
-		auto wavPeakL = AudioCore.getWavPeakL();
-
-		bool isWavPeakLed = wavPeakL > 0.2;
-		if (_lastIsWavPeakLed != isWavPeakLed)
-		{
-			_lastIsWavPeakLed = isWavPeakLed;
-			HardwareCore.seqLedWrite(12, isWavPeakLed);			
-		}
-
-		DisplayCore.drawMeter(4, wavPeakL, AudioCore.getWavPeakR());
-
-		auto leftCh = AudioCore.getPeakAudioInputL();
-
-		bool isLeftChPeakLed = leftCh > 0.2;
-		if (_lastIsLeftChPeakLed != isLeftChPeakLed)
-		{
-			_lastIsLeftChPeakLed = isLeftChPeakLed;
-			HardwareCore.seqLedWrite(13, isLeftChPeakLed);
-		}
-
-		DisplayCore.drawMeter(5, leftCh, leftCh);
-		auto rightCh = AudioCore.getPeakAudioInputR();
-
-		bool isRightChPeakLed = rightCh > 0.2;
-		if (_lastIsRightChPeakLed != isRightChPeakLed)
-		{
-			_lastIsRightChPeakLed = isRightChPeakLed;
-			HardwareCore.seqLedWrite(14, isRightChPeakLed);
-		}
-
-		DisplayCore.drawMeter(6, rightCh, rightCh);
-
-		
-		DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
-	//	DisplayCore.drawRecordStatus(AudioCore.getRecorderStatus(), 0);
-		//DisplayCore.drawRecordStatus(_recordStatus, 20);
-	
 		if (_currentSong != _lastSong)
 		{
 			auto song = songs[_currentSong];
-			DisplayCore.drawSongName(String(_currentSong)  + " " + song.substring(0, song.length() - 4));
-	//		DisplayCore.drawSongDetails(String(AudioCore.getMaxRecordedTracks(_currentSong)));
+			DisplayCore.drawSongName(String(_currentSong) + " " + song.substring(0, song.length() - 4));
+			//		DisplayCore.drawSongDetails(String(AudioCore.getMaxRecordedTracks(_currentSong)));
 			_lastSong = _currentSong;
 		}
+
 	}
 	//AudioCore.continueRecording();
 }

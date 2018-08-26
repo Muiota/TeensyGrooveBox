@@ -67,13 +67,13 @@ class EngineClass
  protected:
 	 elapsedMillis _hardwareTimer;
 	
-	 bool _lastIsWavPeakLed;
-	bool _lastIsLeftChPeakLed;
-	bool _lastIsRightChPeakLed;
+
 
 public:
+	
 	static void updateModeLinks();	
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName,  ChannelSettings& setting);
+	static int getCurrentMode();
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);	
 	static void saveSettings();
 	static void loadSettings();

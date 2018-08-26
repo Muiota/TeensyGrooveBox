@@ -1,3 +1,5 @@
+#include "knobs.h"
+#include "picture.h"
 #include "Channel.h"
 #include "Enums.h"
 #include "InputLeft.h"
