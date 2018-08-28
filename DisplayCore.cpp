@@ -22,13 +22,13 @@ uint16_t BORDER_COLOR_DARK = 0x5180; //    /* 255, 165,   0 */
 uint16_t OFF_COLOR = 0x20A1;
 uint16_t INFO_COLOR = ILI9341_CYAN;
 uint16_t SUCCESS_COLOR = ILI9341_GREEN;
-uint16_t ACTIVE_COLOR = 0xF487;
+uint16_t ACTIVE_COLOR = 0xFD80;
 
 uint16_t DARK_PANEL_COLOR = 0x3186;
 uint16_t LIGHT_PANEL_COLOR = 0x9CD3;
+//0xFD80, 0x5A65
 
-
-const uint16_t METER_HEIGHT = 90;
+const uint16_t METER_HEIGHT = 64;
 
 void DisplayCoreClass::init()
 {
@@ -377,22 +377,40 @@ void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
 		x = x + 12;
 	}
 
-	uint16_t y = 128;
+	uint16_t y = 154;
 	tft.fillRect(x, y, 20, METER_HEIGHT , ILI9341_BLACK);
 	tft.fillRect(x + 14, y + 2, 6, METER_HEIGHT - 4, OFF_COLOR);
 	tft.drawRect(x, y, 20, METER_HEIGHT, isActive ? ACTIVE_COLOR : BORDER_COLOR);
 
-	tft.writeRect(x, 76, 20, 20, isActive ? (uint16_t*)green_on : (uint16_t*)off);
-	tft.writeRect(x , 98, 20, 20, isActive ? (uint16_t*)red_on : (uint16_t*)off);
+	tft.writeRect(x+2, 102,16, 8, isActive ? (uint16_t*)led_green[1] : (uint16_t*)led_green[0]);
+	tft.writeRect(x+2, 102+9, 16, 8, isActive ? (uint16_t*)led_green[3] : (uint16_t*)led_green[2]);
+	tft.writeRect(x+2, 102 + 18, 16, 8, isActive ? (uint16_t*)led_green[5] : (uint16_t*)led_green[4]);
+	tft.writeRect(x+2, 102 + 27, 16, 8, isActive ? (uint16_t*)led_green[7] : (uint16_t*)led_green[6]);
+	//tft.writeRect(x , 124, 20, 20, isActive ? (uint16_t*)red_on : (uint16_t*)off);
 
 	if (channel == 1)
 	{
-		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)guitar_l : (uint16_t*)guitar);
+		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[3] : (uint16_t*)channels[2]);
+	}
+	else if (channel == 0)
+	{
+		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[1] : (uint16_t*)channels[0]);
+	}
+	else if (channel >=8 && channel <= 10)
+	{
+		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[7] : (uint16_t*)channels[6]);
+	}
+	else if (channel == 11)
+	{
+		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[9] : (uint16_t*)channels[8]);
 	}
 	else
 	{
-		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)microphone_l : (uint16_t*)microphone);
+		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[5] : (uint16_t*)channels[4]);
 	}
+
+	tft.writeRect(x + 2, 52, 16, 8, (uint16_t*)encoder_linear[0]);
+	tft.writeRect(x + 2, 22, 16, 16, (uint16_t*)small_knob_negative[5]);
 	
 
 }
@@ -412,7 +430,7 @@ void DisplayCoreClass::drawMeter(uint16_t channel,  float r, float l)
 	{
 		x = x + 12;
 	}
-	uint16_t y = 128;
+	uint16_t y = 154;
 	drawMeterSide(l, x, y);
 	drawMeterSide(r, x + 6, y);
 }
@@ -503,24 +521,67 @@ void DisplayCoreClass::drawMixerBackground()
 	//tft.fillRect(8, 124 , 308, 116, LIGHT_PANEL_COLOR);
 	
 	//Панель микшера снизу (метры)
-	tft.fillRect(8, 124, 52, 116, DARK_PANEL_COLOR);
-	tft.fillRect(64, 124, 140, 116, DARK_PANEL_COLOR);
-	tft.fillRect(208, 124, 74, 116, DARK_PANEL_COLOR);
-	tft.fillRect(286, 124, 30, 116, DARK_PANEL_COLOR);	
+	tft.fillRect(8, 150, 52, 90, DARK_PANEL_COLOR);
+	tft.fillRect(64, 150, 140, 90, DARK_PANEL_COLOR);
+	tft.fillRect(208, 150, 74, 90, DARK_PANEL_COLOR);
+	tft.fillRect(286, 150, 30, 90, DARK_PANEL_COLOR);	
 
 	//Панель микшера посередине (лампы)
-	tft.fillRect(8, 72, 52, 48, DARK_PANEL_COLOR);
-	tft.fillRect(64, 72, 140, 48, DARK_PANEL_COLOR);
-	tft.fillRect(208, 72, 74, 48, DARK_PANEL_COLOR);
-	tft.fillRect(286, 72, 30, 48, DARK_PANEL_COLOR);
+	tft.fillRect(8, 98, 52, 48, DARK_PANEL_COLOR);
+	tft.fillRect(64, 98, 140, 48, DARK_PANEL_COLOR);
+	tft.fillRect(208, 98, 74, 48, DARK_PANEL_COLOR);
+	tft.fillRect(286, 98, 30, 48, DARK_PANEL_COLOR);
 
 	//Панель микшера вверху (громкость баланс)
-	tft.fillRect(8, 20, 52, 48, DARK_PANEL_COLOR);
-	tft.fillRect(64, 20, 140, 48, DARK_PANEL_COLOR);
-	tft.fillRect(208, 20, 74, 48, LIGHT_PANEL_COLOR);
-	tft.fillRect(286, 20, 30, 48, LIGHT_PANEL_COLOR);
+	tft.fillRect(8, 42, 52, 52, LIGHT_PANEL_COLOR);
+	tft.fillRect(64, 42, 140, 52, LIGHT_PANEL_COLOR);
+	tft.fillRect(208, 42, 74, 52, LIGHT_PANEL_COLOR);
+	tft.fillRect(286, 42, 30, 52, LIGHT_PANEL_COLOR);
 
+
+	//Панель микшера вверху (громкость баланс)
+	tft.fillRect(8, 20, 52, 19, DARK_PANEL_COLOR);
+	tft.fillRect(64, 20, 140, 19, DARK_PANEL_COLOR);
+	tft.fillRect(208, 20, 74, 19, DARK_PANEL_COLOR);
+	tft.fillRect(286, 20, 30, 19, DARK_PANEL_COLOR);
+
+
+	//tft.fillRect(0, 0, 320, 240, 0x2144);
+	tft.writeRect(16, 66, 16, 16, (uint16_t*)buttons[0]); //knob_full_top_left		
+	tft.writeRect(16+18, 66, 16, 16, (uint16_t*)buttons[1]); //knob_full_top_left		
+	tft.writeRect(16 + 18*2, 66, 16, 16, (uint16_t*)buttons[2]); //knob_full_top_left			
+	tft.writeRect(16 + 18 * 3, 66, 16, 16, (uint16_t*)buttons[3]); //knob_full_top_left			
+	tft.writeRect(16 + 18 * 4, 66, 16, 16, (uint16_t*)buttons[4]); //knob_full_top_left			
+	tft.writeRect(16 + 18 * 5, 66, 16, 16, (uint16_t*)buttons[5]); //knob_full_top_left			
+	tft.writeRect(16 + 18 * 6, 66, 16, 16, (uint16_t*)buttons[6]); //knob_full_top_left			
+	tft.writeRect(16 + 18 * 7, 66, 16, 16, (uint16_t*)buttons[7]); //knob_full_top_left			
+	tft.setCursor(17, 69);
+	tft.setTextColor(ILI9341_BLACK);
+	tft.print(16);
+
+	tft.setCursor(17+18, 69);
+	tft.setTextColor(ILI9341_BLACK);
+	tft.print(14);
+
+	tft.setCursor(17 + 18*2, 69);
+	tft.setTextColor(ILI9341_BLACK);
+	tft.print(12);
+	tft.setCursor(17 + 18 * 3, 69);
+	tft.setTextColor(ILI9341_BLACK);
+	tft.print(16);
+	tft.setCursor(17 + 18 * 4, 69);
+	tft.setTextColor(ILI9341_BLACK);
+	tft.print(12);
 	
+	tft.setCursor(17 + 18 * 5, 69);
+	tft.setTextColor(ILI9341_BLACK);
+	tft.print(16);
+	tft.setCursor(17 + 18 * 6, 69);
+	tft.setTextColor(ACTIVE_COLOR);
+		tft.print(12);
+	tft.setCursor(17 + 18 * 7, 69);
+	tft.setTextColor(ACTIVE_COLOR);
+	tft.print(16);
 }
 
 

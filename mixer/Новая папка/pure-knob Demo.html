@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- saved from url=(0069)https://www.cssscript.com/demo/canvas-javascript-knob-dial-component/ -->
+<html><script async="" src="./pure-knob Demo_files/analytics.js.download"></script><script type="text/javascript" charset="utf-8" id="zm-extension" src="chrome-extension://fdcgdnkidjaadafnichfpabhfomcebme/scripts/webrtc-patch.js" async=""></script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="./pure-knob Demo_files/sticky.css" rel="stylesheet" type="text/css">
+<title>pure-knob Demo</title>
+<style>
+body { background-color:#333;}
+.container { margin:150px auto 50px auto; text-align: center; max-width:600px;}
+h1 { color:#fff;}
+</style>
+</head>
+<body>
+<div id="css-script-menu">
+<div class="css-script-center">
+<ul>
+<li><a href="https://www.cssscript.com/canvas-javascript-knob-dial-component/">Download</a></li>
+<li><a href="https://www.cssscript.com/">Back To CSS Script</a></li>
+</ul>
+<div class="css-script-ads">
+<script async="" src="./pure-knob Demo_files/f.txt"></script>
+
+<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2783044520727903" data-ad-slot="3025259193"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+<div class="css-script-clear"></div>
+</div>
+</div>
+<div class="container">
+<h1>pure-knob Demo</h1>
+<div id="demo"><div style="display: inline-block; height: 300px; position: relative; text-align: center; width: 300px;"><canvas height="300" width="300" style="height: 100%; width: 100%;"></canvas><div style="bottom: 0px; display: none; left: 0px; position: absolute; right: 0px; top: 0px;"><input style="background-color: rgba(0, 0, 0, 0.8); border: none; color: rgb(136, 255, 136); font-family: sans-serif; font-size: 60px; height: 300px; margin: auto; padding: 0px; text-align: center; width: 300px;"></div></div></div>
+</div>
+<script src="./pure-knob Demo_files/pureknob.js.download"></script>
+<script>
+// Create knob element, 300 x 300 px in size.
+var knob = pureknob.createKnob(300, 300);
+
+// Set properties.
+knob.setProperty('angleStart', -0.75 * Math.PI);
+knob.setProperty('angleEnd', 0.75 * Math.PI);
+knob.setProperty('colorFG', '#88ff88');
+knob.setProperty('trackWidth', 0.4);
+knob.setProperty('valMin', -100);
+knob.setProperty('valMax', 100);
+
+// Set initial value.
+knob.setValue(50);
+
+/*
+ * Event listener.
+ *
+ * Parameter 'knob' is the knob object which was
+ * actuated. Allows you to associate data with
+ * it to discern which of your knobs was actuated.
+ *
+ * Parameter 'value' is the value which was set
+ * by the user.
+ */
+var listener = function(knob, value) {
+	console.log(value);
+};
+
+knob.addListener(listener);
+
+// Create element node.
+var node = knob.node();
+
+// Add it to the DOM.
+var elem = document.getElementById('demo');
+elem.appendChild(node);
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46156385-1', 'cssscript.com');
+  ga('send', 'pageview');
+
+</script>
+
+
+</body></html>

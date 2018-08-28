@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioCore.cpp" />
+    <ClCompile Include="buttons.c" />
     <ClCompile Include="Channel.cpp" />
     <ClCompile Include="DisplayCore.cpp" />
     <ClCompile Include="Engine.cpp" />

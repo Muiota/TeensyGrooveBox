@@ -54,9 +54,6 @@
     <ClInclude Include="InputLeft.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Enums.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="Channel.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
@@ -80,17 +77,24 @@
     <ClCompile Include="InputLeft.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Enums.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
     <ClCompile Include="DisplayCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Channel.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="knobs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="base.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="buttons.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="AudioSheme.txt" />
+    <Text Include="readme.txt" />
   </ItemGroup>
 </Project>

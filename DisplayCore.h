@@ -7,7 +7,8 @@
 #include <font_Arial.h>
 #include "AudioCore.h"
 #include "base.c" 
-#include "knobs.c" //the picture
+#include "knobs.c" 
+#include "buttons.c" 
 
 class DisplayCoreClass
 {
