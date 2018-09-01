@@ -57,6 +57,9 @@
     <ClInclude Include="Channel.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
+    <ClInclude Include="SongLoader.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioCore.cpp">
@@ -92,9 +95,12 @@
     <ClCompile Include="buttons.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SongLoader.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="AudioSheme.txt" />
-    <Text Include="readme.txt" />
+    <Text Include="todo.txt" />
   </ItemGroup>
 </Project>

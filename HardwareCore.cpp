@@ -110,6 +110,11 @@ void HardwareCoreClass::init()
 
 }
 
+bool HardwareCoreClass::panelButtonRead(button_type button)
+{
+	return _currentButton[button].pressed;
+}
+
 bool HardwareCoreClass::seqButtonRead(uint8_t button_pin)
 {
 	return mcp.digitalRead(button_pin < 8 ? 7 - button_pin : 23 - button_pin) == 0;	

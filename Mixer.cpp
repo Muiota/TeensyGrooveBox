@@ -8,20 +8,30 @@
 #include "Engine.h"
 
 bool _current[16];
-record_status _recordStatus = RECORD_STATUS_NONE;
 bool _lastIsWavPeakLed;
 bool _lastIsLeftChPeakLed;
 bool _lastIsRightChPeakLed;
 int _lastCurrentMode = -1;
 bool _isInvalidScreen;
+bool _lastBrownButtonPressed;
 void MixerClass::handle()
 {	
+	
 	if (!_isInvalidScreen)
 	{
 		DisplayCore.drawMixerBackground();
 		_isInvalidScreen = true;
 	}
 
+	bool brownButtonPressed = HardwareCore.panelButtonRead(BROWN);
+	
+	if (_lastBrownButtonPressed != brownButtonPressed)
+	{		
+		HardwareCore.seqLedWrite(15, brownButtonPressed);
+		_lastBrownButtonPressed = brownButtonPressed;
+	}
+	
+	/*
 	for (uint8_t i = 0; i <= 15; i++) {
 		auto value = HardwareCore.seqButtonRead(i);
 		if (_current[i] != value)
@@ -68,12 +78,12 @@ void MixerClass::handle()
 			HardwareCore.seqLedWrite(i, value);
 		}
 	}
+	*/
 
 
 
-
-	DisplayCore.drawMeter(11, AudioCore.getPeakL(), AudioCore.getPeakR());
-	DisplayCore.drawMeter(3, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
+	DisplayCore.drawMixerMeter(11, AudioCore.getPeakL(), AudioCore.getPeakR());
+	DisplayCore.drawMixerMeter(3, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
 
 
 	auto wavPeakL = AudioCore.getWavPeakL();
@@ -85,7 +95,7 @@ void MixerClass::handle()
 		HardwareCore.seqLedWrite(12, isWavPeakLed);
 	}
 
-	DisplayCore.drawMeter(2, wavPeakL, AudioCore.getWavPeakR());
+	DisplayCore.drawMixerMeter(2, wavPeakL, AudioCore.getWavPeakR());
 
 	auto leftCh = AudioCore.getPeakAudioInputL();
 
@@ -96,7 +106,7 @@ void MixerClass::handle()
 		HardwareCore.seqLedWrite(13, isLeftChPeakLed);
 	}
 
-	DisplayCore.drawMeter(0, leftCh, leftCh);
+	DisplayCore.drawMixerMeter(0, leftCh, leftCh);
 	auto rightCh = AudioCore.getPeakAudioInputR();
 
 	bool isRightChPeakLed = rightCh > 0.2;
@@ -106,39 +116,24 @@ void MixerClass::handle()
 		HardwareCore.seqLedWrite(11, isRightChPeakLed);
 	}
 
-	DisplayCore.drawMeter(1, rightCh, rightCh);
+	DisplayCore.drawMixerMeter(1, rightCh, rightCh);
 
 
 	DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
-
-
-	auto current_mode = Engine.getCurrentMode();
-	if (_lastCurrentMode != current_mode)
-	{		
-		DisplayCore.drawMeterTitle(0, current_mode == EDIT_CHANNEL_LEFT_CHANNEL);
-		DisplayCore.drawMeterTitle(1, current_mode == EDIT_CHANNEL_RIGHT_CHANNEL);
-
-	
-		DisplayCore.drawMeterTitle(2, current_mode == EDIT_CHANNEL_WAV);
-		DisplayCore.drawMeterTitle(3, current_mode == EDIT_CHANNEL_FX_REVERB);
-		DisplayCore.drawMeterTitle(4, false);
-		DisplayCore.drawMeterTitle(5, false);
-		DisplayCore.drawMeterTitle(6, false);
-		DisplayCore.drawMeterTitle(7, false);
-
-		DisplayCore.drawMeterTitle(8, false);
-		DisplayCore.drawMeterTitle(9, false);
-		DisplayCore.drawMeterTitle(10, false);
-
-		DisplayCore.drawMeterTitle(11, current_mode == EDIT_CHANNEL_MASTER);
 		
+	if (_lastCurrentMode != Engine.songSettings.currentChannel)
+	{
+		for (uint8_t i = 0; i <= 11; i++) {
+			{
+				DisplayCore.drawMixerMeterTitle(i, Engine.songSettings.currentChannel == i);
+			}
 
-		_lastCurrentMode = current_mode;
+			_lastCurrentMode = Engine.songSettings.currentChannel;
+		}
+		//	DisplayCore.drawRecordStatus(AudioCore.getRecorderStatus(), 0);
+		//DisplayCore.drawRecordStatus(_recordStatus, 20);
+
 	}
-	//	DisplayCore.drawRecordStatus(AudioCore.getRecorderStatus(), 0);
-	//DisplayCore.drawRecordStatus(_recordStatus, 20);
-
-
 
 }
 

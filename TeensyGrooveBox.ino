@@ -1,3 +1,4 @@
+#include "SongLoader.h"
 #include "knobs.h"
 #include "picture.h"
 #include "Channel.h"
@@ -36,11 +37,7 @@ void setup() {
 	
 	HardwareCore.init();
 	AudioCore.init();
-	log("Audio success", false);
-	
-	for (uint8_t i = 0; i <= 15; i++) {
-		DisplayCore.drawSequenceButton(i, false);
-	}
+	log("Audio success", false);	
 	DisplayCore.clearAll();
 	Engine.init();
 

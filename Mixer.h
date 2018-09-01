@@ -7,16 +7,13 @@
 
 class MixerClass
 {
-protected:	
-
-
+protected:		
 	
 
 public:	
-	static void handle();
+	static void handle();	
 };
 extern MixerClass Mixer;
-
 
 #endif
 

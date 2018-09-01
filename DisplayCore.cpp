@@ -232,84 +232,6 @@ void DisplayCoreClass::drawEncoder(uint8_t encoder, int32_t value, int32_t max, 
 	tft.print(value);
 }
 
-void drawEncoder2(uint8_t encoder, int32_t value, int32_t max, bool isBoth)
-{
-
-	uint16_t x = 148 + 64 * encoder;
-	uint16_t y = 68;
-
-	tft.fillCircle(x, y, 14, OFF_COLOR);
-	tft.setTextColor(MAIN_COLOR);
-	tft.fillRect(x - 24, y + 36, 48, 11, OFF_COLOR);
-	auto valueGauge = value * 100 / max;
-
-	if (isBoth)
-	{
-		int8_t positive = valueGauge > 0 ? 1 : -1;
-		auto radians = positive* valueGauge * PI / 124.0;
-		auto px = x + 13 * sin(radians)* positive;
-		auto py = y - 13 * cos(radians);
-		tft.drawLine(x, y, px, py, MAIN_COLOR);
-
-
-		for (int8_t i = -100; i < 100; i = i + 6)
-		{
-			bool pos = i >= 0 ? 1 : -1;
-			auto r = pos * i * PI / 124.0;
-			auto px1 = x + 20 * sin(r)*pos;
-			auto py1 = y - 20 * cos(r);
-			auto px2 = x + 28 * sin(r) *pos;
-			auto py2 = y - 28 * cos(r);
-			auto color = OFF_COLOR;
-			if (positive == 1)
-			{
-				if (i >= 0 && i <= valueGauge)
-				{
-					color = MAIN_COLOR;
-				}
-			}
-			else
-			{
-				if (i <= 0 && i >= valueGauge)
-				{
-					color = MAIN_COLOR;
-				}
-			}
-
-
-			tft.drawLine(px1, py1, px2, py2, color);
-		}
-	}
-	else
-	{
-
-		auto radians = valueGauge * PI / 62 + PI / 6 * 4;
-		auto px = x + 13 * cos(radians);
-		auto py = y + 13 * sin(radians);
-		tft.drawLine(x, y, px, py, MAIN_COLOR);
-
-
-		for (uint8_t i = 0; i < 100; i = i + 3)
-		{
-			auto r = i * PI / 62 + PI / 6 * 4;
-			auto px1 = x + 20 * cos(r);
-			auto py1 = y + 20 * sin(r);
-			auto px2 = x + 28 * cos(r);
-			auto py2 = y + 28 * sin(r);
-			auto color = i <= valueGauge ? MAIN_COLOR : OFF_COLOR;
-			tft.drawLine(px1, py1, px2, py2, color);
-		}
-	}
-
-	uint8_t shift = 0;//countDigits(value);
-	uint8_t exShift = 0;
-	if (value < 0) {
-		exShift = 4;
-	}
-	tft.setCursor(x + 23 - shift * 7 - exShift, y + 36);
-	tft.setTextColor(INFO_COLOR);
-	tft.print(value);
-}
 
 uint8_t DisplayCoreClass::countDigits(int num) {
 	uint8_t count = 1;
@@ -361,7 +283,7 @@ void DisplayCoreClass::drawMeterSide(float l, uint16_t x, uint16_t y)
 }
 
 
-void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
+uint16_t DisplayCoreClass::getMixerChannelXcoord(uint8_t channel)
 {
 	uint16_t x = channel * 22 + 13;
 	if (channel == 11)
@@ -376,17 +298,17 @@ void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
 	{
 		x = x + 12;
 	}
+	return x;
+}
 
+void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
+{
+	uint16_t x = getMixerChannelXcoord(channel);
 	uint16_t y = 154;
 	tft.fillRect(x, y, 20, METER_HEIGHT , ILI9341_BLACK);
 	tft.fillRect(x + 14, y + 2, 6, METER_HEIGHT - 4, OFF_COLOR);
 	tft.drawRect(x, y, 20, METER_HEIGHT, isActive ? ACTIVE_COLOR : BORDER_COLOR);
-
-	tft.writeRect(x+2, 102,16, 8, isActive ? (uint16_t*)led_green[1] : (uint16_t*)led_green[0]);
-	tft.writeRect(x+2, 102+9, 16, 8, isActive ? (uint16_t*)led_green[3] : (uint16_t*)led_green[2]);
-	tft.writeRect(x+2, 102 + 18, 16, 8, isActive ? (uint16_t*)led_green[5] : (uint16_t*)led_green[4]);
-	tft.writeRect(x+2, 102 + 27, 16, 8, isActive ? (uint16_t*)led_green[7] : (uint16_t*)led_green[6]);
-	//tft.writeRect(x , 124, 20, 20, isActive ? (uint16_t*)red_on : (uint16_t*)off);
+	drawMixerButtons(channel, x);
 
 	if (channel == 1)
 	{
@@ -409,27 +331,27 @@ void DisplayCoreClass::drawMeterTitle(uint8_t channel, bool isActive)
 		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[5] : (uint16_t*)channels[4]);
 	}
 
-	tft.writeRect(x + 2, 52, 16, 8, (uint16_t*)encoder_linear[0]);
-	tft.writeRect(x + 2, 22, 16, 16, (uint16_t*)small_knob_negative[5]);
+
 	
 
 }
 
-void DisplayCoreClass::drawMeter(uint16_t channel,  float r, float l)
+
+void DisplayCoreClass::drawMixerButtons(uint8_t channel, uint16_t x)
+{	
+	uint16_t ix = x + 2;
+	//tft.writeRect(ix, 102, 16, 8, true ? (uint16_t*)leds[1] : (uint16_t*)leds[0]);
+	//tft.writeRect(ix, 102 + 9, 16, 8, true ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
+	tft.writeRect(ix, 122, 16, 8, true ? (uint16_t*)leds[1] : (uint16_t*)leds[0]);
+	tft.writeRect(ix, 131, 16, 8, true ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
+	tft.writeRect(ix, 52, 16, 8, (uint16_t*)encoder_linear[3]);
+	tft.writeRect(ix, 102, 16, 16, (uint16_t*)small_knob_negative[5]);
+	//tft.writeRect(x , 124, 20, 20, isActive ? (uint16_t*)red_on : (uint16_t*)off);
+}
+
+void DisplayCoreClass::drawMixerMeter(uint16_t channel,  float r, float l)
 {
-	uint16_t x = channel * 22 + 13;
-	if (channel == 11)
-	{
-		x = x + 36;
-	}
-	else if (channel > 7)
-	{
-		x = x + 24;
-	}
-	else if (channel > 1)
-	{
-		x = x + 12;
-	}
+	uint16_t x = getMixerChannelXcoord(channel);
 	uint16_t y = 154;
 	drawMeterSide(l, x, y);
 	drawMeterSide(r, x + 6, y);
@@ -441,7 +363,7 @@ void DisplayCoreClass::printLn(const char * msg, bool isError)
 	tft.println(msg);
 }
 
-void DisplayCoreClass::drawUsage(double cpu, double memory)
+void DisplayCoreClass::drawUsage(double cpu, uint16_t memory)
 {
 	uint16_t x = 240;
 	uint16_t y = 3;
@@ -482,27 +404,6 @@ void DisplayCoreClass::drawSongStatus(bool wav_is_playing)
 	tft.fillRect(x, y, 8, 8, wav_is_playing ? ILI9341_GREEN: OFF_COLOR);
 }
 
-void DisplayCoreClass::drawRecordStatus(record_status status, uint16_t shift)
-{
-	uint16_t x = 90;
-	uint16_t y = 52+ shift;
-	uint16_t color;
-	switch (status)
-	{
-	case RECORD_STATUS_NONE:
-		color = OFF_COLOR;
-		break;
-	case RECORD_STATUS_RECORD:
-		color = ILI9341_RED;		
-		break;
-	case RECORD_STATUS_PLAY:
-		color = ILI9341_GREEN;
-		break;
-	}
-
-	tft.fillRect(x, y, 8, 8, color);
-}
-
 void DisplayCoreClass::drawMuteMaster(bool isMute)
 {
 	uint16_t x = 307;
@@ -533,21 +434,21 @@ void DisplayCoreClass::drawMixerBackground()
 	tft.fillRect(286, 98, 30, 48, DARK_PANEL_COLOR);
 
 	//Панель микшера вверху (громкость баланс)
-	tft.fillRect(8, 42, 52, 52, LIGHT_PANEL_COLOR);
-	tft.fillRect(64, 42, 140, 52, LIGHT_PANEL_COLOR);
-	tft.fillRect(208, 42, 74, 52, LIGHT_PANEL_COLOR);
-	tft.fillRect(286, 42, 30, 52, LIGHT_PANEL_COLOR);
+	tft.fillRect(8, 20, 52, 74, LIGHT_PANEL_COLOR);
+	tft.fillRect(64, 20, 140, 74, LIGHT_PANEL_COLOR);
+	tft.fillRect(208, 20, 74, 74, LIGHT_PANEL_COLOR);
+	tft.fillRect(286, 20, 30, 74, LIGHT_PANEL_COLOR);
 
 
 	//Панель микшера вверху (громкость баланс)
-	tft.fillRect(8, 20, 52, 19, DARK_PANEL_COLOR);
-	tft.fillRect(64, 20, 140, 19, DARK_PANEL_COLOR);
-	tft.fillRect(208, 20, 74, 19, DARK_PANEL_COLOR);
-	tft.fillRect(286, 20, 30, 19, DARK_PANEL_COLOR);
+	//tft.fillRect(8, 20, 52, 19, DARK_PANEL_COLOR);
+	//tft.fillRect(64, 20, 140, 19, DARK_PANEL_COLOR);
+	//tft.fillRect(208, 20, 74, 19, DARK_PANEL_COLOR);
+	//tft.fillRect(286, 20, 30, 19, DARK_PANEL_COLOR);
 
 
 	//tft.fillRect(0, 0, 320, 240, 0x2144);
-	tft.writeRect(16, 66, 16, 16, (uint16_t*)buttons[0]); //knob_full_top_left		
+	/*tft.writeRect(16, 66, 16, 16, (uint16_t*)buttons[0]); //knob_full_top_left		
 	tft.writeRect(16+18, 66, 16, 16, (uint16_t*)buttons[1]); //knob_full_top_left		
 	tft.writeRect(16 + 18*2, 66, 16, 16, (uint16_t*)buttons[2]); //knob_full_top_left			
 	tft.writeRect(16 + 18 * 3, 66, 16, 16, (uint16_t*)buttons[3]); //knob_full_top_left			
@@ -581,9 +482,14 @@ void DisplayCoreClass::drawMixerBackground()
 		tft.print(12);
 	tft.setCursor(17 + 18 * 7, 69);
 	tft.setTextColor(ACTIVE_COLOR);
-	tft.print(16);
+	tft.print(16); */
 }
 
 
 DisplayCoreClass DisplayCore;
 
+/*
+ * 	for (uint8_t i = 0; i <= 15; i++) {
+		DisplayCore.drawSequenceButton(i, false);
+	}
+ */

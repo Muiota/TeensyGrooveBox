@@ -9,12 +9,6 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
-enum record_status {
-	RECORD_STATUS_NONE = 0,
-	RECORD_STATUS_RECORD = 1,
-	RECORD_STATUS_PLAY = 2
-};
-
 //#include <OpenAudio_ArduinoLibrary.h> 
 //#include <synth_simple_drum.h>
 
@@ -51,19 +45,12 @@ class AudioCoreClass
 	static float getReverbFxPeakR();
 	static float getPeakAudioInputL();
 	static float getPeakAudioInputR();
-	static bool wavIsPlaying();
-	static record_status getRecorderStatus();
+	static bool wavIsPlaying();	
 	static String getRecordFileName(String prefix, uint8_t songNum, uint16_t version);
 	static uint16_t getMaxRecordedTracks(uint8_t songNum);
-	static bool startRecording(uint8_t songNum);
-	static void continueRecording();
 	static void stopRecording();
-	
-
 	static void playWav(const char * song);
 	static void playLastRecorderInputRaw();
-	static void stopLastRecorderInputRaw();	
-	static bool isLastRecorderInputPlaying();
 	static void stopWav();
 
 };

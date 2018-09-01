@@ -6,7 +6,6 @@
 
 //File _fileRec;
 //String _lastFileNameRec = "";
-record_status _recorderStatus;
 
 float WAVESHAPE_EXAMPLE[17] = {
 	-0.588,
@@ -418,23 +417,6 @@ void AudioCoreClass::playLastRecorderInputRaw()
 	} */
 }
 
-void AudioCoreClass::stopLastRecorderInputRaw()
-{
-	/*if (playTestRawL.isPlaying())
-	{
-		playTestRawL.stop();
-	}
-	if (playTestRawR.isPlaying())
-	{
-		playTestRawR.stop();
-	}*/
-	_recorderStatus = RECORD_STATUS_NONE;
-}
-
-bool AudioCoreClass::isLastRecorderInputPlaying()
-{
-	return false;// playTestRawL.isPlaying() || playTestRawR.isPlaying();
-}
 
 void AudioCoreClass::stopWav()
 {
@@ -446,10 +428,6 @@ bool AudioCoreClass::wavIsPlaying()
 	return playSdWavA.isPlaying();
 }
 
-record_status AudioCoreClass::getRecorderStatus()
-{
-	return _recorderStatus;
-}
 
 String AudioCoreClass::getRecordFileName(String prefix, uint8_t songNum, uint16_t version)
 {
@@ -467,65 +445,6 @@ uint16_t AudioCoreClass::getMaxRecordedTracks(uint8_t songNum) {
 	return _version;
 }
 
-
-bool AudioCoreClass::startRecording(uint8_t songNum) {
-	if (_recorderStatus == RECORD_STATUS_RECORD)
-	{
-		stopRecording();
-	}
-	Serial.println("startRecording");
-	getMaxRecordedTracks(songNum);
-		 
-	/*if (SD.exists(_lastFileNameRecL)) {
-		SD.remove(_lastFileNameRecL);
-	}
-	if (SD.exists(_lastFileNameRecR)) {
-		SD.remove(_lastFileNameRecR);
-	}*/
-	//Serial.println("file: " + _lastFileNameRec);
-//	_fileRec = SD.open(_lastFileNameRec.c_str(), FILE_WRITE);
-	
-
-	if (false) {
-		//queueRecordR.begin();				
-	//	queueRecordL.begin();
-		_recorderStatus = RECORD_STATUS_RECORD;
-		return true;
-	}
-	return false;
-}
-
-void AudioCoreClass::continueRecording() {
-	if (_recorderStatus == RECORD_STATUS_RECORD)
-	{ 
-		/*if (queueRecordR.available() >= 2) {
-			byte buffer[512];
-			// Fetch 2 blocks from the audio library and copy
-			// into a 512 byte buffer.  The Arduino SD library
-			// is most efficient when full 512 byte sector size
-			// writes are used.
-			memcpy(buffer, queueRecordR.readBuffer(), 256);
-			queueRecordR.freeBuffer();
-			memcpy(buffer + 256, queueRecordR.readBuffer(), 256);
-			queueRecordR.freeBuffer();
-			// write all 512 bytes to the SD card
-			elapsedMicros usec = 0;
-			_fileRec.write(buffer, 512);
-			// Uncomment these lines to see how long SD writes
-			// are taking.  A pair of audio blocks arrives every
-			// 5802 microseconds, so hopefully most of the writes
-			// take well under 5802 us.  Some will take more, as
-			// the SD library also must write to the FAT tables
-			// and the SD card controller manages media erase and
-			// wear leveling.  The queue1 object can buffer
-			// approximately 301700 us of audio, to allow time
-			// for occasional high SD card latency, as long as
-			// the average write time is under 5802 us.
-			//Serial.print("SD write, us=");
-			//Serial.println(usec);
-		} */
-	}
-}
 
 void AudioCoreClass::stopRecording() {
 	Serial.println("StopRecording");
