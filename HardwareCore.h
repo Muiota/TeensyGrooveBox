@@ -4,7 +4,7 @@
 #define _HARDWARECORE_h
 
 typedef void(*EncoderCallback) (int, int);
-typedef void(*ButtonCallback) ();
+typedef void(*ButtonCallback) (bool);
 
 enum button_type {
 	BROWN = 0,
@@ -35,13 +35,14 @@ class HardwareCoreClass
 	static bool panelButtonRead(button_type button);
 	static bool seqButtonRead(uint8_t button_pin);
 	static void seqLedWrite(uint8_t led_pin, bool value);
-	void resetEncoders();
-	void setEncoderParam(uint8_t encoder, EncoderCallback callback,
+	static void setLedEncoder(uint8_t encoder, bool value);
+	static void resetEncoders();
+	static void setEncoderParam(uint8_t encoder, EncoderCallback callback,
 		String title, float min, float max, float step, float currenctValue);
 	static void setButtonParam(uint8_t button, ButtonCallback callback);
-	static void update();	
-	int32_t readEncoder(uint8_t encoder);	
-	void writeEncoder(uint8_t encoder, int32_t value);	
+	static void update();
+	static int32_t readEncoder(uint8_t encoder);
+	static void writeEncoder(uint8_t encoder, int32_t value);	
 };
 
 extern HardwareCoreClass HardwareCore;

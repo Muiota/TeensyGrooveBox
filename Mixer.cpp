@@ -12,24 +12,61 @@ bool _lastIsWavPeakLed;
 bool _lastIsLeftChPeakLed;
 bool _lastIsRightChPeakLed;
 int _lastCurrentMode = -1;
-bool _isInvalidScreen;
-bool _lastBrownButtonPressed;
+bool _subMenuPressed;
+
+void MixerClass::onShow()
+{
+	HardwareCore.setButtonParam(BROWN, subMenuShow);
+	HardwareCore.setButtonParam(ENCODER0, switchToSongLoader);
+}
+
+void MixerClass::switchToSongLoader(bool pressed)
+{
+	if (pressed && _subMenuPressed)
+	{
+		HardwareCore.setLedEncoder(0, false);		
+		Engine.switchWindow(VIEW_MODE_OPEN_SONG);
+		
+	}	
+}
+
+void MixerClass::subMenuShow(bool pressed)
+{	
+	HardwareCore.setLedEncoder(0, pressed);
+	_subMenuPressed = pressed;	
+	if (pressed)
+	{
+		DisplayCore.disaplaySubMenu();
+	}
+	else
+	{
+		DisplayCore.clearAll();
+		Engine.isValidScreen = false;
+	}
+}
+
 void MixerClass::handle()
 {	
-	
-	if (!_isInvalidScreen)
+	if (_subMenuPressed)
 	{
-		DisplayCore.drawMixerBackground();
-		_isInvalidScreen = true;
+		return;
 	}
 
-	bool brownButtonPressed = HardwareCore.panelButtonRead(BROWN);
+	bool _fullRedraw = false;
+	if (!Engine.isValidScreen)
+	{
+		DisplayCore.drawMixerBackground();
+		_fullRedraw = true;
+		Engine.isValidScreen = true;
+	}
+
+/*	bool brownButtonPressed = HardwareCore.panelButtonRead(BROWN);
 	
 	if (_lastBrownButtonPressed != brownButtonPressed)
 	{		
-		HardwareCore.seqLedWrite(15, brownButtonPressed);
+		
 		_lastBrownButtonPressed = brownButtonPressed;
-	}
+	} */
 	
 	/*
 	for (uint8_t i = 0; i <= 15; i++) {
@@ -121,7 +158,7 @@ void MixerClass::handle()
 
 	DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
 		
-	if (_lastCurrentMode != Engine.songSettings.currentChannel)
+	if (_lastCurrentMode != Engine.songSettings.currentChannel || _fullRedraw)
 	{
 		for (uint8_t i = 0; i <= 11; i++) {
 			{

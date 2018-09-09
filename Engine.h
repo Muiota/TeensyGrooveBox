@@ -105,11 +105,11 @@ protected:
 public:
 	//static void updateModeLinks();	
 	SongSettings songSettings;
-	
+	bool isValidScreen;	
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting);
 
-	static void saveSettings();
-	static void loadSettings();
+	static void saveSettings(bool pressed);
+	static void loadSettings(bool pressed);
 	static void init();
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);
@@ -135,6 +135,7 @@ public:
 	static void setRightInputVolume(int encoder, int value);
 	static void setReverbVolume(int encoder, int value); */
 	 void update();
+	void switchWindow(current_view_mode current_view_mode);
 };
 
 extern EngineClass Engine;

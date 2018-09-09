@@ -12,6 +12,9 @@ protected:
 
 public:	
 	static void handle();	
+	static void onShow();
+	static void switchToSongLoader(bool pressed);
+	static void subMenuShow(bool pressed);
 };
 extern MixerClass Mixer;
 

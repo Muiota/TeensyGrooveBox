@@ -7,13 +7,13 @@
 // Load drivers
 
 
-String songs[160];
+String songs[50];
 bool _muteMaster;
 uint8_t SONG_COUNT = 0;
 uint8_t _currentSong = 0;
 uint8_t _lastSong = -1;
 
-
+uint8_t _lastViewMode = 128;
 
 
 //BaseSettings* _currenctSettings = &_songSettings.mixer.master;
@@ -142,7 +142,7 @@ void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName,
 	channel["roomsize"] = setting.roomsize;	
 }
 
-void EngineClass::saveSettings()
+void EngineClass::saveSettings(bool pressed)
 {
 
 	if (SD.exists("settings.mxr"))
@@ -173,7 +173,7 @@ void EngineClass::saveSettings()
 
 }
 
-void EngineClass::loadSettings()
+void EngineClass::loadSettings(bool pressed)
 {
 	//Set default
 	Engine.songSettings.currentChannel = EDIT_CHANNEL_MASTER;
@@ -186,6 +186,13 @@ void EngineClass::loadSettings()
 	Engine.songSettings.mixer.rightInput.q = 0.707f;
 	Engine.songSettings.mixer.fxReverb.frequency = 300;
 	Engine.songSettings.mixer.fxReverb.q = 0.707f;
+
+
+	if (SD.exists("settings.mxr"))
+	{
+		SD.remove("settings.mxr");
+		return;
+	}
 
 	if (!SD.exists("settings.mxr"))
 	{
@@ -260,7 +267,7 @@ void EngineClass::init()
 	}
 
 
-	loadSettings();
+	loadSettings(true);
 	AudioCore.setMasterVolume(Engine.songSettings.mixer.master.volume); //todo settings by channel
 	AudioCore.setWavVolume(Engine.songSettings.mixer.wav.volume, Engine.songSettings.mixer.wav.balance);
 	AudioCore.setWavBiquad(Engine.songSettings.mixer.wav.frequency, Engine.songSettings.mixer.wav.q);
@@ -497,9 +504,27 @@ void EngineClass::update()
 			DisplayCore.drawUsage(usageCPU, usageMemory);
 		}
 		
-
 		HardwareCore.update(); //Обновить состояние кнопок
 
+		if (_lastViewMode != songSettings.viewMode)
+		{
+			switch (songSettings.viewMode)
+			{
+			case VIEW_MODE_MAIN_MIXER:
+				Mixer.onShow();
+				break;
+			case VIEW_MODE_OPEN_SONG:
+				SongLoader.onShow();
+				break;
+			default:
+				
+				break;
+			}
+			_lastViewMode = songSettings.viewMode;
+		}
+
+
+	
 		switch (songSettings.viewMode)
 		{
 		case VIEW_MODE_MAIN_MIXER:
@@ -510,10 +535,9 @@ void EngineClass::update()
 			break;
 		default:
 			DisplayCore.clearAll();
-			DisplayCore.drawSongName("Not implemented " + songSettings.viewMode);
+			DisplayCore.drawText("Not implemented " + songSettings.viewMode, 3 , 3);
 			break;
 		}
-
 
 	
 		
@@ -529,13 +553,20 @@ void EngineClass::update()
 		if (_currentSong != _lastSong)
 		{
 			auto song = songs[_currentSong];
-			DisplayCore.drawSongName(String(_currentSong) + " " + song.substring(0, song.length() - 4));
+			DisplayCore.drawText(String(_currentSong) + " " + song.substring(0, song.length() - 4), 3, 3);
 			//		DisplayCore.drawSongDetails(String(AudioCore.getMaxRecordedTracks(_currentSong)));
 			_lastSong = _currentSong;
 		}
 
 	}
 	//AudioCore.continueRecording();
+}
+
+void EngineClass::switchWindow(current_view_mode current_view_mode)
+{	
+	songSettings.viewMode = current_view_mode;	
+	DisplayCore.clearAll();	
+	isValidScreen = false;
 }
 
 

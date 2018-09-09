@@ -27,12 +27,16 @@ class DisplayCoreClass
 	static void drawMixerButtons(uint8_t channel, uint16_t x);
 	static void printLn(const char* msg, bool isError);
 	static void drawUsage(double usage, uint16_t memory);
-	static void drawSongName(const String& song);
+	static void drawText(const String& song, uint16_t x, uint16_t y);
+	static void drawTextOpacity(const String& song, uint16_t x, uint16_t y, uint16_t color);
 	static void drawSongDetails(const String& song);	
 	static void drawSongStatus(bool wav_is_playing);	
 	static void drawMuteMaster(bool b);
 	static void clearAll();
+	static void drawStandartBackground();
+	static void drawFileloadBackground();	
 	static void drawMixerBackground();
+	static void disaplaySubMenu();
 };
 
 extern DisplayCoreClass DisplayCore;

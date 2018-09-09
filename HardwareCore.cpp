@@ -31,7 +31,7 @@ void emptyEncoderCallback(int e, int x)
 {
 }
 
-void emptyButtonCallback()
+void emptyButtonCallback(bool pressed)
 {
 }
 
@@ -126,6 +126,24 @@ void HardwareCoreClass::seqLedWrite(uint8_t led_pin, bool value)
 }
 
 
+void HardwareCoreClass::setLedEncoder(uint8_t encoder, bool value)
+{
+	switch (encoder)
+	{
+	case 0:
+		digitalWrite(39, value);
+		break;
+	case 1:
+		digitalWrite(8, value);
+		break;
+	case 2:
+		digitalWrite(15, value);
+		break;
+	}
+}
+
+
+
 void HardwareCoreClass::resetEncoders()
 {
 	for (uint8_t i = 0; i <= 2; i++) {
@@ -179,6 +197,8 @@ void HardwareCoreClass::setButtonParam(uint8_t button, ButtonCallback callback)
 {
 	HardwareButton* item = &_currentButton[button];
 	item->callback = callback;
+	Serial.print("set callback for pin ");
+	Serial.println(item->pin);	
 }
 
 //Tick of update cycle
@@ -224,19 +244,15 @@ void HardwareCoreClass::update()
 
 	for (int i = 0; i < 7; i++) {
 		HardwareButton* item = &_currentButton[i];
-		uint8_t value = digitalRead(item->pin);
-		if (value == 0)
+		bool proposed = !digitalRead(item->pin);
+		if (item->pressed != proposed)
 		{
-
-			if (!item->pressed)
-			{
-				item->pressed = true;
-				item->callback();
-			}
-		}
-		else
-		{
-			item->pressed = false;			
+			item->pressed = proposed;
+			
+			Serial.print("pin ");
+			Serial.print(item->pin);
+			Serial.println(item->pressed ? " down" : " up");
+			item->callback(item->pressed);
 		}
 	}
 
@@ -253,10 +269,10 @@ int32_t HardwareCoreClass::readEncoder(uint8_t encoder)
 		return enc_two.read();
 	case 2:
 		return enc_three.read();
+	default: 
+		return 0;
 	}
 }
-
-
 
 
 void HardwareCoreClass::writeEncoder(uint8_t encoder, int32_t value)
@@ -271,6 +287,8 @@ void HardwareCoreClass::writeEncoder(uint8_t encoder, int32_t value)
 		break;
 	case 2:
 		enc_three.write(value);
+		break;
+	default: 
 		break;
 	}
 }

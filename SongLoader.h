@@ -8,6 +8,9 @@ class SongLoaderClass
 {
 public:
 	static void handle();
+	static void onShow();
+	static void backToMixer(bool pressed);
+	static void loadSongs();
 };
 extern SongLoaderClass SongLoader;
 

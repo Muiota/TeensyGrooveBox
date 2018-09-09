@@ -377,15 +377,22 @@ void DisplayCoreClass::drawUsage(double cpu, uint16_t memory)
 	tft.print(memory);
 }
 
-void DisplayCoreClass::drawSongName(const String& song)
+void DisplayCoreClass::drawText(const String& song, uint16_t x, uint16_t y)
 {
-	uint16_t x = 3;
-	uint16_t y = 3;
-	tft.fillRect(x, y, 107, 12, OFF_COLOR);
+	//tft.fillRect(x, y, 107, 12, OFF_COLOR);
 	tft.setCursor(x + 1, y + 1);
 	tft.setTextColor(MAIN_COLOR);
 	tft.print(song);
 }
+
+void DisplayCoreClass::drawTextOpacity(const String& song, uint16_t x, uint16_t y, uint16_t color)
+{
+	tft.setCursor(x, y);
+	tft.setTextColor(color);
+	
+	tft.print(song);
+}
+
 void DisplayCoreClass::drawSongDetails(const String& song)
 {
 	uint16_t x = 3;
@@ -393,7 +400,7 @@ void DisplayCoreClass::drawSongDetails(const String& song)
 	tft.fillRect(x, y, 107, 12, OFF_COLOR);
 	tft.setCursor(x + 1, y + 1);
 	tft.setTextColor(MAIN_COLOR);
-	tft.print(song);
+	tft.print(song);	
 }
 
 
@@ -414,6 +421,20 @@ void DisplayCoreClass::drawMuteMaster(bool isMute)
 void DisplayCoreClass::clearAll()
 {
 	tft.fillScreen(ILI9341_BLACK);	
+}
+
+void DisplayCoreClass::drawStandartBackground()
+{
+	tft.fillRect(8, 20, 308, 74, LIGHT_PANEL_COLOR);
+	tft.fillRect(8, 98, 308, 160, DARK_PANEL_COLOR);
+}
+
+void DisplayCoreClass::drawFileloadBackground()
+{
+	tft.fillRect(8, 20, 116, 230, OFF_COLOR);
+
+	tft.fillRect(128, 20, 188, 74, LIGHT_PANEL_COLOR);
+	tft.fillRect(128, 98, 188, 160, DARK_PANEL_COLOR);
 }
 
 void DisplayCoreClass::drawMixerBackground()
@@ -440,6 +461,20 @@ void DisplayCoreClass::drawMixerBackground()
 	tft.fillRect(286, 20, 30, 74, LIGHT_PANEL_COLOR);
 
 
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	Serial.println("ac");
+	tft.color565toRGB(ACTIVE_COLOR, r, g, b);
+	Serial.println(r);
+	Serial.println(g);
+	Serial.println(b);
+	Serial.println("off");
+	tft.color565toRGB(OFF_COLOR, r, g, b);
+	Serial.println(r);
+	Serial.println(g);
+	Serial.println(b);
+	
 	//Панель микшера вверху (громкость баланс)
 	//tft.fillRect(8, 20, 52, 19, DARK_PANEL_COLOR);
 	//tft.fillRect(64, 20, 140, 19, DARK_PANEL_COLOR);
@@ -484,6 +519,24 @@ void DisplayCoreClass::drawMixerBackground()
 	tft.setTextColor(ACTIVE_COLOR);
 	tft.print(16); */
 }
+
+void DisplayCoreClass::disaplaySubMenu()
+{
+	tft.fillRect(8, 20, 308, 74, LIGHT_PANEL_COLOR);
+
+	for (uint8_t i = 0; i <= 2; i++) {
+		uint8_t i1 = i * 80;
+		tft.writeRect(16 + i1, 26, 64, 64, (uint16_t*)encoder_background);
+		bool active = i == 0;
+		tft.writeRect(18 + i1, 28, 8, 8, (uint16_t*)led_small[active ? 1 : 0]);
+		if (active)
+		{
+			tft.writeRect(16 + i1 + 16, 42, 32, 32, (uint16_t*)folder);
+		} 
+	}
+}
+
+
 
 
 DisplayCoreClass DisplayCore;
