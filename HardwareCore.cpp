@@ -110,6 +110,17 @@ void HardwareCoreClass::init()
 
 }
 
+void HardwareCoreClass::resetButtons()
+{
+	setButtonParam(BLACK, emptyButtonCallback);
+	setButtonParam(BROWN, emptyButtonCallback);
+	setButtonParam(GREEN, emptyButtonCallback);
+	setButtonParam(RED, emptyButtonCallback);
+	setButtonParam(ENCODER0, emptyButtonCallback);
+	setButtonParam(ENCODER1, emptyButtonCallback);
+	setButtonParam(ENCODER2, emptyButtonCallback);
+}
+
 bool HardwareCoreClass::panelButtonRead(button_type button)
 {
 	return _currentButton[button].pressed;

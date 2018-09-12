@@ -32,6 +32,7 @@ class HardwareCoreClass
 	 boolean _sdCardInitialized;
  public:
 	void init();
+	static void resetButtons();
 	static bool panelButtonRead(button_type button);
 	static bool seqButtonRead(uint8_t button_pin);
 	static void seqLedWrite(uint8_t led_pin, bool value);

@@ -8,15 +8,42 @@
 #include "Engine.h"
 
 
-const char * filepathA = "/DATA/TRACKS/";  // "/DATA/SONGS_A/";
-const char * filepathB = "/DATA/SONGS_B/";
-const char * filepathC = "/DATA/SONGS_C/";
-const char * filepathD = "/DATA/SONGS_D/";
+
+const String filePathPrefix = "/DATA/SONGS_";
+
 String loadedSongs[250];
 uint8_t songCount = 0;
+song_load_part selectedPart = SONGS_PART_A;
+uint8_t lastPage = 0;
 uint8_t selectedSong = 0;
-uint16_t MAIN_COLOR_OPACITY[4] = { 0xF487, 0xDD03,0xBCA7,0x9C2B };
-uint16_t LIGHT_PANEL_COLOR_OPACITY[4] = {0x7BCF,0x630B,0x4A28, 0x3164};
+uint16_t SELECTED_COLOR_OPACITY = 0xF487;
+uint16_t UNSELECTED_COLOR_OPACITY = 0x4A28;
+
+void SongLoaderClass::drawTexts()
+{
+	uint8_t page = (selectedSong) / 13;
+	uint8_t start = page * 13;
+	uint8_t end = start + 13;
+	if (end > songCount)
+	{
+		end = songCount;
+	}
+	for (uint8_t i = start; i < end; i++) //songCount
+	{
+		auto songName = loadedSongs[i];
+		auto itemString = String(1000 + i).substring(1, 4) + " " + songName.substring(0, songName.length() - 4);
+
+
+		auto color = (i == selectedSong ? SELECTED_COLOR_OPACITY : (i == 5 ? ILI9341_WHITE : UNSELECTED_COLOR_OPACITY));
+
+		DisplayCore.drawTextOpacity(itemString, 16, 30 + (i - start) * 16, color);
+	}
+	if (lastPage != page)
+	{
+		lastPage = page;
+		Engine.isValidScreen = false;
+	}
+}
 
 void SongLoaderClass::handle()
 {
@@ -31,26 +58,14 @@ void SongLoaderClass::handle()
 
 	if (_fullRedraw)
 	{
-		for (int i = 0; i < 12; i++) //songCount
-		{
-			auto songName = loadedSongs[i];
-			auto itemString = String(1000 + i).substring(1, 4) + " " + songName.substring(0, songName.length() - 4);
-
-
-			auto color = (i== selectedSong ? MAIN_COLOR_OPACITY[0] : LIGHT_PANEL_COLOR_OPACITY[0]);
-
-			DisplayCore.drawTextOpacity(itemString, 20, 36 + i * 16, color);
-		}
+		drawTexts();
 	}
-
-	
-	
-
 }
 
 void SongLoaderClass::onShow()
 {
 	HardwareCore.setButtonParam(BROWN, backToMixer);
+	HardwareCore.setButtonParam(ENCODER0, loadSelectedSong);
 	loadSongs();
 }
 
@@ -62,17 +77,35 @@ void SongLoaderClass::backToMixer(bool pressed)
 	}
 }
 
-void SongLoaderClass::loadSongs()
+void SongLoaderClass::loadSelectedSong(bool pressed)
 {
-	Serial.println("Load loadedSongs");
-	auto filepath = filepathA;
+	if (pressed && selectedSong >= 0 && selectedSong < songCount)
+	{
+		saveSettings();
+		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
+	}
+}
+
+
+void SongLoaderClass::selectSong(int encoder, int value)
+{
+	selectedSong = - static_cast<int>(value / 100);
+	drawTexts();
+}
+
+void SongLoaderClass::loadSongs()
+{	
+	auto concatenated = (filePathPrefix + String(selectedPart)+ "/");
+	Serial.println("Load loadedSongs from "+ concatenated);		
+	const char* filepath = concatenated.c_str();
 	if (!SD.exists(filepath))
 	{
 		SD.mkdir(filepath);
 	}
 	songCount = 0;
 	File rootdir = SD.open(filepath);
-	while (1) {
+	while (true)
+	{
 		// open a file from the SD card
 		File f = rootdir.openNextFile();
 		if (!f) break;
@@ -80,11 +113,36 @@ void SongLoaderClass::loadSongs()
 		songCount++;
 		f.close();
 	}
-	rootdir.close();	
+	rootdir.close();
 
-	for (int i = 0; i< songCount; i++)
+	for (uint8_t i = 0; i < songCount; i++)
 	{
 		Serial.println("song: " + loadedSongs[i]);
 	}
 
+	if (songCount > 0)
+	{
+		HardwareCore.setEncoderParam(0, selectSong, "selector", -songCount + 1, 0, 1, selectedSong);
+	}
 }
+
+void SongLoaderClass::saveSettings()
+{
+	if (SD.exists("settings.jsn"))
+	{
+		SD.remove("settings.jsn");
+	}
+
+	StaticJsonBuffer<1000> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	JsonObject& song = root.createNestedObject("song");
+
+	song["selectedSong"] = loadedSongs[selectedSong];
+	song["selectedPart"] = String(selectedPart);
+
+	root.prettyPrintTo(Serial);
+	File settings = SD.open("settings.jsn", FILE_WRITE);
+	root.prettyPrintTo(settings);
+	settings.close();
+}
+

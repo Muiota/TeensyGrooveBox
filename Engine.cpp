@@ -8,11 +8,9 @@
 
 
 String songs[50];
-bool _muteMaster;
 uint8_t SONG_COUNT = 0;
 uint8_t _currentSong = 0;
 uint8_t _lastSong = -1;
-
 uint8_t _lastViewMode = 128;
 
 
@@ -566,6 +564,8 @@ void EngineClass::switchWindow(current_view_mode current_view_mode)
 {	
 	songSettings.viewMode = current_view_mode;	
 	DisplayCore.clearAll();	
+	HardwareCore.resetEncoders();
+	HardwareCore.resetButtons();
 	isValidScreen = false;
 }
 

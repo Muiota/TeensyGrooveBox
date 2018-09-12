@@ -136,6 +136,7 @@ public:
 	static void setReverbVolume(int encoder, int value); */
 	 void update();
 	void switchWindow(current_view_mode current_view_mode);
+	void saveSettings();
 };
 
 extern EngineClass Engine;

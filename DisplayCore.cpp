@@ -388,8 +388,7 @@ void DisplayCoreClass::drawText(const String& song, uint16_t x, uint16_t y)
 void DisplayCoreClass::drawTextOpacity(const String& song, uint16_t x, uint16_t y, uint16_t color)
 {
 	tft.setCursor(x, y);
-	tft.setTextColor(color);
-	
+	tft.setTextColor(color);	
 	tft.print(song);
 }
 
@@ -435,6 +434,17 @@ void DisplayCoreClass::drawFileloadBackground()
 
 	tft.fillRect(128, 20, 188, 74, LIGHT_PANEL_COLOR);
 	tft.fillRect(128, 98, 188, 160, DARK_PANEL_COLOR);
+
+	for (uint8_t i = 0; i <= 1; i++) {
+		uint8_t i1 = i * 80;
+		tft.writeRect(146 + i1, 26, 64, 64, (uint16_t*)encoder_background);
+		bool active = i <2;
+		tft.writeRect(148 + i1, 28, 8, 8, (uint16_t*)led_small[active ? 1 : 0]);
+		if (active)
+		{
+			tft.writeRect(146 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i+2]);
+		}
+	}
 }
 
 void DisplayCoreClass::drawMixerBackground()
@@ -461,7 +471,7 @@ void DisplayCoreClass::drawMixerBackground()
 	tft.fillRect(286, 20, 30, 74, LIGHT_PANEL_COLOR);
 
 
-	uint8_t r;
+/*	uint8_t r;
 	uint8_t g;
 	uint8_t b;
 	Serial.println("ac");
@@ -473,7 +483,7 @@ void DisplayCoreClass::drawMixerBackground()
 	tft.color565toRGB(OFF_COLOR, r, g, b);
 	Serial.println(r);
 	Serial.println(g);
-	Serial.println(b);
+	Serial.println(b); */
 	
 	//Панель микшера вверху (громкость баланс)
 	//tft.fillRect(8, 20, 52, 19, DARK_PANEL_COLOR);
@@ -527,11 +537,11 @@ void DisplayCoreClass::disaplaySubMenu()
 	for (uint8_t i = 0; i <= 2; i++) {
 		uint8_t i1 = i * 80;
 		tft.writeRect(16 + i1, 26, 64, 64, (uint16_t*)encoder_background);
-		bool active = i == 0;
+		bool active = i <2 ;
 		tft.writeRect(18 + i1, 28, 8, 8, (uint16_t*)led_small[active ? 1 : 0]);
 		if (active)
 		{
-			tft.writeRect(16 + i1 + 16, 42, 32, 32, (uint16_t*)folder);
+			tft.writeRect(16 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i]);
 		} 
 	}
 }
