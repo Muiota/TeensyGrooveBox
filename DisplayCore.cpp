@@ -392,6 +392,18 @@ void DisplayCoreClass::drawTextOpacity(const String& song, uint16_t x, uint16_t 
 	tft.print(song);
 }
 
+void DisplayCoreClass::setCursor(uint16_t x, uint16_t y)
+{
+	tft.setCursor(x, y);
+}
+
+void DisplayCoreClass::drawColoredChar(const char& val,  uint16_t color)
+{		
+	tft.setTextColor(color);
+	tft.print(val);	
+}
+
+
 void DisplayCoreClass::drawSongDetails(const String& song)
 {
 	uint16_t x = 3;
@@ -431,21 +443,56 @@ void DisplayCoreClass::drawStandartBackground()
 void DisplayCoreClass::drawFileloadBackground()
 {
 	tft.fillRect(8, 20, 116, 230, OFF_COLOR);
-
 	tft.fillRect(128, 20, 188, 74, LIGHT_PANEL_COLOR);
-	tft.fillRect(128, 98, 188, 160, DARK_PANEL_COLOR);
+}
+
+void DisplayCoreClass::drawFileloadPanel(bool withField, uint8_t selectedPart)
+{	
+	if (withField)
+	{
+		tft.fillRect(132, 148, 104, 14, OFF_COLOR);
+	} else
+	{
+		tft.fillRect(128, 98, 188, 160, DARK_PANEL_COLOR);
+
+		for (uint8_t i = 0; i < 8; i++)
+		{
+			auto selected = selectedPart == i;
+			tft.writeRect(132 + 18 * i, 102, 16, 16, (uint16_t*)buttons[selected ? 2 : 7]); //knob_full_top_left		
+			tft.setCursor(135 + 18 * i, 105);
+			tft.setTextColor(selected ? ILI9341_BLACK : LIGHT_PANEL_COLOR);
+			tft.print(char(65+ i));
+		}
+	}
+}
+
+void DisplayCoreClass::drawFileloadButtons(song_load_buttons type)
+{
+	uint8_t threshold = type == song_load_buttons_new ? 1 : 2;
 
 	for (uint8_t i = 0; i <= 1; i++) {
 		uint8_t i1 = i * 80;
 		tft.writeRect(146 + i1, 26, 64, 64, (uint16_t*)encoder_background);
-		bool active = i <2;
+		bool active = i < threshold;
 		tft.writeRect(148 + i1, 28, 8, 8, (uint16_t*)led_small[active ? 1 : 0]);
 		if (active)
 		{
-			tft.writeRect(146 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i+2]);
+			switch (type)
+			{
+			case song_load_buttons_new:
+				tft.writeRect(146 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i + 4]);
+				break;
+			case song_load_buttons_edit:
+				tft.writeRect(146 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i + 2]);
+				break;
+			case song_load_buttons_yes_no:
+				tft.writeRect(146 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i + 6]);
+				break;
+			}		
 		}
 	}
 }
+
 
 void DisplayCoreClass::drawMixerBackground()
 {

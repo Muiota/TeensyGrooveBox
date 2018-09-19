@@ -10,6 +10,14 @@
 #include "knobs.c" 
 #include "buttons.c" 
 
+
+enum song_load_buttons
+{
+	song_load_buttons_new = 0,
+	song_load_buttons_edit = 1,
+	song_load_buttons_yes_no = 2	
+};
+
 class DisplayCoreClass
 {
  protected:
@@ -29,12 +37,16 @@ class DisplayCoreClass
 	static void drawUsage(double usage, uint16_t memory);
 	static void drawText(const String& song, uint16_t x, uint16_t y);
 	static void drawTextOpacity(const String& song, uint16_t x, uint16_t y, uint16_t color);
+	static void setCursor(uint16_t x, uint16_t y);
+	static void drawColoredChar(const char& val, uint16_t color);
 	static void drawSongDetails(const String& song);	
 	static void drawSongStatus(bool wav_is_playing);	
 	static void drawMuteMaster(bool b);
 	static void clearAll();
 	static void drawStandartBackground();
-	static void drawFileloadBackground();	
+	static void drawFileloadBackground();
+	static void drawFileloadPanel(bool withField, uint8_t selectedPart);
+	static void drawFileloadButtons(song_load_buttons type);
 	static void drawMixerBackground();
 	static void disaplaySubMenu();
 };

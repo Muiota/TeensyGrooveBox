@@ -94,6 +94,7 @@ typedef struct
 	edit_channel currentChannel;
 	MixerSettings mixer;
 	String name;
+	String path;
 } SongSettings;
 
 
@@ -134,9 +135,8 @@ public:
 	static void setLeftInputVolume(int encoder, int value);
 	static void setRightInputVolume(int encoder, int value);
 	static void setReverbVolume(int encoder, int value); */
-	 void update();
-	void switchWindow(current_view_mode current_view_mode);
-	void saveSettings();
+	void update();
+	void switchWindow(current_view_mode current_view_mode);	
 };
 
 extern EngineClass Engine;

@@ -10,15 +10,21 @@
 
 
 const String filePathPrefix = "/DATA/SONGS_";
+const String newAlias = "NEW";
 
 String loadedSongs[250];
 uint8_t songCount = 0;
 song_load_part selectedPart = SONGS_PART_A;
 uint8_t lastPage = 0;
 uint8_t selectedSong = 0;
+uint8_t loadedSong = -1;
 uint16_t SELECTED_COLOR_OPACITY = 0xF487;
 uint16_t UNSELECTED_COLOR_OPACITY = 0x4A28;
-
+bool isCreatingSong;
+bool isRewriting;
+char currentSongName[8] = { 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A' };
+uint8_t currentSongNameLength = 8;
+uint8_t currentSongNameIndex = 0;
 void SongLoaderClass::drawTexts()
 {
 	uint8_t page = (selectedSong) / 13;
@@ -30,12 +36,30 @@ void SongLoaderClass::drawTexts()
 	}
 	for (uint8_t i = start; i < end; i++) //songCount
 	{
-		auto songName = loadedSongs[i];
-		auto itemString = String(1000 + i).substring(1, 4) + " " + songName.substring(0, songName.length() - 4);
+		String songName = loadedSongs[i];
+		String itemString = (i == 0 ? "***" : String(1000 + i).substring(1, 4)) + " " + songName.substring(0, songName.length() - 4);
 
-
-		auto color = (i == selectedSong ? SELECTED_COLOR_OPACITY : (i == 5 ? ILI9341_WHITE : UNSELECTED_COLOR_OPACITY));
-
+		uint16_t color;
+		if (i == selectedSong)
+		{
+			if (i == 0)
+			{
+				color = isCreatingSong ? ILI9341_WHITE : ILI9341_CYAN;
+			} else
+			{
+				color = SELECTED_COLOR_OPACITY;
+			}
+		} else if (i == loadedSong)
+		{
+			color = ILI9341_WHITE;
+		} else if (i == 0)
+		{
+			color = ILI9341_DARKCYAN;
+		} else
+		{
+			color = UNSELECTED_COLOR_OPACITY;
+		}
+	
 		DisplayCore.drawTextOpacity(itemString, 16, 30 + (i - start) * 16, color);
 	}
 	if (lastPage != page)
@@ -45,12 +69,44 @@ void SongLoaderClass::drawTexts()
 	}
 }
 
+void SongLoaderClass::drawNewSongName()
+{
+	DisplayCore.drawFileloadPanel(true,selectedPart);
+	uint16_t x = 156;
+	DisplayCore.setCursor(136, 150);
+	
+		DisplayCore.drawColoredChar('<',ILI9341_PURPLE);		
+		DisplayCore.drawColoredChar(' ', ILI9341_BLUE);
+	for (uint8_t i = 0; i < currentSongNameLength; i++)
+	{
+		DisplayCore.drawColoredChar(currentSongName[i], currentSongNameIndex == i ? ILI9341_YELLOW : ILI9341_PINK) ;
+	}	
+}
+
+void SongLoaderClass::drawButtons()
+{
+	song_load_buttons type;
+	if (selectedSong == 0)
+	{
+		if (isCreatingSong)
+		{ type = song_load_buttons_yes_no; }
+		else { type = song_load_buttons_new; }
+		
+	} else
+	{
+		type = song_load_buttons_edit;
+	}
+
+	DisplayCore.drawFileloadButtons(type);
+}
+
 void SongLoaderClass::handle()
 {
 	bool _fullRedraw = false;
 	if (!Engine.isValidScreen)
 	{
 		DisplayCore.drawFileloadBackground();
+		DisplayCore.drawFileloadPanel(false, selectedPart);
 		_fullRedraw = true;
 		Engine.isValidScreen = true;
 	}
@@ -59,13 +115,16 @@ void SongLoaderClass::handle()
 	if (_fullRedraw)
 	{
 		drawTexts();
+		drawButtons();
 	}
 }
 
 void SongLoaderClass::onShow()
 {
 	HardwareCore.setButtonParam(BROWN, backToMixer);
-	HardwareCore.setButtonParam(ENCODER0, loadSelectedSong);
+	HardwareCore.setButtonParam(BLACK, switchPart);
+	HardwareCore.setButtonParam(ENCODER0, pressEncoder0);
+	HardwareCore.setButtonParam(ENCODER1, pressEncoder1);
 	loadSongs();
 }
 
@@ -73,19 +132,99 @@ void SongLoaderClass::backToMixer(bool pressed)
 {
 	if (pressed)
 	{
+		isCreatingSong = false;
+		isRewriting = false;
 		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
 	}
 }
 
-void SongLoaderClass::loadSelectedSong(bool pressed)
+void SongLoaderClass::switchPart(bool pressed)
 {
-	if (pressed && selectedSong >= 0 && selectedSong < songCount)
+	if (pressed)
 	{
-		saveSettings();
-		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
+		isCreatingSong = false;
+		isRewriting = false;
+		selectedPart = (song_load_part)((selectedPart + 1) % 8);
+		loadSongs();
+		Engine.isValidScreen = false;
 	}
 }
 
+
+
+void SongLoaderClass::pressEncoder0(bool pressed)
+{
+	if (pressed)
+	{
+		if (selectedSong == 0)
+		{
+			if (!isCreatingSong)
+			{
+				isCreatingSong = true;
+				drawButtons();
+				drawTexts();
+				HardwareCore.setEncoderParam(2, selectSongLength, "selectSongLength", 3, 8, 1, currentSongNameLength);
+				drawNewSongName();
+			}
+			else
+			{
+				saveCurrentSongToFile();
+				//file create
+			}
+		}
+		else if (selectedSong > 0 && selectedSong < songCount)
+		{
+			saveSettings();
+			Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
+		}
+	}
+}
+
+void SongLoaderClass::pressEncoder1(bool pressed)
+{
+	if (pressed)
+	{
+		if (isCreatingSong)
+		{
+			isCreatingSong = false;
+			isRewriting = false;
+			loadSongs();
+			DisplayCore.drawFileloadPanel(false, selectedPart);
+			drawButtons();
+			drawTexts();
+		}		
+	}
+}
+
+void SongLoaderClass::selectSongLength(int encoder, int value)
+{
+	if (!isCreatingSong)
+		return;
+	currentSongNameLength = static_cast<int>(value / 100);	
+	drawNewSongName();
+	if (currentSongNameLength <= currentSongNameIndex)
+	{
+		currentSongNameIndex = currentSongNameLength - 1;
+	}
+	HardwareCore.setEncoderParam(1, selectSongIndex, "selectSongIndex", 0, currentSongNameLength - 1, 1, currentSongNameIndex);
+}
+
+void SongLoaderClass::selectSongIndex(int encoder, int value)
+{
+	if (!isCreatingSong)
+		return;
+	currentSongNameIndex = static_cast<int>(value / 100);	
+	drawNewSongName();
+	HardwareCore.setEncoderParam(0, selectSongSymbol, "selectSongSymbol", 65, 90, 1, currentSongName[currentSongNameIndex]);
+}
+
+void SongLoaderClass::selectSongSymbol(int encoder, int value)
+{
+	if (!isCreatingSong)
+		return;
+	currentSongName[currentSongNameIndex] = static_cast<int>(value / 100);
+	drawNewSongName();	
+}
 
 void SongLoaderClass::selectSong(int encoder, int value)
 {
@@ -93,9 +232,14 @@ void SongLoaderClass::selectSong(int encoder, int value)
 	drawTexts();
 }
 
+StringSumHelper getCurrentLoadPath()
+{
+	return (filePathPrefix + char(selectedPart + 65) + "/");
+}
+
 void SongLoaderClass::loadSongs()
 {	
-	auto concatenated = (filePathPrefix + String(selectedPart)+ "/");
+	auto concatenated = getCurrentLoadPath();
 	Serial.println("Load loadedSongs from "+ concatenated);		
 	const char* filepath = concatenated.c_str();
 	if (!SD.exists(filepath))
@@ -103,6 +247,10 @@ void SongLoaderClass::loadSongs()
 		SD.mkdir(filepath);
 	}
 	songCount = 0;
+
+	loadedSongs[songCount] = newAlias;
+	songCount++;
+	loadedSong = -1;
 	File rootdir = SD.open(filepath);
 	while (true)
 	{
@@ -110,6 +258,11 @@ void SongLoaderClass::loadSongs()
 		File f = rootdir.openNextFile();
 		if (!f) break;
 		loadedSongs[songCount] = f.name();
+		String path = filepath + String(f.name());
+		if (path.equals(Engine.songSettings.path))
+		{
+			loadedSong = songCount;
+		}
 		songCount++;
 		f.close();
 	}
@@ -144,5 +297,58 @@ void SongLoaderClass::saveSettings()
 	File settings = SD.open("settings.jsn", FILE_WRITE);
 	root.prettyPrintTo(settings);
 	settings.close();
+}
+
+void SongLoaderClass::saveCurrentSongToFile()
+{
+	auto concatenated = getCurrentLoadPath();
+	String songName = "";
+	for (uint8_t i = 0; i < currentSongNameLength; i++)
+	{
+		songName = songName + currentSongName[i];
+	}	
+	concatenated = concatenated + songName + ".sng";
+	Serial.println("Save song to " + concatenated);
+	const char* filepath = concatenated.c_str();
+	if (SD.exists(filepath))
+	{
+		if (isRewriting)
+		{
+			isRewriting = false;
+			SD.remove(filepath);
+		} else
+		{
+			isRewriting = true;
+			DisplayCore.drawTextOpacity("Do you want to overwrite song?", 132, 180, ILI9341_RED);
+			return;
+		}
+	}
+	
+
+	StaticJsonBuffer<65536> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	JsonObject& mixer = root.createNestedObject("mixerSettings");
+	JsonObject& master = mixer.createNestedObject("master");
+	master["volume"] = Engine.songSettings.mixer.master.volume;
+
+	//saveChannelPart(mixer, "wav", Engine.songSettings.mixer.wav);
+	//saveChannelPart(mixer, "leftInput", Engine.songSettings.mixer.leftInput);
+	//saveChannelPart(mixer, "rightInput", Engine.songSettings.mixer.rightInput);
+	//saveChannelPartFxReverb(mixer, "fxReverb", Engine.songSettings.mixer.fxReverb);
+
+	/*JsonArray& data = mixer.createNestedArray("data");
+	data.add(48.756080);
+	data.add(2.302038); */
+
+	// Step 4	
+	root.prettyPrintTo(Serial);
+	File settings = SD.open(filepath, FILE_WRITE);
+	root.prettyPrintTo(settings);
+	settings.close();
+
+	Engine.songSettings.path = filepath;
+	Engine.songSettings.name = songName;
+	loadSongs();
+	Engine.isValidScreen = false;
 }
 
