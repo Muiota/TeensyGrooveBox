@@ -27,6 +27,7 @@ public:
 	static void backToMixer(bool pressed);
 	static void switchPart(bool pressed);
 	static void saveCurrentSongToFile();
+	static void loadSelectedSong(int selected_song);
 	static void pressEncoder0(bool pressed);
 	static void pressEncoder1(bool pressed);
 	static void selectSongLength(int encoder, int value);

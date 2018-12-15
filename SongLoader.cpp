@@ -175,6 +175,7 @@ void SongLoaderClass::pressEncoder0(bool pressed)
 		else if (selectedSong > 0 && selectedSong < songCount)
 		{
 			saveSettings();
+			loadSelectedSong(selectedSong);
 			Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
 		}
 	}
@@ -228,8 +229,14 @@ void SongLoaderClass::selectSongSymbol(int encoder, int value)
 
 void SongLoaderClass::selectSong(int encoder, int value)
 {
+	bool needRedraw = selectedSong == 0;
 	selectedSong = - static_cast<int>(value / 100);
+	needRedraw = needRedraw || selectedSong == 0;
 	drawTexts();
+	if (needRedraw)
+	{
+		drawButtons();
+	}
 }
 
 StringSumHelper getCurrentLoadPath()
@@ -259,6 +266,8 @@ void SongLoaderClass::loadSongs()
 		if (!f) break;
 		loadedSongs[songCount] = f.name();
 		String path = filepath + String(f.name());
+		Serial.println(path);
+		Serial.println(Engine.songSettings.path);
 		if (path.equals(Engine.songSettings.path))
 		{
 			loadedSong = songCount;
@@ -348,6 +357,20 @@ void SongLoaderClass::saveCurrentSongToFile()
 
 	Engine.songSettings.path = filepath;
 	Engine.songSettings.name = songName;
+	loadSongs();
+	Engine.isValidScreen = false;
+}
+
+void SongLoaderClass::loadSelectedSong(int selected_song)
+{
+	auto loaded_song = loadedSongs[selected_song];
+	auto concatenated = (getCurrentLoadPath()+ loaded_song).c_str();
+	
+	if (SD.exists(concatenated))
+	{
+		Engine.songSettings.path = concatenated;
+		Engine.songSettings.name = loaded_song.substring(0, loaded_song.length() - 4);
+	}
 	loadSongs();
 	Engine.isValidScreen = false;
 }
