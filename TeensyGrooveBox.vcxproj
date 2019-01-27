@@ -86,9 +86,9 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HardwareCore.h" />
     <ClInclude Include="InputLeft.h" />
+    <ClInclude Include="LooperChanel.h" />
     <ClInclude Include="Mixer.h" />
     <ClInclude Include="SongLoader.h" />
-    <ClInclude Include="WavePlayer.h" />
     <ClInclude Include="__vm\.TeensyGrooveBox.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
@@ -100,10 +100,10 @@
     <ClCompile Include="HardwareCore.cpp" />
     <ClCompile Include="InputLeft.cpp" />
     <ClCompile Include="knobs.c" />
+    <ClCompile Include="LooperChanel.cpp" />
     <ClCompile Include="Mixer.cpp" />
     <ClCompile Include="base.c" />
     <ClCompile Include="SongLoader.cpp" />
-    <ClCompile Include="WavePlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="AudioSheme.txt" />

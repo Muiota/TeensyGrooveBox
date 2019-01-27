@@ -112,6 +112,7 @@ public:
 	static void saveSettings(bool pressed);
 	static void loadSettings(bool pressed);
 	static void init();
+	void drawTopPanel();
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);
 	//static void changeMode();

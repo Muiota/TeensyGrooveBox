@@ -3,6 +3,7 @@
 // 
 
 #include "Engine.h"
+#include "LooperChanel.h"
 
 // Load drivers
 
@@ -10,7 +11,6 @@
 String songs[50];
 uint8_t SONG_COUNT = 0;
 uint8_t _currentSong = 0;
-uint8_t _lastSong = -1;
 uint8_t _lastViewMode = 128;
 
 
@@ -488,6 +488,11 @@ void EngineClass::setReverbVolume(int encoder, int value)
 
 */
 
+void EngineClass::drawTopPanel()
+{
+	DisplayCore.drawText(songSettings.name, 8, 3);
+}
+
 void EngineClass::update()
 {
 	if (_hardwareTimer >= 100) {
@@ -503,7 +508,7 @@ void EngineClass::update()
 		}
 		
 		HardwareCore.update(); //Обновить состояние кнопок
-
+		bool needUpdatePanel = !isValidScreen; //Требуется обновить верхнюю панель
 		if (_lastViewMode != songSettings.viewMode)
 		{
 			switch (songSettings.viewMode)
@@ -514,11 +519,15 @@ void EngineClass::update()
 			case VIEW_MODE_OPEN_SONG:
 				SongLoader.onShow();
 				break;
+			case VIEW_MODE_EDIT_CHANNEL:
+				LooperChanel.onShow();
+				break;
 			default:
 				
 				break;
 			}
 			_lastViewMode = songSettings.viewMode;
+			needUpdatePanel = true;
 		}
 
 
@@ -531,30 +540,23 @@ void EngineClass::update()
 		case VIEW_MODE_OPEN_SONG:
 			SongLoader.handle();
 			break;
+		case VIEW_MODE_EDIT_CHANNEL:
+			LooperChanel.handle();
+			break;
 		default:
 			DisplayCore.clearAll();
 			DisplayCore.drawText("Not implemented " + songSettings.viewMode, 3 , 3);
 			break;
 		}
 
-	
-		
-		//Serial.print(" ");		
-	
-
-
-		
-
 		//	Serial.print(seqButtonRead(24));
 		//	Serial.println("----------");
-	
-		if (_currentSong != _lastSong)
+
+		if (needUpdatePanel)
 		{
-			auto song = songs[_currentSong];
-			DisplayCore.drawText(String(_currentSong) + " " + song.substring(0, song.length() - 4), 3, 3);
-			//		DisplayCore.drawSongDetails(String(AudioCore.getMaxRecordedTracks(_currentSong)));
-			_lastSong = _currentSong;
+			drawTopPanel();
 		}
+
 
 	}
 	//AudioCore.continueRecording();

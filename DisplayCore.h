@@ -49,6 +49,8 @@ class DisplayCoreClass
 	static void drawFileloadButtons(song_load_buttons type);
 	static void drawMixerBackground();
 	static void disaplaySubMenu();
+	static void disaplayLooper();
+	static void drawTapeFrame(uint8_t l, uint8_t r);
 };
 
 extern DisplayCoreClass DisplayCore;

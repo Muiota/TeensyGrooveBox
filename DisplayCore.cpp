@@ -326,6 +326,10 @@ void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
 	{
 		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[9] : (uint16_t*)channels[8]);
 	}
+	else if (channel == 7)
+	{
+		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[11] : (uint16_t*)channels[10]);
+	}
 	else
 	{
 		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[5] : (uint16_t*)channels[4]);
@@ -491,6 +495,7 @@ void DisplayCoreClass::drawFileloadButtons(song_load_buttons type)
 			}		
 		}
 	}
+
 }
 
 
@@ -593,7 +598,17 @@ void DisplayCoreClass::disaplaySubMenu()
 	}
 }
 
+void DisplayCoreClass::disaplayLooper()
+{
+	tft.fillRect(8, 100, 308, 128, DARK_PANEL_COLOR);
+	tft.writeRect(16, 104, 214, 115, (uint16_t*)tape_back);
+}
 
+void DisplayCoreClass::drawTapeFrame(uint8_t l, uint8_t r)
+{
+	tft.writeRect(59, 153, 26, 26, (uint16_t*)tape_frames[l]);
+	tft.writeRect(162, 153, 26, 26, (uint16_t*)tape_frames[r]);
+}
 
 
 DisplayCoreClass DisplayCore;

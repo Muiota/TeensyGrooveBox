@@ -13,6 +13,7 @@ protected:
 public:	
 	static void handle();	
 	static void onShow();
+	static void selectChanel(int encoder, int value);
 	static void switchToSongLoader(bool pressed);
 	static void subMenuShow(bool pressed);
 };

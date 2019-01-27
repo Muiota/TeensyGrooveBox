@@ -18,30 +18,46 @@ void MixerClass::onShow()
 {
 	HardwareCore.setButtonParam(BROWN, subMenuShow);
 	HardwareCore.setButtonParam(ENCODER0, switchToSongLoader);
+	HardwareCore.setEncoderParam(0, selectChanel, "selectChannel", 0, 11, 1, Engine.songSettings.currentChannel);
+}
+
+void MixerClass::selectChanel(int encoder, int value)
+{
+	Engine.songSettings.currentChannel = static_cast<edit_channel>(value / 100);
 }
 
 void MixerClass::switchToSongLoader(bool pressed)
 {
-	if (pressed && _subMenuPressed)
+	if (pressed)
 	{
-		HardwareCore.setLedEncoder(0, false);		
-		Engine.switchWindow(VIEW_MODE_OPEN_SONG);
-		
-	}	
+		HardwareCore.setLedEncoder(0, false);
+
+		if (_subMenuPressed)
+		{
+			Engine.switchWindow(VIEW_MODE_OPEN_SONG);
+		}
+		else
+		{
+			Engine.switchWindow(VIEW_MODE_EDIT_CHANNEL);
+		}
+	}
 }
 
 void MixerClass::subMenuShow(bool pressed)
 {	
 	HardwareCore.setLedEncoder(0, pressed);
-	_subMenuPressed = pressed;	
-	if (pressed)
+	if (_subMenuPressed != pressed)
 	{
-		DisplayCore.disaplaySubMenu();
-	}
-	else
-	{
-		DisplayCore.clearAll();
-		Engine.isValidScreen = false;
+		_subMenuPressed = pressed;
+		if (pressed)
+		{
+			DisplayCore.disaplaySubMenu();
+		}
+		else
+		{
+			DisplayCore.clearAll();
+			Engine.isValidScreen = false;
+		}
 	}
 }
 

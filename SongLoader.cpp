@@ -25,6 +25,8 @@ bool isRewriting;
 char currentSongName[8] = { 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A' };
 uint8_t currentSongNameLength = 8;
 uint8_t currentSongNameIndex = 0;
+
+
 void SongLoaderClass::drawTexts()
 {
 	uint8_t page = (selectedSong) / 13;

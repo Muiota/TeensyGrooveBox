@@ -48,9 +48,6 @@
     <ClInclude Include="Mixer.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="WavePlayer.h">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
     <ClInclude Include="InputLeft.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
@@ -58,6 +55,9 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="SongLoader.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="LooperChanel.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -72,9 +72,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mixer.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="WavePlayer.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="InputLeft.cpp">
@@ -96,6 +93,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SongLoader.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="LooperChanel.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
