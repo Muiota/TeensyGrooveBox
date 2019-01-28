@@ -7,10 +7,6 @@
 
 // Load drivers
 
-
-String songs[50];
-uint8_t SONG_COUNT = 0;
-uint8_t _currentSong = 0;
 uint8_t _lastViewMode = 128;
 
 
@@ -140,6 +136,16 @@ void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName,
 	channel["roomsize"] = setting.roomsize;	
 }
 
+void EngineClass::startTrack(bool pressed)
+{
+	LooperChanel.startTrack();
+}
+
+void EngineClass::stopTrack(bool pressed)
+{
+	LooperChanel.stopTrack();
+}
+
 void EngineClass::saveSettings(bool pressed)
 {
 
@@ -247,22 +253,7 @@ void EngineClass::loadSettings(bool pressed)
 
 void EngineClass::init()
 {
-	Serial.println("Load songs");
-	File rootdir = SD.open("/DATA/TRACKS/");	
-	while (1) {
-		// open a file from the SD card
-		File f = rootdir.openNextFile();
-		if (!f) break;		
-		songs[SONG_COUNT] = f.name();
-		SONG_COUNT++;		
-		f.close();
-	}
-	rootdir.close();
 
-	for (int i = 0; i< SONG_COUNT; i++)
-	{
-		Serial.println("file: " + songs[i]);
-	}
 
 
 	loadSettings(true);
@@ -277,10 +268,10 @@ void EngineClass::init()
 	AudioCore.setReverbBiquad(Engine.songSettings.mixer.fxReverb.frequency, Engine.songSettings.mixer.fxReverb.q);
 	AudioCore.setReverbRoom(Engine.songSettings.mixer.fxReverb.damping, Engine.songSettings.mixer.fxReverb.roomsize);
 	//updateModeLinks();	
-
+	HardwareCore.setButtonParam(GREEN, startTrack);
+	HardwareCore.setButtonParam(BLACK, stopTrack);
 	/*
-	HardwareCore.setButtonParam(GREEN, startWavTrack);
-	HardwareCore.setButtonParam(BLACK, stopWavTrack);
+
 	HardwareCore.setButtonParam(BROWN, changeWavTrack);
 	*/
 	HardwareCore.setButtonParam(RED, saveSettings);
@@ -309,42 +300,6 @@ void EngineClass::muteMaster()
 	}
 }
 
-void EngineClass::startWavTrack()
-{
-	if (!AudioCore.wavIsPlaying())
-	{
-		Serial.print("Start");
-		auto song = songs[_currentSong];
-		AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
-
-	}
-}
-
-void EngineClass::stopWavTrack()
-{
-	if (AudioCore.wavIsPlaying())
-	{
-		Serial.print("Stop");
-		AudioCore.stopWav();
-//		switch (_recordStatus)
-	///	{
-		//case RECORD_STATUS_RECORD:
-		//	AudioCore.stopRecording();
-//			break;
-	//	case RECORD_STATUS_PLAY:
-	//		AudioCore.stopLastRecorderInputRaw();
-	//		break;
-	//	}
-	}
-}
-
-void EngineClass::changeWavTrack()
-{
-	if (!AudioCore.wavIsPlaying())
-	{
-		_currentSong = (_currentSong + 1) % SONG_COUNT;
-	}
-}
 */
 /*
 void EngineClass::changeMode()
@@ -488,7 +443,7 @@ void EngineClass::setReverbVolume(int encoder, int value)
 
 */
 
-void EngineClass::drawTopPanel()
+void EngineClass::drawTopPanel() const
 {
 	DisplayCore.drawText(songSettings.name, 8, 3);
 }
@@ -519,7 +474,7 @@ void EngineClass::update()
 			case VIEW_MODE_OPEN_SONG:
 				SongLoader.onShow();
 				break;
-			case VIEW_MODE_EDIT_CHANNEL:
+			case VIEW_MODE_EDIT_LOOPER_CHANNEL:
 				LooperChanel.onShow();
 				break;
 			default:
@@ -540,7 +495,7 @@ void EngineClass::update()
 		case VIEW_MODE_OPEN_SONG:
 			SongLoader.handle();
 			break;
-		case VIEW_MODE_EDIT_CHANNEL:
+		case VIEW_MODE_EDIT_LOOPER_CHANNEL:
 			LooperChanel.handle();
 			break;
 		default:

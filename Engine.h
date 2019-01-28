@@ -46,7 +46,7 @@ enum edit_channel
 	EDIT_CHANNEL_STRINGS = 4,
 	EDIT_CHANNEL_PIANO =5,
 	EDIT_CHANNEL_FM = 6,
-	EDIT_CHANNEL_WAVE = 7,
+	EDIT_CHANNEL_LOOPER = 7,
 	EDIT_CHANNEL_SEND_FX_REVERB = 8,
 	EDIT_CHANNEL_SEND_FX_CHORUS = 9,
 	EDIT_CHANNEL_SEND_FX_DELAY = 10,
@@ -70,7 +70,7 @@ enum current_view_mode
 {
 	VIEW_MODE_MAIN_MIXER = 0, //Режим микшера
 	VIEW_MODE_EDIT_PARAMETERS = 1, //Настройки канала
-	VIEW_MODE_EDIT_CHANNEL = 2, //Редактирование инструмента,
+	VIEW_MODE_EDIT_LOOPER_CHANNEL = 2, //Редактирование инструмента,
 	VIEW_MODE_SEQUENCER = 3, //Редактирование песни
 	VIEW_MODE_OPEN_SONG = 4 //Открыть сохраненный файл
 };
@@ -112,7 +112,7 @@ public:
 	static void saveSettings(bool pressed);
 	static void loadSettings(bool pressed);
 	static void init();
-	void drawTopPanel();
+	void drawTopPanel() const;
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);
 	//static void changeMode();
@@ -136,6 +136,8 @@ public:
 	static void setLeftInputVolume(int encoder, int value);
 	static void setRightInputVolume(int encoder, int value);
 	static void setReverbVolume(int encoder, int value); */
+	static void startTrack(bool pressed);
+	static void stopTrack(bool pressed);
 	void update();
 	void switchWindow(current_view_mode current_view_mode);	
 };

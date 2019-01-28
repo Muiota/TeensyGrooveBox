@@ -38,7 +38,25 @@ void MixerClass::switchToSongLoader(bool pressed)
 		}
 		else
 		{
-			Engine.switchWindow(VIEW_MODE_EDIT_CHANNEL);
+			switch (Engine.songSettings.currentChannel)
+			{
+			case EDIT_CHANNEL_LOOPER:
+					Engine.switchWindow(VIEW_MODE_EDIT_LOOPER_CHANNEL);
+				break;
+			case EDIT_CHANNEL_INPUT_MIC: break;
+			case EDIT_CHANNEL_INPUT_GUITAR: break;
+			case EDIT_CHANNEL_DRUMS: break;
+			case EDIT_CHANNEL_BASS: break;
+			case EDIT_CHANNEL_STRINGS: break;
+			case EDIT_CHANNEL_PIANO: break;
+			case EDIT_CHANNEL_FM: break;
+			case EDIT_CHANNEL_SEND_FX_REVERB: break;
+			case EDIT_CHANNEL_SEND_FX_CHORUS: break;
+			case EDIT_CHANNEL_SEND_FX_DELAY: break;
+			case EDIT_CHANNEL_MASTER: break;
+			default: ;
+			}
+			
 		}
 	}
 }
@@ -55,7 +73,7 @@ void MixerClass::subMenuShow(bool pressed)
 		}
 		else
 		{
-			DisplayCore.clearAll();
+			DisplayCore.clearAll(); //todo clear only needed with lines
 			Engine.isValidScreen = false;
 		}
 	}

@@ -301,15 +301,8 @@ uint16_t DisplayCoreClass::getMixerChannelXcoord(uint8_t channel)
 	return x;
 }
 
-void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
+void DisplayCoreClass::drawChannelIcon(uint8_t channel, bool isActive, uint16_t x)
 {
-	uint16_t x = getMixerChannelXcoord(channel);
-	uint16_t y = 154;
-	tft.fillRect(x, y, 20, METER_HEIGHT , ILI9341_BLACK);
-	tft.fillRect(x + 14, y + 2, 6, METER_HEIGHT - 4, OFF_COLOR);
-	tft.drawRect(x, y, 20, METER_HEIGHT, isActive ? ACTIVE_COLOR : BORDER_COLOR);
-	drawMixerButtons(channel, x);
-
 	if (channel == 1)
 	{
 		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[3] : (uint16_t*)channels[2]);
@@ -334,6 +327,18 @@ void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
 	{
 		tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[5] : (uint16_t*)channels[4]);
 	}
+}
+
+void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
+{
+	uint16_t x = getMixerChannelXcoord(channel);
+	uint16_t y = 154;
+	tft.fillRect(x, y, 20, METER_HEIGHT , ILI9341_BLACK);
+	tft.fillRect(x + 14, y + 2, 6, METER_HEIGHT - 4, OFF_COLOR);
+	tft.drawRect(x, y, 20, METER_HEIGHT, isActive ? ACTIVE_COLOR : BORDER_COLOR);
+	drawMixerButtons(channel, x);
+
+	drawChannelIcon(channel, isActive, x);
 
 
 	
@@ -598,16 +603,18 @@ void DisplayCoreClass::disaplaySubMenu()
 	}
 }
 
-void DisplayCoreClass::disaplayLooper()
+void DisplayCoreClass::disaplayLooperTape(uint8_t channel)
 {
-	tft.fillRect(8, 100, 308, 128, DARK_PANEL_COLOR);
-	tft.writeRect(16, 104, 214, 115, (uint16_t*)tape_back);
+	tft.fillRect(8, 100, 308, 119, DARK_PANEL_COLOR);
+	tft.writeRect(16, 102, 214, 115, (uint16_t*)tape_back);
+	uint16_t x = getMixerChannelXcoord(channel);
+	drawChannelIcon(channel, true, x);
 }
 
 void DisplayCoreClass::drawTapeFrame(uint8_t l, uint8_t r)
 {
-	tft.writeRect(59, 153, 26, 26, (uint16_t*)tape_frames[l]);
-	tft.writeRect(162, 153, 26, 26, (uint16_t*)tape_frames[r]);
+	tft.writeRect(59, 151, 26, 26, (uint16_t*)tape_frames[l]);
+	tft.writeRect(162, 151, 26, 26, (uint16_t*)tape_frames[r]);
 }
 
 

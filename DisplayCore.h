@@ -22,8 +22,9 @@ class DisplayCoreClass
 {
  protected:
 	 static uint16_t getMixerChannelXcoord(uint8_t channel);
+	static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
 
- public:
+public:
 	static void init();
 	static void drawSequenceButton(uint8_t pin, bool value);
 	static void drawEncoder(uint8_t encoder, int32_t value, int32_t max, bool isBoth = false);
@@ -49,7 +50,7 @@ class DisplayCoreClass
 	static void drawFileloadButtons(song_load_buttons type);
 	static void drawMixerBackground();
 	static void disaplaySubMenu();
-	static void disaplayLooper();
+	static void disaplayLooperTape(uint8_t channel);
 	static void drawTapeFrame(uint8_t l, uint8_t r);
 };
 
