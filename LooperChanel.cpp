@@ -6,27 +6,46 @@
 
 static uint8_t left_tape_frame = 0;
 static uint8_t right_tape_frame = 5;
-String songs[50];
-uint8_t SONG_COUNT = 0;
-uint8_t _currentSong = 0;
+String songs[64];
+uint8_t WAVES_COUNT = 0;
+uint8_t _lastWavPage = 0;
+uint8_t _currentWave = 0;
+uint16_t SELECTED_COLOR_WAV = 0xF487;
+uint16_t UNSELECTED_COLOR_WAV = 0x4A28;
 
 void LooperChanelClass::handle()
 {
-	if (!Engine.isValidScreen)
+	switch (Engine.songSettings.currentView)
 	{
-		DisplayCore.disaplaySubMenu();
-		DisplayCore.disaplayLooperTape(EDIT_CHANNEL_LOOPER);
-		Engine.isValidScreen = true;
+	case EDIT_CHANNEL_MODE_MAIN: 
+		if (!Engine.isValidScreen)
+		{
+			DisplayCore.disaplaySubMenu();
+			DisplayCore.disaplayLooperTape(EDIT_CHANNEL_LOOPER);
+			Engine.isValidScreen = true;
+		}
+		left_tape_frame = (left_tape_frame + 1) % 10;
+		right_tape_frame = (right_tape_frame + 1) % 10;
+		DisplayCore.drawTapeFrame(left_tape_frame, right_tape_frame);
+		
+		break;
+	case EDIT_CHANNEL_MODE_SETTINGS: 
+		if (!Engine.isValidScreen)
+		{
+			DisplayCore.drawFileListBackground();		
+			drawTexts();
+			Engine.isValidScreen = true;
+		}
+	
+		break;
 	}
-	left_tape_frame = (left_tape_frame + 1) % 10;
-	right_tape_frame = (right_tape_frame + 1) % 10;
-	DisplayCore.drawTapeFrame(left_tape_frame, right_tape_frame);
+	
 }
 
 
 void LooperChanelClass::loadWaves()
 {
-	if (SONG_COUNT == 0)
+	if (WAVES_COUNT == 0)
 	{
 		Serial.println("Load songs");
 		File rootdir = SD.open("/DATA/TRACKS/");
@@ -34,13 +53,13 @@ void LooperChanelClass::loadWaves()
 			// open a file from the SD card
 			File f = rootdir.openNextFile();
 			if (!f) break;
-			songs[SONG_COUNT] = f.name();
-			SONG_COUNT++;
+			songs[WAVES_COUNT] = f.name();
+			WAVES_COUNT++;
 			f.close();
 		}
 		rootdir.close();
 
-		for (int i = 0; i < SONG_COUNT; i++)
+		for (int i = 0; i < WAVES_COUNT; i++)
 		{
 			Serial.println("file: " + songs[i]);
 		}
@@ -50,18 +69,39 @@ void LooperChanelClass::loadWaves()
 
 void LooperChanelClass::onShow()
 {
-	HardwareCore.setButtonParam(BROWN, backToMixer);
+	Engine.assignDefaultButtons();
 	loadWaves();
+
+	switch (Engine.songSettings.currentView)
+	{
+	case EDIT_CHANNEL_MODE_MAIN:
+	
+
+		break;
+	case EDIT_CHANNEL_MODE_SETTINGS:
+		if (WAVES_COUNT > 0)
+		{
+			HardwareCore.setEncoderParam(0, selectSong, "selector", -WAVES_COUNT + 1, 0, 1, _currentWave);
+		}
+		break;
+	}
+
 	//HardwareCore.setButtonParam(ENCODER0, switchToSongLoader);
 }
 
-void LooperChanelClass::backToMixer(bool pressed)
+void LooperChanelClass::selectSong(int encoder, int value)
 {
-	if (pressed)
+	bool needRedraw = _currentWave == 0;
+	_currentWave = -static_cast<int>(value / 100);
+	needRedraw = needRedraw || _currentWave == 0;
+	drawTexts();
+	if (needRedraw)
 	{
-		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
+		drawTexts();
 	}
 }
+
+
 
 void LooperChanelClass::startTrack()
 {
@@ -69,7 +109,7 @@ void LooperChanelClass::startTrack()
 	{
 		loadWaves();
 		Serial.print("Start");
-		auto song = songs[_currentSong];
+		auto song = songs[_currentWave];
 		AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
 	}
 }
@@ -92,13 +132,36 @@ void LooperChanelClass::stopTrack()
 	}
 }
 
-
-
-void LooperChanelClass::changeWavTrack()
+void LooperChanelClass::drawTexts()
 {
-	if (!AudioCore.wavIsPlaying())
+	uint8_t page = (_currentWave) / 13;
+	uint8_t start = page * 13;
+	uint8_t end = start + 13;
+	if (end > WAVES_COUNT)
 	{
-		_currentSong = (_currentSong + 1) % SONG_COUNT;
+		end = WAVES_COUNT;
+	}
+	for (uint8_t i = start; i < end; i++) //songCount
+	{
+		String songName = songs[i];
+		String itemString = (String(1000 + i).substring(1, 4)) + " " + songName.substring(0, songName.length() - 4);
+
+		uint16_t color;
+		if (i == _currentWave)
+		{
+			color = SELECTED_COLOR_WAV;
+		}
+		else
+		{
+			color = UNSELECTED_COLOR_WAV;
+		}
+
+		DisplayCore.drawTextOpacity(itemString, 16, 30 + (i - start) * 16, color);
+	}
+	if (_lastWavPage != page)
+	{
+		_lastWavPage = page;
+		Engine.isValidScreen = false;
 	}
 }
 

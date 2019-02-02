@@ -4,13 +4,13 @@
 #define _ENGINE_h
 
 #include "c:\Program Files (x86)\Arduino\libraries\ArduinoJson\ArduinoJson.h"
-#include "Enums.h"
 #include "DisplayCore.h"
 #include "HardwareCore.h"
 #include "AudioCore.h"
 #include "Mixer.h"
 #include "SongLoader.h"
 #include "WavePlayer.h"
+#include "Equalizer.h"
 
 
 typedef struct
@@ -24,18 +24,52 @@ typedef struct : BaseSettings
 {
 } MasterSettings;
 
+enum equalizer_type
+{
+	LOWPASS = 0,
+	HIGHPASS = 1,
+	BANDPASS = 2,
+	NOTCH = 3,
+	//PEAK = 4,
+	LOW_SHELF = 5,
+	HIGH_SHELF = 6,
+	//ONE_POLE_LP = 7,
+	//ONE_POLE_HP = 8
+};
+
+/*
+#define FILTER_LOPASS 0
+#define FILTER_HIPASS 1
+#define FILTER_BANDPASS 2
+#define FILTER_NOTCH 3
+#define FILTER_PARAEQ 4
+#define FILTER_LOSHELF 5
+#define FILTER_HISHELF 6
+*/
+
 typedef struct : BaseSettings
 {
 	float balance = 0.0f;
-	float frequency = 12000.0f;
-	float q = 0.707f;
+	float eqFc = 12000.0f;
+	float eqSlope = 1.0f;
+	float eqQ = 0.707f;
+	float eqGain = -6;
+	equalizer_type eqType = HIGH_SHELF;
 } ChannelSettings;
 
+//Настройки реквербератора
 typedef struct : ChannelSettings
 {
 	float roomsize = 0.1f;
 	float damping = 1.0f;
 } FxReverbChannelSettings;
+
+//Настройки лупера
+typedef struct : ChannelSettings
+{
+	String wavName = "";
+	bool isPlayWave = false;
+} LooperSettings;
 
 enum edit_channel
 {
@@ -55,16 +89,10 @@ enum edit_channel
 
 enum edit_cnannel_mode
 {
-	EDIT_CHANNEL_MODE_EQ = 0, //Еквалайзер 
-	EDIT_CHANNEL_MODE_BALANCE = 1, //Баланс
+	EDIT_CHANNEL_MODE_MAIN = 0,		//Основная 
+	EDIT_CHANNEL_MODE_SETTINGS = 1, //Настройки
 };
 
-enum edit_fx_reverb_mode
-{
-	EDIT_FX_REVERB_MODE_EQ = 0, //Редактирование эквалайзера
-	EDIT_FX_REVERB_MODE_BALANCE = 1, //Редактирование баланса
-	EDIT_FX_REVERB_MODE_ROOM = 2 //Редактирование остального
-};
 
 enum current_view_mode
 {
@@ -72,7 +100,8 @@ enum current_view_mode
 	VIEW_MODE_EDIT_PARAMETERS = 1, //Настройки канала
 	VIEW_MODE_EDIT_LOOPER_CHANNEL = 2, //Редактирование инструмента,
 	VIEW_MODE_SEQUENCER = 3, //Редактирование песни
-	VIEW_MODE_OPEN_SONG = 4 //Открыть сохраненный файл
+	VIEW_MODE_OPEN_SONG = 4, //Открыть сохраненный файл,
+	VIEW_MODE_EQUALIZER = 5 //Открыть сохраненный файл
 };
 
 
@@ -80,7 +109,7 @@ enum current_view_mode
 typedef struct
 {
 	MasterSettings master;
-	ChannelSettings wav;
+	LooperSettings looper;
 	ChannelSettings leftInput;
 	ChannelSettings rightInput;
 	FxReverbChannelSettings fxReverb;
@@ -92,6 +121,7 @@ typedef struct
 {
 	current_view_mode viewMode; //По умолчанию режим микшера
 	edit_channel currentChannel;
+	edit_cnannel_mode currentView;
 	MixerSettings mixer;
 	String name;
 	String path;
@@ -113,6 +143,7 @@ public:
 	static void loadSettings(bool pressed);
 	static void init();
 	void drawTopPanel() const;
+	static void assignDefaultButtons();
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);
 	//static void changeMode();
@@ -132,7 +163,7 @@ public:
 	static void setRightInputHighpass(int encoder, int value);
 	static void setReverbHighpass(int encoder, int value);
 	static void setMasterVolume(int encoder, int value);
-	static void setWavVolume(int encoder, int value);
+	static void setLooperVolume(int encoder, int value);
 	static void setLeftInputVolume(int encoder, int value);
 	static void setRightInputVolume(int encoder, int value);
 	static void setReverbVolume(int encoder, int value); */
@@ -140,6 +171,7 @@ public:
 	static void stopTrack(bool pressed);
 	void update();
 	void switchWindow(current_view_mode current_view_mode);	
+	static void backToMixer(bool pressed);
 };
 
 extern EngineClass Engine;

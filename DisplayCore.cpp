@@ -386,9 +386,48 @@ void DisplayCoreClass::drawUsage(double cpu, uint16_t memory)
 	tft.print(memory);
 }
 
-void DisplayCoreClass::drawText(const String& song, uint16_t x, uint16_t y)
+
+void DisplayCoreClass::drawEqChart(uint16_t vx, uint16_t y, double ymin, double ymax, uint16_t len, double *data)
 {
-	//tft.fillRect(x, y, 107, 12, OFF_COLOR);
+	double scale = ymax - ymin;
+	uint16_t height = 96;
+	int16_t x = vx + 20;
+
+	tft.fillRect(vx, y, 20, 12, ILI9341_BLACK);
+	tft.setCursor(vx + 1, y + 1);
+	tft.setTextColor(MAIN_COLOR);
+	tft.print(static_cast<int>(ymax));
+	tft.fillRect(vx, y+height, 20, 12, ILI9341_BLACK);
+	tft.setCursor(vx + 1, y+height + 1);
+	tft.setTextColor(MAIN_COLOR);
+	tft.print(static_cast<int>(ymin));
+
+	tft.fillRect(x, y - 1, len, height + 2, OFF_COLOR);
+
+	int16_t ya = 0;
+	for (uint16_t idx = 0; idx < len; idx++)
+	{
+		int16_t xa = x + idx - 1;
+		int16_t xb = x + idx;
+
+		double val = (data[idx] - ymin) / (scale)*  static_cast<double>(height);
+
+		int16_t yb = y + height - static_cast<int>(val);
+		if (ya > 0)
+		{
+			tft.drawLine(xa, ya, xb, yb, MAIN_COLOR);
+		}
+		ya = yb;
+	}
+	
+}
+
+void DisplayCoreClass::drawText(const String& song, uint16_t x, uint16_t y, bool isClear)
+{
+	if (isClear)
+	{
+		tft.fillRect(x, y, 107, 12, OFF_COLOR);
+	}
 	tft.setCursor(x + 1, y + 1);
 	tft.setTextColor(MAIN_COLOR);
 	tft.print(song);
@@ -449,9 +488,13 @@ void DisplayCoreClass::drawStandartBackground()
 	tft.fillRect(8, 98, 308, 160, DARK_PANEL_COLOR);
 }
 
-void DisplayCoreClass::drawFileloadBackground()
+void DisplayCoreClass::drawFileListBackground()
 {
 	tft.fillRect(8, 20, 116, 230, OFF_COLOR);
+}
+
+void DisplayCoreClass::drawFileLoadBackground()
+{
 	tft.fillRect(128, 20, 188, 74, LIGHT_PANEL_COLOR);
 }
 
@@ -605,16 +648,16 @@ void DisplayCoreClass::disaplaySubMenu()
 
 void DisplayCoreClass::disaplayLooperTape(uint8_t channel)
 {
-	tft.fillRect(8, 100, 308, 119, DARK_PANEL_COLOR);
-	tft.writeRect(16, 102, 214, 115, (uint16_t*)tape_back);
+	tft.fillRect(8, 100, 308, 121, DARK_PANEL_COLOR);
+	tft.writeRect(16, 103, 214, 115, (uint16_t*)tape_back);
 	uint16_t x = getMixerChannelXcoord(channel);
 	drawChannelIcon(channel, true, x);
 }
 
 void DisplayCoreClass::drawTapeFrame(uint8_t l, uint8_t r)
 {
-	tft.writeRect(59, 151, 26, 26, (uint16_t*)tape_frames[l]);
-	tft.writeRect(162, 151, 26, 26, (uint16_t*)tape_frames[r]);
+	tft.writeRect(59, 152, 26, 26, (uint16_t*)tape_frames[l]);
+	tft.writeRect(162, 152, 26, 26, (uint16_t*)tape_frames[r]);
 }
 
 

@@ -18,14 +18,14 @@ song_load_part selectedPart = SONGS_PART_A;
 uint8_t lastPage = 0;
 uint8_t selectedSong = 0;
 uint8_t loadedSong = -1;
-uint16_t SELECTED_COLOR_OPACITY = 0xF487;
-uint16_t UNSELECTED_COLOR_OPACITY = 0x4A28;
+
 bool isCreatingSong;
 bool isRewriting;
 char currentSongName[8] = { 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A' };
 uint8_t currentSongNameLength = 8;
 uint8_t currentSongNameIndex = 0;
-
+uint16_t SELECTED_COLOR_OPACITY = 0xF487;
+uint16_t UNSELECTED_COLOR_OPACITY = 0x4A28;
 
 void SongLoaderClass::drawTexts()
 {
@@ -107,7 +107,8 @@ void SongLoaderClass::handle()
 	bool _fullRedraw = false;
 	if (!Engine.isValidScreen)
 	{
-		DisplayCore.drawFileloadBackground();
+		DisplayCore.drawFileListBackground();
+		DisplayCore.drawFileLoadBackground();
 		DisplayCore.drawFileloadPanel(false, selectedPart);
 		_fullRedraw = true;
 		Engine.isValidScreen = true;
@@ -123,22 +124,15 @@ void SongLoaderClass::handle()
 
 void SongLoaderClass::onShow()
 {
-	HardwareCore.setButtonParam(BROWN, backToMixer);
+	isCreatingSong = false;
+	isRewriting = false;
+	Engine.assignDefaultButtons();
 	HardwareCore.setButtonParam(BLACK, switchPart);
 	HardwareCore.setButtonParam(ENCODER0, pressEncoder0);
 	HardwareCore.setButtonParam(ENCODER1, pressEncoder1);
 	loadSongs();
 }
 
-void SongLoaderClass::backToMixer(bool pressed)
-{
-	if (pressed)
-	{
-		isCreatingSong = false;
-		isRewriting = false;
-		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);
-	}
-}
 
 void SongLoaderClass::switchPart(bool pressed)
 {
@@ -342,7 +336,7 @@ void SongLoaderClass::saveCurrentSongToFile()
 	JsonObject& master = mixer.createNestedObject("master");
 	master["volume"] = Engine.songSettings.mixer.master.volume;
 
-	//saveChannelPart(mixer, "wav", Engine.songSettings.mixer.wav);
+	//saveChannelPart(mixer, "looper", Engine.songSettings.mixer.looper);
 	//saveChannelPart(mixer, "leftInput", Engine.songSettings.mixer.leftInput);
 	//saveChannelPart(mixer, "rightInput", Engine.songSettings.mixer.rightInput);
 	//saveChannelPartFxReverb(mixer, "fxReverb", Engine.songSettings.mixer.fxReverb);
@@ -376,4 +370,5 @@ void SongLoaderClass::loadSelectedSong(int selected_song)
 	loadSongs();
 	Engine.isValidScreen = false;
 }
+
 

@@ -7,13 +7,14 @@
 class LooperChanelClass
 {
 public:
-	static void handle();
-	static void loadWaves();
+	static void handle();	
 	static void onShow();
-	static void backToMixer(bool pressed);
 	static void startTrack();
-	static void stopTrack();
-	static void changeWavTrack();
+	static void stopTrack();	
+protected:
+	static void loadWaves();
+	static void selectSong(int encoder, int value);
+	static void drawTexts();
 };
 extern LooperChanelClass LooperChanel;
 

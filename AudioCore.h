@@ -22,7 +22,7 @@ class AudioCoreClass
 	AudioCoreClass();
 	void init();
 	static void setReverbRoom(float damping, float roomsize);
-	static void setWavBiquad(float frequency, float q);
+	static void setLooperEqBiquad(int* coefs);
 	static void setLeftInputBiquad(float frequency, float q);
 	static void setRightInputBiquad(float frequency, float q);
 	static void setReverbBiquad(float frequency, float q);
@@ -32,7 +32,7 @@ class AudioCoreClass
 	static void drum4On();
 	static void setMasterVolume(float x);
 	static void enhanceBass(bool enable);
-	static void setWavVolume(float vol, float balance);
+	static void setLooperVolume(float vol, float balance);
 	static void setLeftInputVolume(float vol, float balance);
 
 	static void setRightInputVolume(float vol, float balance);

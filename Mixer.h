@@ -14,8 +14,12 @@ public:
 	static void handle();	
 	static void onShow();
 	static void selectChanel(int encoder, int value);
-	static void switchToSongLoader(bool pressed);
+	static void switchToChannel();
+	static void encoder0press(bool pressed);
+	static void encoder1press(bool pressed);
+	static void encoder2press(bool pressed);
 	static void subMenuShow(bool pressed);
+
 };
 extern MixerClass Mixer;
 

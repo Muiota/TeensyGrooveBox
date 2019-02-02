@@ -4,6 +4,7 @@
 
 #include "Engine.h"
 #include "LooperChanel.h"
+#include "Equalizer.h"
 
 // Load drivers
 
@@ -28,24 +29,24 @@ void EngineClass::updateModeLinks()
 		break;
 		case EDIT_CHANNEL_WAV:
 		
-			_currenctSettings = &_songSettings.mixer.wav;
-			switch (_songSettings.mixer.wav.editMode)
+			_currenctSettings = &_songSettings.mixer.looper;
+			switch (_songSettings.mixer.looper.editMode)
 			{
 			case EDIT_CHANNEL_MODE_EQ:
 
 				DisplayCore.drawEncoderTitle(1, "LP FQ", true);
-				HardwareCore.setEncoderParam(1, setWavLowpass, "LP FQ", 100, 20000, 50, _songSettings.mixer.wav.frequency);
+				HardwareCore.setEncoderParam(1, setWavLowpass, "LP FQ", 100, 20000, 50, _songSettings.mixer.looper.frequency);
 				break;
 			case EDIT_CHANNEL_MODE_BALANCE:
 
 				DisplayCore.drawEncoderTitle(1, "BAL", true);
-				HardwareCore.setEncoderParam(1, setWavBalance, "BAL", -1, 1, 0.05, _songSettings.mixer.wav.balance);
+				HardwareCore.setEncoderParam(1, setWavBalance, "BAL", -1, 1, 0.05, _songSettings.mixer.looper.balance);
 				break;
 			}
 			
 		
 		DisplayCore.drawEncoderTitle(2, "W VOL", true);
-			HardwareCore.setEncoderParam(2, setWavVolume, "W VOL", 0, 1, 0.01, _songSettings.mixer.wav.volume);
+			HardwareCore.setEncoderParam(2, setLooperVolume, "W VOL", 0, 1, 0.01, _songSettings.mixer.looper.volume);
 			break;
 		case EDIT_CHANNEL_LEFT_CHANNEL:
 			_currenctSettings = &_songSettings.mixer.leftInput;
@@ -123,8 +124,8 @@ JsonObject& EngineClass::saveChannelPart(JsonObject& mixer, String channelName, 
 	JsonObject& channel = mixer.createNestedObject(channelName);
 	channel["volume"] = setting.volume;
 	channel["balance"] = setting.balance;
-	channel["frequency"] = setting.frequency;
-	channel["q"] = setting.q;
+	channel["frequency"] = setting.eqFc;
+	channel["q"] = setting.eqQ;
 	return channel;
 }
 
@@ -160,7 +161,7 @@ void EngineClass::saveSettings(bool pressed)
 	JsonObject& master = mixer.createNestedObject("master");
 	master["volume"] = Engine.songSettings.mixer.master.volume;
 	
-	saveChannelPart(mixer, "wav", Engine.songSettings.mixer.wav);
+	saveChannelPart(mixer, "looper", Engine.songSettings.mixer.looper);
 	saveChannelPart(mixer, "leftInput", Engine.songSettings.mixer.leftInput);
 	saveChannelPart(mixer, "rightInput", Engine.songSettings.mixer.rightInput);
 	saveChannelPartFxReverb(mixer, "fxReverb", Engine.songSettings.mixer.fxReverb);
@@ -182,14 +183,14 @@ void EngineClass::loadSettings(bool pressed)
 	//Set default
 	Engine.songSettings.currentChannel = EDIT_CHANNEL_MASTER;
 	Engine.songSettings.viewMode = VIEW_MODE_MAIN_MIXER;
-	Engine.songSettings.mixer.wav.frequency = 12000;
-	Engine.songSettings.mixer.wav.q = 0.707f;
-	Engine.songSettings.mixer.leftInput.frequency = 100;
-	Engine.songSettings.mixer.leftInput.q = 0.707f;
-	Engine.songSettings.mixer.rightInput.frequency = 200;
-	Engine.songSettings.mixer.rightInput.q = 0.707f;
-	Engine.songSettings.mixer.fxReverb.frequency = 300;
-	Engine.songSettings.mixer.fxReverb.q = 0.707f;
+	Engine.songSettings.mixer.looper.eqFc = 12000;
+	Engine.songSettings.mixer.looper.eqQ = 0.707f;
+	Engine.songSettings.mixer.leftInput.eqFc = 100;
+	Engine.songSettings.mixer.leftInput.eqQ = 0.707f;
+	Engine.songSettings.mixer.rightInput.eqFc = 200;
+	Engine.songSettings.mixer.rightInput.eqQ = 0.707f;
+	Engine.songSettings.mixer.fxReverb.eqFc = 300;
+	Engine.songSettings.mixer.fxReverb.eqQ = 0.707f;
 
 
 	if (SD.exists("settings.mxr"))
@@ -221,28 +222,28 @@ void EngineClass::loadSettings(bool pressed)
 		JsonObject& mixer = root["mixerSettings"];
 		JsonObject& master = mixer["master"];
 		Engine.songSettings.mixer.master.volume = master["volume"];
-		JsonObject& wav = mixer["wav"];
-		Engine.songSettings.mixer.wav.volume = wav["volume"];
-		Engine.songSettings.mixer.wav.frequency = wav["frequency"];
-		Engine.songSettings.mixer.wav.q = wav["q"];
-		Engine.songSettings.mixer.wav.balance= wav["balance"];
+		JsonObject& wav = mixer["looper"];
+		Engine.songSettings.mixer.looper.volume = wav["volume"];
+		Engine.songSettings.mixer.looper.eqFc = wav["frequency"];
+		Engine.songSettings.mixer.looper.eqQ = wav["q"];
+		Engine.songSettings.mixer.looper.balance= wav["balance"];
 
 		JsonObject& leftInput = mixer["leftInput"];
 		Engine.songSettings.mixer.leftInput.volume = leftInput["volume"];
-		Engine.songSettings.mixer.leftInput.frequency = leftInput["frequency"];
-		Engine.songSettings.mixer.leftInput.q = leftInput["q"];
+		Engine.songSettings.mixer.leftInput.eqFc = leftInput["frequency"];
+		Engine.songSettings.mixer.leftInput.eqQ = leftInput["q"];
 		Engine.songSettings.mixer.leftInput.balance = leftInput["balance"];
 
 		JsonObject& rightInput = mixer["rightInput"];
 		Engine.songSettings.mixer.rightInput.volume = rightInput["volume"];
-		Engine.songSettings.mixer.rightInput.frequency = rightInput["frequency"];
-		Engine.songSettings.mixer.rightInput.q = rightInput["q"];
+		Engine.songSettings.mixer.rightInput.eqFc = rightInput["frequency"];
+		Engine.songSettings.mixer.rightInput.eqQ = rightInput["q"];
 		Engine.songSettings.mixer.rightInput.balance = rightInput["balance"];
 
 		JsonObject& fxReverb = mixer["fxReverb"];
 		Engine.songSettings.mixer.fxReverb.volume = fxReverb["volume"];
-		Engine.songSettings.mixer.fxReverb.frequency = fxReverb["frequency"];
-		Engine.songSettings.mixer.fxReverb.q = fxReverb["q"];
+		Engine.songSettings.mixer.fxReverb.eqFc = fxReverb["frequency"];
+		Engine.songSettings.mixer.fxReverb.eqQ = fxReverb["q"];
 		Engine.songSettings.mixer.fxReverb.balance = fxReverb["balance"];
 		Engine.songSettings.mixer.fxReverb.damping = fxReverb["damping"];
 		Engine.songSettings.mixer.fxReverb.roomsize = fxReverb["roomsize"];
@@ -258,18 +259,17 @@ void EngineClass::init()
 
 	loadSettings(true);
 	AudioCore.setMasterVolume(Engine.songSettings.mixer.master.volume); //todo settings by channel
-	AudioCore.setWavVolume(Engine.songSettings.mixer.wav.volume, Engine.songSettings.mixer.wav.balance);
-	AudioCore.setWavBiquad(Engine.songSettings.mixer.wav.frequency, Engine.songSettings.mixer.wav.q);
+	AudioCore.setLooperVolume(Engine.songSettings.mixer.looper.volume, Engine.songSettings.mixer.looper.balance);
+	//AudioCore.setWavBiquad(Engine.songSettings.mixer.looper.eqFc, Engine.songSettings.mixer.looper.eqQ);
 	AudioCore.setLeftInputVolume(Engine.songSettings.mixer.leftInput.volume, Engine.songSettings.mixer.leftInput.balance);
-	AudioCore.setLeftInputBiquad(Engine.songSettings.mixer.leftInput.frequency, Engine.songSettings.mixer.leftInput.q);
+	AudioCore.setLeftInputBiquad(Engine.songSettings.mixer.leftInput.eqFc, Engine.songSettings.mixer.leftInput.eqQ);
 	AudioCore.setRightInputVolume(Engine.songSettings.mixer.rightInput.volume, Engine.songSettings.mixer.rightInput.balance);
-	AudioCore.setRightInputBiquad(Engine.songSettings.mixer.rightInput.frequency, Engine.songSettings.mixer.rightInput.q);
-	AudioCore.setReverbVolume(Engine.songSettings.mixer.fxReverb.volume, Engine.songSettings.mixer.fxReverb.balance);
-	AudioCore.setReverbBiquad(Engine.songSettings.mixer.fxReverb.frequency, Engine.songSettings.mixer.fxReverb.q);
+	AudioCore.setRightInputBiquad(Engine.songSettings.mixer.rightInput.eqFc, Engine.songSettings.mixer.rightInput.eqQ);
+	AudioCore.setReverbVolume(0, Engine.songSettings.mixer.fxReverb.balance);
+	AudioCore.setReverbBiquad(Engine.songSettings.mixer.fxReverb.eqFc, Engine.songSettings.mixer.fxReverb.eqQ);
 	AudioCore.setReverbRoom(Engine.songSettings.mixer.fxReverb.damping, Engine.songSettings.mixer.fxReverb.roomsize);
 	//updateModeLinks();	
-	HardwareCore.setButtonParam(GREEN, startTrack);
-	HardwareCore.setButtonParam(BLACK, stopTrack);
+
 	/*
 
 	HardwareCore.setButtonParam(BROWN, changeWavTrack);
@@ -328,9 +328,9 @@ void EngineClass::changeEditType()
 
 void EngineClass::setWavLowpass(int encoder, int value)
 {
-	_songSettings.mixer.wav.frequency = static_cast<float>(value / 100);
-	DisplayCore.drawEncoder(encoder, _songSettings.mixer.wav.frequency, 20000);
-	AudioCore.setWavBiquad(_songSettings.mixer.wav.frequency, _songSettings.mixer.wav.q);
+	_songSettings.mixer.looper.frequency = static_cast<float>(value / 100);
+	DisplayCore.drawEncoder(encoder, _songSettings.mixer.looper.frequency, 20000);
+	AudioCore.setWavBiquad(_songSettings.mixer.looper.frequency, _songSettings.mixer.looper.q);
 }
 
 void EngineClass::setLeftInputHighpass(int encoder, int value)
@@ -349,9 +349,9 @@ void EngineClass::setLeftInputBalance(int encoder, int value)
 
 void EngineClass::setWavBalance(int encoder, int value)
 {
-	_songSettings.mixer.wav.balance = static_cast<float>(value / 100.0);
+	_songSettings.mixer.looper.balance = static_cast<float>(value / 100.0);
 	DisplayCore.drawEncoder(encoder, value, 100, true);
-	AudioCore.setWavVolume(_songSettings.mixer.wav.volume, _songSettings.mixer.wav.balance);
+	AudioCore.setLooperVolume(_songSettings.mixer.looper.volume, _songSettings.mixer.looper.balance);
 }
 
 
@@ -413,11 +413,11 @@ void EngineClass::setMasterVolume(int encoder, int value)
 }
 
 
-void EngineClass::setWavVolume(int encoder, int value)
+void EngineClass::setLooperVolume(int encoder, int value)
 {
-	_songSettings.mixer.wav.volume = static_cast<float>(value) / 100;
+	_songSettings.mixer.looper.volume = static_cast<float>(value) / 100;
 	DisplayCore.drawEncoder(encoder, value, 100);
-	AudioCore.setWavVolume(_songSettings.mixer.wav.volume, _songSettings.mixer.wav.balance);
+	AudioCore.setLooperVolume(_songSettings.mixer.looper.volume, _songSettings.mixer.looper.balance);
 }
 
 void EngineClass::setLeftInputVolume(int encoder, int value)
@@ -448,11 +448,18 @@ void EngineClass::drawTopPanel() const
 	DisplayCore.drawText(songSettings.name, 8, 3);
 }
 
+void EngineClass::assignDefaultButtons()
+{
+	HardwareCore.setButtonParam(GREEN, startTrack);
+	HardwareCore.setButtonParam(BLACK, stopTrack);
+	HardwareCore.setButtonParam(BROWN, backToMixer);
+}
+
 void EngineClass::update()
 {
 	if (_hardwareTimer >= 100) {
 		_hardwareTimer = 0;
-		if (_tickCounter++ >= 10)
+		if (_tickCounter++ >= 10 || !isValidScreen)
 		{
 			_tickCounter = 0;
 			auto usageCPU = AudioProcessorUsageMax();
@@ -477,6 +484,9 @@ void EngineClass::update()
 			case VIEW_MODE_EDIT_LOOPER_CHANNEL:
 				LooperChanel.onShow();
 				break;
+			case VIEW_MODE_EQUALIZER:
+				Equalizer.onShow();
+				break;
 			default:
 				
 				break;
@@ -497,6 +507,9 @@ void EngineClass::update()
 			break;
 		case VIEW_MODE_EDIT_LOOPER_CHANNEL:
 			LooperChanel.handle();
+			break;
+		case VIEW_MODE_EQUALIZER:
+			Equalizer.handle();
 			break;
 		default:
 			DisplayCore.clearAll();
@@ -519,13 +532,23 @@ void EngineClass::update()
 
 void EngineClass::switchWindow(current_view_mode current_view_mode)
 {	
-	songSettings.viewMode = current_view_mode;	
-	DisplayCore.clearAll();	
-	HardwareCore.resetEncoders();
-	HardwareCore.resetButtons();
-	isValidScreen = false;
+	if (songSettings.viewMode != current_view_mode)
+	{
+		songSettings.viewMode = current_view_mode;
+		DisplayCore.clearAll();
+		HardwareCore.resetEncoders();
+		HardwareCore.resetButtons();
+		isValidScreen = false;
+	}
 }
 
+void EngineClass::backToMixer(bool pressed)
+{
+	if (pressed)
+	{
+		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);		
+	}
+}
 
 EngineClass Engine;
 

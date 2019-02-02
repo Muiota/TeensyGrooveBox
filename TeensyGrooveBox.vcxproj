@@ -84,6 +84,7 @@
     <ClInclude Include="Channel.h" />
     <ClInclude Include="DisplayCore.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="Equalizer.h" />
     <ClInclude Include="HardwareCore.h" />
     <ClInclude Include="InputLeft.h" />
     <ClInclude Include="LooperChanel.h" />
@@ -97,6 +98,7 @@
     <ClCompile Include="Channel.cpp" />
     <ClCompile Include="DisplayCore.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Equalizer.cpp" />
     <ClCompile Include="HardwareCore.cpp" />
     <ClCompile Include="InputLeft.cpp" />
     <ClCompile Include="knobs.c" />

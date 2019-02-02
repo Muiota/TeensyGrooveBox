@@ -24,7 +24,6 @@ public:
 	static void drawButtons();
 	static void handle();
 	static void onShow();
-	static void backToMixer(bool pressed);
 	static void switchPart(bool pressed);
 	static void saveCurrentSongToFile();
 	static void loadSelectedSong(int selected_song);

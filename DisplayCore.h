@@ -36,7 +36,8 @@ public:
 	static void drawMixerButtons(uint8_t channel, uint16_t x);
 	static void printLn(const char* msg, bool isError);
 	static void drawUsage(double usage, uint16_t memory);
-	static void drawText(const String& song, uint16_t x, uint16_t y);
+	static void drawEqChart(uint16_t x, uint16_t y, double ymin, double ymax, uint16_t len, double* data);
+	static void drawText(const String& song, uint16_t x, uint16_t y, bool isClear = false);
 	static void drawTextOpacity(const String& song, uint16_t x, uint16_t y, uint16_t color);
 	static void setCursor(uint16_t x, uint16_t y);
 	static void drawColoredChar(const char& val, uint16_t color);
@@ -45,7 +46,8 @@ public:
 	static void drawMuteMaster(bool b);
 	static void clearAll();
 	static void drawStandartBackground();
-	static void drawFileloadBackground();
+	static void drawFileListBackground();
+	static void drawFileLoadBackground();
 	static void drawFileloadPanel(bool withField, uint8_t selectedPart);
 	static void drawFileloadButtons(song_load_buttons type);
 	static void drawMixerBackground();

@@ -211,10 +211,10 @@ void AudioCoreClass::setReverbRoom(float damping, float roomsize)
 }
 
 
-void AudioCoreClass::setWavBiquad(float frequency, float q) {
+void AudioCoreClass::setLooperEqBiquad(int* coefs) {
 
-	biquadWavAL.setLowpass(0, frequency, q);
-	biquadWavAR.setLowpass(0, frequency, q);
+	biquadWavAL.setCoefficients(0, coefs);
+	biquadWavAR.setCoefficients(0, coefs);
 }
 
 void AudioCoreClass::setLeftInputBiquad(float frequency, float q) {
@@ -264,7 +264,7 @@ void AudioCoreClass::drum4On()
 	
  }
 
- void AudioCoreClass::setWavVolume(float vol, float balance)
+ void AudioCoreClass::setLooperVolume(float vol, float balance)
  {	 
 	 setBalancedVolume(3, vol, balance);
  }

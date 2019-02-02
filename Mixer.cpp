@@ -16,8 +16,11 @@ bool _subMenuPressed;
 
 void MixerClass::onShow()
 {
+	Engine.assignDefaultButtons();
 	HardwareCore.setButtonParam(BROWN, subMenuShow);
-	HardwareCore.setButtonParam(ENCODER0, switchToSongLoader);
+	HardwareCore.setButtonParam(ENCODER0, encoder0press);
+	HardwareCore.setButtonParam(ENCODER1, encoder1press);
+	HardwareCore.setButtonParam(ENCODER2, encoder2press);	
 	HardwareCore.setEncoderParam(0, selectChanel, "selectChannel", 0, 11, 1, Engine.songSettings.currentChannel);
 }
 
@@ -26,7 +29,28 @@ void MixerClass::selectChanel(int encoder, int value)
 	Engine.songSettings.currentChannel = static_cast<edit_channel>(value / 100);
 }
 
-void MixerClass::switchToSongLoader(bool pressed)
+void MixerClass::switchToChannel()
+{
+	switch (Engine.songSettings.currentChannel)
+	{
+		case EDIT_CHANNEL_LOOPER:
+			Engine.switchWindow(VIEW_MODE_EDIT_LOOPER_CHANNEL);
+			break;
+		case EDIT_CHANNEL_INPUT_MIC: break;
+		case EDIT_CHANNEL_INPUT_GUITAR: break;
+		case EDIT_CHANNEL_DRUMS: break;
+		case EDIT_CHANNEL_BASS: break;
+		case EDIT_CHANNEL_STRINGS: break;
+		case EDIT_CHANNEL_PIANO: break;
+		case EDIT_CHANNEL_FM: break;
+		case EDIT_CHANNEL_SEND_FX_REVERB: break;
+		case EDIT_CHANNEL_SEND_FX_CHORUS: break;
+		case EDIT_CHANNEL_SEND_FX_DELAY: break;
+		case EDIT_CHANNEL_MASTER: break;
+	}
+}
+
+void MixerClass::encoder0press(bool pressed)
 {
 	if (pressed)
 	{
@@ -38,27 +62,21 @@ void MixerClass::switchToSongLoader(bool pressed)
 		}
 		else
 		{
-			switch (Engine.songSettings.currentChannel)
-			{
-			case EDIT_CHANNEL_LOOPER:
-					Engine.switchWindow(VIEW_MODE_EDIT_LOOPER_CHANNEL);
-				break;
-			case EDIT_CHANNEL_INPUT_MIC: break;
-			case EDIT_CHANNEL_INPUT_GUITAR: break;
-			case EDIT_CHANNEL_DRUMS: break;
-			case EDIT_CHANNEL_BASS: break;
-			case EDIT_CHANNEL_STRINGS: break;
-			case EDIT_CHANNEL_PIANO: break;
-			case EDIT_CHANNEL_FM: break;
-			case EDIT_CHANNEL_SEND_FX_REVERB: break;
-			case EDIT_CHANNEL_SEND_FX_CHORUS: break;
-			case EDIT_CHANNEL_SEND_FX_DELAY: break;
-			case EDIT_CHANNEL_MASTER: break;
-			default: ;
-			}
-			
+			Engine.songSettings.currentView = EDIT_CHANNEL_MODE_MAIN;
+			switchToChannel();		
 		}
 	}
+}
+
+void MixerClass::encoder1press(bool pressed)
+{	
+	Engine.switchWindow(VIEW_MODE_EQUALIZER);
+}
+
+void MixerClass::encoder2press(bool pressed)
+{
+	Engine.songSettings.currentView = EDIT_CHANNEL_MODE_SETTINGS;
+	switchToChannel();
 }
 
 void MixerClass::subMenuShow(bool pressed)
@@ -153,8 +171,8 @@ void MixerClass::handle()
 
 
 
-	DisplayCore.drawMixerMeter(11, AudioCore.getPeakL(), AudioCore.getPeakR());
-	DisplayCore.drawMixerMeter(3, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
+	DisplayCore.drawMixerMeter(EDIT_CHANNEL_MASTER, AudioCore.getPeakL(), AudioCore.getPeakR());
+	DisplayCore.drawMixerMeter(EDIT_CHANNEL_SEND_FX_REVERB, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
 
 
 	auto wavPeakL = AudioCore.getWavPeakL();
@@ -166,7 +184,7 @@ void MixerClass::handle()
 		HardwareCore.seqLedWrite(12, isWavPeakLed);
 	}
 
-	DisplayCore.drawMixerMeter(2, wavPeakL, AudioCore.getWavPeakR());
+	DisplayCore.drawMixerMeter(EDIT_CHANNEL_LOOPER, wavPeakL, AudioCore.getWavPeakR());
 
 	auto leftCh = AudioCore.getPeakAudioInputL();
 
@@ -177,7 +195,7 @@ void MixerClass::handle()
 		HardwareCore.seqLedWrite(13, isLeftChPeakLed);
 	}
 
-	DisplayCore.drawMixerMeter(0, leftCh, leftCh);
+	DisplayCore.drawMixerMeter(EDIT_CHANNEL_INPUT_MIC, leftCh, leftCh);
 	auto rightCh = AudioCore.getPeakAudioInputR();
 
 	bool isRightChPeakLed = rightCh > 0.2;
@@ -187,7 +205,7 @@ void MixerClass::handle()
 		HardwareCore.seqLedWrite(11, isRightChPeakLed);
 	}
 
-	DisplayCore.drawMixerMeter(1, rightCh, rightCh);
+	DisplayCore.drawMixerMeter(EDIT_CHANNEL_INPUT_GUITAR, rightCh, rightCh);
 
 
 	DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
