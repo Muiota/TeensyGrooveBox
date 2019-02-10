@@ -9,6 +9,7 @@
 #include "base.c" 
 #include "knobs.c" 
 #include "buttons.c" 
+#include "Engine.h"
 
 
 enum song_load_buttons
@@ -36,7 +37,7 @@ public:
 	static void drawMixerButtons(uint8_t channel, uint16_t x);
 	static void printLn(const char* msg, bool isError);
 	static void drawUsage(double usage, uint16_t memory);
-	static void drawEqChart(uint16_t x, uint16_t y, double ymin, double ymax, uint16_t len, double* data);
+	static void drawEqChart(uint16_t x, uint16_t y, double ymin, double ymax, uint16_t len, double fq, double* data);
 	static void drawText(const String& song, uint16_t x, uint16_t y, bool isClear = false);
 	static void drawTextOpacity(const String& song, uint16_t x, uint16_t y, uint16_t color);
 	static void setCursor(uint16_t x, uint16_t y);
@@ -54,6 +55,7 @@ public:
 	static void disaplaySubMenu();
 	static void disaplayLooperTape(uint8_t channel);
 	static void drawTapeFrame(uint8_t l, uint8_t r);
+	static void drawEqType(uint8_t equalizer);
 };
 
 extern DisplayCoreClass DisplayCore;

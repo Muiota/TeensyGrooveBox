@@ -26,6 +26,13 @@ uint16_t ACTIVE_COLOR = 0xFD80;
 
 uint16_t DARK_PANEL_COLOR = 0x3186;
 uint16_t LIGHT_PANEL_COLOR = 0x9CD3;
+String EQ_TYPES[7] = { "LOW PASS",
+"HIGH PASS",
+"BAND PASS",
+"NOTCH",
+"PEAK",
+"LOW SHELF",
+"HIGH SHELF"};
 //0xFD80, 0x5A65
 
 const uint16_t METER_HEIGHT = 64;
@@ -387,24 +394,53 @@ void DisplayCoreClass::drawUsage(double cpu, uint16_t memory)
 }
 
 
-void DisplayCoreClass::drawEqChart(uint16_t vx, uint16_t y, double ymin, double ymax, uint16_t len, double *data)
+void DisplayCoreClass::drawEqChart(uint16_t vx, uint16_t y, double ymin, 
+	double ymax, uint16_t len, double fq, double *data)
 {
 	double scale = ymax - ymin;
 	uint16_t height = 96;
 	int16_t x = vx + 20;
 
-	tft.fillRect(vx, y, 20, 12, ILI9341_BLACK);
-	tft.setCursor(vx + 1, y + 1);
+	tft.fillRect(vx, y - 2, 20, height + 12, ILI9341_BLACK);
+	tft.setCursor(vx + 1, y - 1);
 	tft.setTextColor(MAIN_COLOR);
 	tft.print(static_cast<int>(ymax));
-	tft.fillRect(vx, y+height, 20, 12, ILI9341_BLACK);
-	tft.setCursor(vx + 1, y+height + 1);
+	
+	
+	tft.setCursor(vx + 1 + (ymin < 0 ? -3: 0), y+height - 1);
 	tft.setTextColor(MAIN_COLOR);
 	tft.print(static_cast<int>(ymin));
 
 	tft.fillRect(x, y - 1, len, height + 2, OFF_COLOR);
 
 	int16_t ya = 0;
+
+
+	double val = (- ymin) / (scale) * static_cast<double>(height);
+	int16_t yb = y + height - static_cast<int>(val);
+	tft.drawLine(x, yb, x + len, yb, BORDER_COLOR_DARK);
+
+	if (ymin < -2 && ymax > 2)
+	{
+		tft.setCursor(vx + 8, yb - 4);
+		tft.setTextColor(MAIN_COLOR);
+		tft.print("0");
+	}
+
+	double koef = static_cast<double>(len) / 22050;
+	int ix = x+ 5000 * koef;
+	tft.drawLine(ix, y, ix, y + height, BORDER_COLOR_DARK);
+	 ix = x + 10000 * koef;
+	tft.drawLine(ix, y, ix, y + height, BORDER_COLOR_DARK);
+	 ix = x + 15000 * koef;
+	tft.drawLine(ix, y, ix, y + height, BORDER_COLOR_DARK);
+	ix = x + 20000 * koef;
+	tft.drawLine(ix, y, ix, y + height, BORDER_COLOR_DARK);
+
+	ix = x + fq * koef;
+	tft.drawLine(ix, y, ix, y + height, BORDER_COLOR);
+
+
 	for (uint16_t idx = 0; idx < len; idx++)
 	{
 		int16_t xa = x + idx - 1;
@@ -412,7 +448,7 @@ void DisplayCoreClass::drawEqChart(uint16_t vx, uint16_t y, double ymin, double 
 
 		double val = (data[idx] - ymin) / (scale)*  static_cast<double>(height);
 
-		int16_t yb = y + height - static_cast<int>(val);
+		yb = y + height - static_cast<int>(val);
 		if (ya > 0)
 		{
 			tft.drawLine(xa, ya, xb, yb, MAIN_COLOR);
@@ -658,6 +694,18 @@ void DisplayCoreClass::drawTapeFrame(uint8_t l, uint8_t r)
 {
 	tft.writeRect(59, 152, 26, 26, (uint16_t*)tape_frames[l]);
 	tft.writeRect(162, 152, 26, 26, (uint16_t*)tape_frames[r]);
+}
+
+void DisplayCoreClass::drawEqType(uint8_t equalizer)
+{
+	tft.fillRect(10, 24, 92, 87, DARK_PANEL_COLOR);
+	for (uint8_t i = 0; i < 7; i++)
+	{		
+		tft.setCursor(12, 26 + 12 * i);
+		auto isActive = equalizer == i;
+		tft.setTextColor(isActive ? MAIN_COLOR : BORDER_COLOR_DARK);
+		tft.print(EQ_TYPES[i]);
+	}
 }
 
 

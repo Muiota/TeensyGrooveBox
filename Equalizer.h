@@ -10,7 +10,8 @@ class EqualizerClass
 public:
 	static void handle();
 	static void onShow();
-	
+	static void pressEncoder0(bool pressed);
+
 
 protected:
 	static void setFc(int encoder, int value);

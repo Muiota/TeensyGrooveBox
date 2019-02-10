@@ -30,7 +30,7 @@ enum equalizer_type
 	HIGHPASS = 1,
 	BANDPASS = 2,
 	NOTCH = 3,
-	//PEAK = 4,
+	PEAK = 4,
 	LOW_SHELF = 5,
 	HIGH_SHELF = 6,
 	//ONE_POLE_LP = 7,

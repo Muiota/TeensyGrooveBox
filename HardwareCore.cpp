@@ -219,6 +219,15 @@ void HardwareCoreClass::update()
 		int32_t encoderValue = HardwareCore.readEncoder(i);
 		HardwareEncoder* item = &_currentEncoder[i];
 		bool needUpdate = false;
+
+		auto speed = abs(item->lastValue - encoderValue) / 4;
+
+		if (speed > 1)
+		{
+			encoderValue = encoderValue - (item->lastValue - encoderValue) * speed * item->step / 100;
+			needUpdate = true;
+		}
+
 		if (encoderValue < item->min)
 		{
 			encoderValue = item->min;
@@ -239,7 +248,7 @@ void HardwareCoreClass::update()
 	
 
 		if (encoderValue != item->lastValue)
-		{				
+		{
 			int dispalyValue = encoderValue / 4 * item->step;			
 			//digitalWrite(39, one_value_r);
 			//		seqLedWrite(8, two_value);

@@ -11,6 +11,7 @@ void EqualizerClass::handle()
 	if (!Engine.isValidScreen)
 	{
 		recalc();
+		DisplayCore.drawEqType(settings->eqType);
 		Engine.isValidScreen = true;
 	}
 }
@@ -23,10 +24,20 @@ void EqualizerClass::onShow()
 	DisplayCore.drawEncoderTitle(0, "FC (Hz)", true);
 	DisplayCore.drawEncoderTitle(1, "Slope", true);
 	DisplayCore.drawEncoderTitle(2, "Gain (dB)", true);
-	HardwareCore.setEncoderParam(0, setFc, "FC (Hz)", 50, 20000, 50, settings->eqFc); //20-20000
+	HardwareCore.setEncoderParam(0, setFc, "FC (Hz)", 50, 20000, 10, settings->eqFc); //20-20000
 	//HardwareCore.setEncoderParam(1, setQ, "Q", 100, 10000, 100, settings->eqQ);
-	HardwareCore.setEncoderParam(1, setQ, "Slope", 0, 2, 0.1, settings->eqSlope);
+	HardwareCore.setEncoderParam(1, setQ, "Slope", 0, 1, 0.05, settings->eqSlope);
 	HardwareCore.setEncoderParam(2, setGain, "Gain (dB)", -30, 30, 1, settings->eqGain);
+	HardwareCore.setButtonParam(ENCODER0, pressEncoder0);
+}
+
+void EqualizerClass::pressEncoder0(bool pressed)
+{
+	if (pressed)
+	{
+		settings->eqType = static_cast<equalizer_type>((settings->eqType + 1) % 7);
+		Engine.isValidScreen = false;
+	}
 }
 
 void EqualizerClass::setFc(int encoder, int value)
@@ -46,7 +57,7 @@ void EqualizerClass::setQ(int encoder, int value)
 void EqualizerClass::setSlope(int encoder, int value)
 {
 	settings->eqSlope = static_cast<float>(value / 100);
-	DisplayCore.drawEncoder(encoder, settings->eqSlope, 2);
+	DisplayCore.drawEncoder(encoder, settings->eqSlope * 100, 1);
 	recalc();
 }
 
@@ -158,7 +169,7 @@ void EqualizerClass::recalc()
 	case HIGHPASS:
 	case BANDPASS:
 	case NOTCH:
-		ymin = -100;
+		ymin = -99;
 		ymax = 0;
 		if (maxVal > ymax)
 			ymax = maxVal;
@@ -185,7 +196,7 @@ void EqualizerClass::recalc()
 	DisplayCore.drawText(magPlot[0], 10, 160, true);
 	DisplayCore.drawText(magPlot[150], 10, 180, true);
 	DisplayCore.drawText(magPlot[300], 10, 200, true); */
-	DisplayCore.drawEqChart(10, 124, ymin, ymax, len, magPlot);
+	DisplayCore.drawEqChart(10, 124, ymin, ymax, len, settings->eqFc,  magPlot);
 	AudioCore.setLooperEqBiquad(coef);
 	//calcBiquad(type, Fc, Fs, Q, gain);
 }

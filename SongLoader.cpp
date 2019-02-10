@@ -140,7 +140,7 @@ void SongLoaderClass::switchPart(bool pressed)
 	{
 		isCreatingSong = false;
 		isRewriting = false;
-		selectedPart = (song_load_part)((selectedPart + 1) % 8);
+		selectedPart = static_cast<song_load_part>((selectedPart + 1) % 8);
 		loadSongs();
 		Engine.isValidScreen = false;
 	}
