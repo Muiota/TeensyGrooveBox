@@ -445,7 +445,46 @@ void EngineClass::setReverbVolume(int encoder, int value)
 
 void EngineClass::drawTopPanel() const
 {
-	DisplayCore.drawText(songSettings.name, 8, 3);
+	 DisplayCore.drawText(songSettings.name, 8, 3);
+}
+
+ChannelSettings* EngineClass::getChannelByNum(edit_channel channel)
+{
+	switch (channel)
+	{
+	case EDIT_CHANNEL_LOOPER:
+		return &Engine.songSettings.mixer.looper;		
+	case EDIT_CHANNEL_INPUT_MIC:
+		return  &Engine.songSettings.mixer.leftInput;		
+	case EDIT_CHANNEL_INPUT_GUITAR:
+		return &Engine.songSettings.mixer.rightInput;		
+	case EDIT_CHANNEL_DRUMS:
+		return  &Engine.songSettings.mixer.drums;		
+	case EDIT_CHANNEL_BASS:
+		return  &Engine.songSettings.mixer.bass;
+	
+	case EDIT_CHANNEL_STRINGS:
+		return &Engine.songSettings.mixer.strings;
+	case EDIT_CHANNEL_PIANO:
+		return &Engine.songSettings.mixer.piano;
+		break;
+	case EDIT_CHANNEL_FM:
+		return  &Engine.songSettings.mixer.fm;		
+	case EDIT_CHANNEL_SEND_FX_REVERB:
+		return &Engine.songSettings.mixer.master;
+	case EDIT_CHANNEL_SEND_FX_CHORUS:
+		return &Engine.songSettings.mixer.master;
+	case EDIT_CHANNEL_SEND_FX_DELAY:
+		return &Engine.songSettings.mixer.master;
+	case EDIT_CHANNEL_MASTER:
+		return &Engine.songSettings.mixer.master;		
+	}
+	return nullptr;
+}
+
+void EngineClass::selectChannel()
+{
+	curentSettings = getChannelByNum(Engine.songSettings.currentChannel);
 }
 
 void EngineClass::assignDefaultButtons()

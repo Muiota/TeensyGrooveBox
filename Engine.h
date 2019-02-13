@@ -15,14 +15,13 @@
 
 typedef struct
 {
+	float balance = 0.0f;
 	float volume = 1.0f;
 	bool isSolo = false;
 	bool isOn = true;
 } BaseSettings;
 
-typedef struct : BaseSettings
-{
-} MasterSettings;
+
 
 enum equalizer_type
 {
@@ -48,14 +47,18 @@ enum equalizer_type
 */
 
 typedef struct : BaseSettings
-{
-	float balance = 0.0f;
+{	
 	float eqFc = 12000.0f;
 	float eqSlope = 1.0f;
 	float eqQ = 0.707f;
 	float eqGain = -6;
 	equalizer_type eqType = HIGH_SHELF;
 } ChannelSettings;
+
+
+typedef struct : ChannelSettings
+{
+} MasterSettings;
 
 //Настройки реквербератора
 typedef struct : ChannelSettings
@@ -112,6 +115,11 @@ typedef struct
 	LooperSettings looper;
 	ChannelSettings leftInput;
 	ChannelSettings rightInput;
+	ChannelSettings drums;
+	ChannelSettings bass;
+	ChannelSettings strings;
+	ChannelSettings piano;
+	ChannelSettings fm;
 	FxReverbChannelSettings fxReverb;
 } MixerSettings;
 
@@ -136,13 +144,16 @@ protected:
 public:
 	//static void updateModeLinks();	
 	SongSettings songSettings;
+	ChannelSettings* curentSettings;
 	bool isValidScreen;	
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting);
 
 	static void saveSettings(bool pressed);
 	static void loadSettings(bool pressed);
 	static void init();
-	void drawTopPanel() const;
+    void drawTopPanel() const;
+	static ChannelSettings* getChannelByNum(edit_channel channel);
+	void selectChannel();
 	static void assignDefaultButtons();
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);

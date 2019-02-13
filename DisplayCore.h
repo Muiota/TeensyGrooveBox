@@ -34,7 +34,7 @@ public:
 	static void drawMeterSide(float l, uint16_t x, uint16_t y);	
 	static void drawMixerMeter(uint16_t channel, float l, float r);
 	static void drawMixerMeterTitle(uint8_t channel, bool isActive);
-	static void drawMixerButtons(uint8_t channel, uint16_t x);
+	static void drawMixerButtons(uint8_t channel, float volume, bool isActive);
 	static void printLn(const char* msg, bool isError);
 	static void drawUsage(double usage, uint16_t memory);
 	static void drawEqChart(uint16_t x, uint16_t y, double ymin, double ymax, uint16_t len, double fq, double* data);

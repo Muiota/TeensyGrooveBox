@@ -40,6 +40,7 @@ class HardwareCoreClass
 	static void resetEncoders();
 	static void setEncoderParam(uint8_t encoder, EncoderCallback callback,
 		String title, float min, float max, float step, float currenctValue);
+	static void setEncoderValue(uint8_t encoder, float currentValue);
 	static void setButtonParam(uint8_t button, ButtonCallback callback);
 	static void update();
 	static int32_t readEncoder(uint8_t encoder);

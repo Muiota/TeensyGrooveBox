@@ -1,6 +1,6 @@
 #include "Equalizer.h"
 
-ChannelSettings* settings;
+
 
 bool _isLog = false;
 bool _qFielddisabled = false;
@@ -11,7 +11,7 @@ void EqualizerClass::handle()
 	if (!Engine.isValidScreen)
 	{
 		recalc();
-		DisplayCore.drawEqType(settings->eqType);
+		DisplayCore.drawEqType(Engine.curentSettings->eqType);
 		Engine.isValidScreen = true;
 	}
 }
@@ -19,15 +19,15 @@ void EqualizerClass::handle()
 void EqualizerClass::onShow()
 {
 	Engine.assignDefaultButtons();
-	settings = &Engine.songSettings.mixer.looper;
+	
 
 	DisplayCore.drawEncoderTitle(0, "FC (Hz)", true);
 	DisplayCore.drawEncoderTitle(1, "Slope", true);
 	DisplayCore.drawEncoderTitle(2, "Gain (dB)", true);
-	HardwareCore.setEncoderParam(0, setFc, "FC (Hz)", 50, 20000, 10, settings->eqFc); //20-20000
+	HardwareCore.setEncoderParam(0, setFc, "FC (Hz)", 50, 20000, 10, Engine.curentSettings->eqFc); //20-20000
 	//HardwareCore.setEncoderParam(1, setQ, "Q", 100, 10000, 100, settings->eqQ);
-	HardwareCore.setEncoderParam(1, setQ, "Slope", 0, 1, 0.05, settings->eqSlope);
-	HardwareCore.setEncoderParam(2, setGain, "Gain (dB)", -30, 30, 1, settings->eqGain);
+	HardwareCore.setEncoderParam(1, setQ, "Slope", 0, 1, 0.05, Engine.curentSettings->eqSlope);
+	HardwareCore.setEncoderParam(2, setGain, "Gain (dB)", -30, 30, 1, Engine.curentSettings->eqGain);
 	HardwareCore.setButtonParam(ENCODER0, pressEncoder0);
 }
 
@@ -35,36 +35,36 @@ void EqualizerClass::pressEncoder0(bool pressed)
 {
 	if (pressed)
 	{
-		settings->eqType = static_cast<equalizer_type>((settings->eqType + 1) % 7);
+		Engine.curentSettings->eqType = static_cast<equalizer_type>((Engine.curentSettings->eqType + 1) % 7);
 		Engine.isValidScreen = false;
 	}
 }
 
 void EqualizerClass::setFc(int encoder, int value)
 {
-	settings->eqFc = static_cast<float>(value / 100);
-	DisplayCore.drawEncoder(encoder, settings->eqFc, 20000);
+	Engine.curentSettings->eqFc = static_cast<float>(value / 100);
+	DisplayCore.drawEncoder(encoder, Engine.curentSettings->eqFc, 20000);
 	recalc();
 }
 
 void EqualizerClass::setQ(int encoder, int value)
 {
-	settings->eqQ = static_cast<float>(value / 100);
-	DisplayCore.drawEncoder(encoder, settings->eqQ, 1000);
+	Engine.curentSettings->eqQ = static_cast<float>(value / 100);
+	DisplayCore.drawEncoder(encoder, Engine.curentSettings->eqQ, 1000);
 	recalc();
 }
 
 void EqualizerClass::setSlope(int encoder, int value)
 {
-	settings->eqSlope = static_cast<float>(value / 100);
-	DisplayCore.drawEncoder(encoder, settings->eqSlope * 100, 1);
+	Engine.curentSettings->eqSlope = static_cast<float>(value / 100);
+	DisplayCore.drawEncoder(encoder, Engine.curentSettings->eqSlope * 100, 1);
 	recalc();
 }
 
 void EqualizerClass::setGain(int encoder, int value)
 {
-	settings->eqGain = static_cast<float>(value / 100);
-	DisplayCore.drawEncoder(encoder, settings->eqGain, 30, true);
+	Engine.curentSettings->eqGain = static_cast<float>(value / 100);
+	DisplayCore.drawEncoder(encoder, Engine.curentSettings->eqGain, 30, true);
 	recalc();
 }
 
@@ -72,7 +72,8 @@ void EqualizerClass::setGain(int encoder, int value)
 void EqualizerClass::recalc()
 {
 	int coef[5];
-	AudioFilterBiquad::calcBiquad(settings->eqType, settings->eqFc, settings->eqGain, settings->eqSlope, coef);
+	AudioFilterBiquad::calcBiquad(Engine.curentSettings->eqType,
+		Engine.curentSettings->eqFc, Engine.curentSettings->eqGain, Engine.curentSettings->eqSlope, coef);
 	
 	/*DisplayCore.drawText(settings->eqFc, 150, 120, true);
 	DisplayCore.drawText(settings->eqGain, 150, 140, true);
@@ -81,7 +82,7 @@ void EqualizerClass::recalc()
 	
 	
 	
-	switch (settings->eqType) {
+	switch (Engine.curentSettings->eqType) {
 	case LOWPASS:
 	case HIGHPASS:
 	case BANDPASS:
@@ -163,7 +164,7 @@ void EqualizerClass::recalc()
 	}
 
 	// configure y-axis
-	switch (settings->eqType) {
+	switch (Engine.curentSettings->eqType) {
 	default:
 	case LOWPASS:
 	case HIGHPASS:
@@ -196,7 +197,7 @@ void EqualizerClass::recalc()
 	DisplayCore.drawText(magPlot[0], 10, 160, true);
 	DisplayCore.drawText(magPlot[150], 10, 180, true);
 	DisplayCore.drawText(magPlot[300], 10, 200, true); */
-	DisplayCore.drawEqChart(10, 124, ymin, ymax, len, settings->eqFc,  magPlot);
+	DisplayCore.drawEqChart(10, 124, ymin, ymax, len, Engine.curentSettings->eqFc,  magPlot);
 	AudioCore.setLooperEqBiquad(coef);
 	//calcBiquad(type, Fc, Fs, Q, gain);
 }

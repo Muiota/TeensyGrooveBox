@@ -343,7 +343,7 @@ void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
 	tft.fillRect(x, y, 20, METER_HEIGHT , ILI9341_BLACK);
 	tft.fillRect(x + 14, y + 2, 6, METER_HEIGHT - 4, OFF_COLOR);
 	tft.drawRect(x, y, 20, METER_HEIGHT, isActive ? ACTIVE_COLOR : BORDER_COLOR);
-	drawMixerButtons(channel, x);
+
 
 	drawChannelIcon(channel, isActive, x);
 
@@ -353,14 +353,52 @@ void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
 }
 
 
-void DisplayCoreClass::drawMixerButtons(uint8_t channel, uint16_t x)
+void DisplayCoreClass::drawMixerButtons(uint8_t channel, float volume, bool isActive)
 {	
+	uint16_t x = getMixerChannelXcoord(channel);
 	uint16_t ix = x + 2;
 	//tft.writeRect(ix, 102, 16, 8, true ? (uint16_t*)leds[1] : (uint16_t*)leds[0]);
 	//tft.writeRect(ix, 102 + 9, 16, 8, true ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
-	tft.writeRect(ix, 122, 16, 8, true ? (uint16_t*)leds[1] : (uint16_t*)leds[0]);
-	tft.writeRect(ix, 131, 16, 8, true ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
-	tft.writeRect(ix, 52, 16, 8, (uint16_t*)encoder_linear[3]);
+	tft.writeRect(ix, 122, 16, 8, isActive ? (uint16_t*)leds[5] : (uint16_t*)leds[4]);
+	tft.writeRect(ix, 131, 16, 8, false ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
+	//tft.writeRect(ix, 52, 16, 8, (uint16_t*)encoder_linear[3]);
+	uint16_t level = volume * 60;
+
+
+	auto sliderIndex = 0 + (isActive ? 3 : 0);
+	if (level == 0)
+	{
+		sliderIndex = sliderIndex+ 2;
+	} else if (level == 60)
+	{
+		sliderIndex = sliderIndex + 1;
+	}
+
+	//tft.writeRect(ix, 22, 16, 8, (uint16_t*)encoder_linear[3]);
+	tft.writeRect(ix, 82 - level, 16, 8, (uint16_t*)encoder_linear[sliderIndex]);
+	auto lineColor = (isActive ? 0x3186 : 0x4A69);
+	auto topHeight = 59 - level;
+	if (topHeight > 0)
+	{
+		tft.fillRect(ix, 23, 6, topHeight, LIGHT_PANEL_COLOR); //LIGHT_PANEL_COLOR
+		tft.fillRect(ix + 10, 23, 6, topHeight, LIGHT_PANEL_COLOR); //LIGHT_PANEL_COLOR
+		tft.fillRect(ix + 6, 23, 4, topHeight, lineColor); //LIGHT_PANEL_COLOR
+	}
+
+	auto bottomHeight = level - 1;
+	if (bottomHeight > 0)
+	{
+		tft.fillRect(ix, 90 - level, 6, bottomHeight, LIGHT_PANEL_COLOR);
+		tft.fillRect(ix + 10, 90 - level, 6, bottomHeight, LIGHT_PANEL_COLOR);
+		tft.fillRect(ix + 6, 90 - level, 4, bottomHeight, lineColor);
+	}
+
+	
+	
+	
+	
+
+
 	tft.writeRect(ix, 102, 16, 16, (uint16_t*)small_knob_negative[5]);
 	//tft.writeRect(x , 124, 20, 20, isActive ? (uint16_t*)red_on : (uint16_t*)off);
 }
@@ -381,14 +419,18 @@ void DisplayCoreClass::printLn(const char * msg, bool isError)
 
 void DisplayCoreClass::drawUsage(double cpu, uint16_t memory)
 {
-	uint16_t x = 240;
-	uint16_t y = 3;
-	tft.fillRect(x, y, 86, 12, OFF_COLOR);
-	tft.setCursor(x+1, y+1);
-	tft.setTextColor(MAIN_COLOR);
-	tft.print(cpu);
+	//uint16_t x = 240;
+	//uint16_t y = 3;
 
-	tft.setCursor(x +44, y + 1);
+	tft.drawRect(240 + 46, 3, 31, 12, BORDER_COLOR);
+	tft.fillRect(240 + 47, 4, 29, 10, OFF_COLOR);
+	tft.fillRect(240 + 47, 4, 29 * cpu / 100, 10, MAIN_COLOR);
+	//tft.setCursor(x+1, y+1);
+	//tft.setTextColor(MAIN_COLOR);
+	//tft.print(cpu);
+
+	tft.fillRect(240 + 20, 3, 22, 12, OFF_COLOR);
+	tft.setCursor(240 + 20, 4);
 	tft.setTextColor(MAIN_COLOR);
 	tft.print(memory);
 }

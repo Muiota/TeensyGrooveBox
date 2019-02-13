@@ -204,6 +204,15 @@ void HardwareCoreClass::setEncoderParam(uint8_t encoder,
 
 }
 
+
+void HardwareCoreClass::setEncoderValue(uint8_t encoder, float currentValue)
+{
+
+	HardwareEncoder* item = &_currentEncoder[encoder];	
+	item->lastValue = static_cast<int32_t>(currentValue * 400 / item->step);
+	writeEncoder(encoder, item->lastValue);
+}
+
 void HardwareCoreClass::setButtonParam(uint8_t button, ButtonCallback callback)
 {
 	HardwareButton* item = &_currentButton[button];
@@ -224,7 +233,8 @@ void HardwareCoreClass::update()
 
 		if (speed > 1)
 		{
-			encoderValue = encoderValue - (item->lastValue - encoderValue) * speed * item->step / 100;
+			auto step = item->step < 4 ? 4  : item->step;
+			encoderValue = encoderValue - (item->lastValue - encoderValue) * speed * step / 100;
 			needUpdate = true;
 		}
 
