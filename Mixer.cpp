@@ -108,6 +108,7 @@ void MixerClass::setChannelVolume(int encoder, int value)
 	Engine.curentSettings->volume = static_cast<float>(value) / 100;	
 	ChannelSettings* channel = Engine.getChannelByNum(static_cast<edit_channel>(Engine.songSettings.currentChannel));
 	DisplayCore.drawMixerButtons(Engine.songSettings.currentChannel, channel->volume, true);
+	AudioCore.setBalancedVolume(Engine.songSettings.currentChannel, channel->volume, channel->balance);
 
 }
 

@@ -74,7 +74,7 @@ void SongLoaderClass::drawTexts()
 void SongLoaderClass::drawNewSongName()
 {
 	DisplayCore.drawFileloadPanel(true,selectedPart);
-	uint16_t x = 156;
+	//uint16_t x = 156;
 	DisplayCore.setCursor(136, 150);
 	
 		DisplayCore.drawColoredChar('<',ILI9341_PURPLE);		

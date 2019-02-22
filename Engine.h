@@ -16,7 +16,7 @@
 typedef struct
 {
 	float balance = 0.0f;
-	float volume = 1.0f;
+	float volume = 0.5f;
 	bool isSolo = false;
 	bool isOn = true;
 } BaseSettings;
@@ -65,7 +65,7 @@ typedef struct : ChannelSettings
 {
 	float roomsize = 0.1f;
 	float damping = 1.0f;
-} FxReverbChannelSettings;
+} Efeect1Settings;
 
 //Настройки лупера
 typedef struct : ChannelSettings
@@ -111,16 +111,20 @@ enum current_view_mode
 //Каналы
 typedef struct
 {
-	MasterSettings master;
-	LooperSettings looper;
 	ChannelSettings leftInput;
 	ChannelSettings rightInput;
+
 	ChannelSettings drums;
 	ChannelSettings bass;
 	ChannelSettings strings;
 	ChannelSettings piano;
 	ChannelSettings fm;
-	FxReverbChannelSettings fxReverb;
+	LooperSettings looper;
+	Efeect1Settings effect1;
+	Efeect1Settings effect2;
+	Efeect1Settings effect3;
+
+	MasterSettings master;
 } MixerSettings;
 
 
@@ -141,6 +145,7 @@ class EngineClass
 protected:
 	elapsedMillis _hardwareTimer;
 	uint8_t _tickCounter;
+	bool demoState;
 public:
 	//static void updateModeLinks();	
 	SongSettings songSettings;
@@ -150,13 +155,14 @@ public:
 
 	static void saveSettings(bool pressed);
 	static void loadSettings(bool pressed);
+	static void calcBiquad(ChannelSettings& setting, int* coef);
 	static void init();
     void drawTopPanel() const;
 	static ChannelSettings* getChannelByNum(edit_channel channel);
 	void selectChannel();
 	static void assignDefaultButtons();
 
-	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting);
+	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, Efeect1Settings& setting);
 	//static void changeMode();
 	//static void changeEditType();
 	//static void muteMaster();

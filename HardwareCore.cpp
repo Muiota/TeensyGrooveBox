@@ -16,8 +16,8 @@
 
 // Input #0 is on pin 21 so connect a button or switch from there to ground
 
-Adafruit_MCP23017 mcp;
-Adafruit_MCP23017 mcp2;
+Adafruit_MCP23017 mcpButtons;
+Adafruit_MCP23017 mcpLeds;
 Encoder enc_one(30, 29);
 Encoder enc_two(28, 27);
 Encoder enc_three(26, 25);
@@ -59,21 +59,21 @@ HardwareButton _currentButton[7];
 
 void HardwareCoreClass::init()
 {
-	mcp.begin(0);      // use default address 0
-	mcp2.begin(1);
+	mcpButtons.begin(0);      // use default address 0
+	mcpLeds.begin(1);
 
 
 	for (int i = 0; i <= 15; i++) {
-		mcp.pinMode(i, INPUT);
-		mcp.pullUp(i, HIGH);  // turn on a 100K pullup internally
+		mcpButtons.pinMode(i, INPUT);
+		mcpButtons.pullUp(i, HIGH);  // turn on a 100K pullup internally
 	}
 
 
 	for (int i = 0; i <= 15; i++) {
-		mcp2.pinMode(i, OUTPUT);
+		mcpLeds.pinMode(i, OUTPUT);
 	}
 
-	mcp2.pullUp(0, HIGH);  // turn on a 100K pullup internally
+	mcpLeds.pullUp(0, HIGH);  // turn on a 100K pullup internally
 
 	enc_three.write(0.6 * 400);
 
@@ -101,6 +101,11 @@ void HardwareCoreClass::init()
 	pinMode(15, OUTPUT); //encoder 2 led
 	pinMode(8, OUTPUT); //encoder 1 led
 
+
+	//todo
+	pinMode(5, OUTPUT); //external port
+
+
 	//seqLedWrite(13, LOW);
 
 	_sdCardInitialized = SD.begin(SDCARD_CS_PIN);
@@ -108,6 +113,11 @@ void HardwareCoreClass::init()
 
 	
 
+}
+
+void HardwareCoreClass::setLedPin( bool state)
+{
+	digitalWrite(5, state);
 }
 
 void HardwareCoreClass::resetButtons()
@@ -128,12 +138,12 @@ bool HardwareCoreClass::panelButtonRead(button_type button)
 
 bool HardwareCoreClass::seqButtonRead(uint8_t button_pin)
 {
-	return mcp.digitalRead(button_pin < 8 ? 7 - button_pin : 23 - button_pin) == 0;	
+	return mcpButtons.digitalRead(button_pin < 8 ? 7 - button_pin : 23 - button_pin) == 0;	
 }
 
 void HardwareCoreClass::seqLedWrite(uint8_t led_pin, bool value)
 {
-	mcp2.digitalWrite(15 - led_pin, value);
+	mcpLeds.digitalWrite(15 - led_pin, value);
 }
 
 

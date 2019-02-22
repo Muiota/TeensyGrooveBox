@@ -69,11 +69,11 @@ void EqualizerClass::setGain(int encoder, int value)
 }
 
 
+
 void EqualizerClass::recalc()
 {
 	int coef[5];
-	AudioFilterBiquad::calcBiquad(Engine.curentSettings->eqType,
-		Engine.curentSettings->eqFc, Engine.curentSettings->eqGain, Engine.curentSettings->eqSlope, coef);
+	Engine.calcBiquad(*Engine.curentSettings, coef);
 	
 	/*DisplayCore.drawText(settings->eqFc, 150, 120, true);
 	DisplayCore.drawText(settings->eqGain, 150, 140, true);
@@ -197,8 +197,8 @@ void EqualizerClass::recalc()
 	DisplayCore.drawText(magPlot[0], 10, 160, true);
 	DisplayCore.drawText(magPlot[150], 10, 180, true);
 	DisplayCore.drawText(magPlot[300], 10, 200, true); */
-	DisplayCore.drawEqChart(10, 124, ymin, ymax, len, Engine.curentSettings->eqFc,  magPlot);
-	AudioCore.setLooperEqBiquad(coef);
+	DisplayCore.drawEqChart(10, 124, ymin, ymax, len, Engine.curentSettings->eqFc,  magPlot);	
+	AudioCore.setEqBiquad(Engine.songSettings.currentChannel, coef);
 	//calcBiquad(type, Fc, Fs, Q, gain);
 }
 

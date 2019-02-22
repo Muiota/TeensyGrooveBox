@@ -130,7 +130,7 @@ JsonObject& EngineClass::saveChannelPart(JsonObject& mixer, String channelName, 
 }
 
 
-void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName, FxReverbChannelSettings& setting)
+void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName, Efeect1Settings& setting)
 {
 	JsonObject& channel =  saveChannelPart(mixer, channelName, setting);	
 	channel["damping"] = setting.damping;
@@ -164,7 +164,7 @@ void EngineClass::saveSettings(bool pressed)
 	saveChannelPart(mixer, "looper", Engine.songSettings.mixer.looper);
 	saveChannelPart(mixer, "leftInput", Engine.songSettings.mixer.leftInput);
 	saveChannelPart(mixer, "rightInput", Engine.songSettings.mixer.rightInput);
-	saveChannelPartFxReverb(mixer, "fxReverb", Engine.songSettings.mixer.fxReverb);
+	saveChannelPartFxReverb(mixer, "fxReverb", Engine.songSettings.mixer.effect1);
 	
 	/*JsonArray& data = mixer.createNestedArray("data");
 	data.add(48.756080);
@@ -189,8 +189,8 @@ void EngineClass::loadSettings(bool pressed)
 	Engine.songSettings.mixer.leftInput.eqQ = 0.707f;
 	Engine.songSettings.mixer.rightInput.eqFc = 200;
 	Engine.songSettings.mixer.rightInput.eqQ = 0.707f;
-	Engine.songSettings.mixer.fxReverb.eqFc = 300;
-	Engine.songSettings.mixer.fxReverb.eqQ = 0.707f;
+	Engine.songSettings.mixer.effect1.eqFc = 300;
+	Engine.songSettings.mixer.effect1.eqQ = 0.707f;
 
 
 	if (SD.exists("settings.mxr"))
@@ -241,33 +241,47 @@ void EngineClass::loadSettings(bool pressed)
 		Engine.songSettings.mixer.rightInput.balance = rightInput["balance"];
 
 		JsonObject& fxReverb = mixer["fxReverb"];
-		Engine.songSettings.mixer.fxReverb.volume = fxReverb["volume"];
-		Engine.songSettings.mixer.fxReverb.eqFc = fxReverb["frequency"];
-		Engine.songSettings.mixer.fxReverb.eqQ = fxReverb["q"];
-		Engine.songSettings.mixer.fxReverb.balance = fxReverb["balance"];
-		Engine.songSettings.mixer.fxReverb.damping = fxReverb["damping"];
-		Engine.songSettings.mixer.fxReverb.roomsize = fxReverb["roomsize"];
+		Engine.songSettings.mixer.effect1.volume = fxReverb["volume"];
+		Engine.songSettings.mixer.effect1.eqFc = fxReverb["frequency"];
+		Engine.songSettings.mixer.effect1.eqQ = fxReverb["q"];
+		Engine.songSettings.mixer.effect1.balance = fxReverb["balance"];
+		Engine.songSettings.mixer.effect1.damping = fxReverb["damping"];
+		Engine.songSettings.mixer.effect1.roomsize = fxReverb["roomsize"];
 
 		Serial.println("Settings loaded");
 	}
 }
 
+
+void EngineClass::calcBiquad(ChannelSettings& setting, int *coef)
+{
+	AudioFilterBiquad::calcBiquad(setting.eqType,
+		setting.eqFc, setting.eqGain, setting.eqSlope, coef);
+}
+
 void EngineClass::init()
 {
-
-
-
 	loadSettings(true);
-	AudioCore.setMasterVolume(Engine.songSettings.mixer.master.volume); //todo settings by channel
-	AudioCore.setLooperVolume(Engine.songSettings.mixer.looper.volume, Engine.songSettings.mixer.looper.balance);
+	
+	for (uint8_t n = 0; n <=11; n++)
+	{
+		ChannelSettings* channel = Engine.getChannelByNum(static_cast<edit_channel>(n));
+		AudioCore.setBalancedVolume(n, channel->volume, channel->balance);	
+		int coef[5];
+		calcBiquad(*channel, coef);
+	
+		
+		AudioCore.setEqBiquad(n, coef);
+	}
+	
 	//AudioCore.setWavBiquad(Engine.songSettings.mixer.looper.eqFc, Engine.songSettings.mixer.looper.eqQ);
-	AudioCore.setLeftInputVolume(Engine.songSettings.mixer.leftInput.volume, Engine.songSettings.mixer.leftInput.balance);
-	AudioCore.setLeftInputBiquad(Engine.songSettings.mixer.leftInput.eqFc, Engine.songSettings.mixer.leftInput.eqQ);
-	AudioCore.setRightInputVolume(Engine.songSettings.mixer.rightInput.volume, Engine.songSettings.mixer.rightInput.balance);
-	AudioCore.setRightInputBiquad(Engine.songSettings.mixer.rightInput.eqFc, Engine.songSettings.mixer.rightInput.eqQ);
-	AudioCore.setReverbVolume(0, Engine.songSettings.mixer.fxReverb.balance);
-	AudioCore.setReverbBiquad(Engine.songSettings.mixer.fxReverb.eqFc, Engine.songSettings.mixer.fxReverb.eqQ);
-	AudioCore.setReverbRoom(Engine.songSettings.mixer.fxReverb.damping, Engine.songSettings.mixer.fxReverb.roomsize);
+	//AudioCore.setLeftInputVolume(Engine.songSettings.mixer.leftInput.volume, Engine.songSettings.mixer.leftInput.balance);
+	//AudioCore.setLeftInputBiquad(Engine.songSettings.mixer.leftInput.eqFc, Engine.songSettings.mixer.leftInput.eqQ);
+	//AudioCore.setRightInputVolume(Engine.songSettings.mixer.rightInput.volume, Engine.songSettings.mixer.rightInput.balance);
+	//AudioCore.setRightInputBiquad(Engine.songSettings.mixer.rightInput.eqFc, Engine.songSettings.mixer.rightInput.eqQ);
+	//AudioCore.setReverbVolume(0, Engine.songSettings.mixer.effect1.balance);
+	//AudioCore.setReverbBiquad(Engine.songSettings.mixer.effect1.eqFc, Engine.songSettings.mixer.effect1.eqQ);
+	//AudioCore.setReverbRoom(Engine.songSettings.mixer.effect1.damping, Engine.songSettings.mixer.effect1.roomsize);
 	//updateModeLinks();	
 
 	/*
@@ -471,11 +485,11 @@ ChannelSettings* EngineClass::getChannelByNum(edit_channel channel)
 	case EDIT_CHANNEL_FM:
 		return  &Engine.songSettings.mixer.fm;		
 	case EDIT_CHANNEL_SEND_FX_REVERB:
-		return &Engine.songSettings.mixer.master;
+		return &Engine.songSettings.mixer.effect1;
 	case EDIT_CHANNEL_SEND_FX_CHORUS:
-		return &Engine.songSettings.mixer.master;
+		return &Engine.songSettings.mixer.effect2;
 	case EDIT_CHANNEL_SEND_FX_DELAY:
-		return &Engine.songSettings.mixer.master;
+		return &Engine.songSettings.mixer.effect3;
 	case EDIT_CHANNEL_MASTER:
 		return &Engine.songSettings.mixer.master;		
 	}
@@ -506,6 +520,8 @@ void EngineClass::update()
 			AudioProcessorUsageMaxReset();
 			AudioMemoryUsageMaxReset();
 			DisplayCore.drawUsage(usageCPU, usageMemory);
+			demoState = !demoState;
+			HardwareCore.setLedPin(demoState);
 		}
 		
 		HardwareCore.update(); //Обновить состояние кнопок
