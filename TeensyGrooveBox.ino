@@ -1,3 +1,4 @@
+#include <WS2812Serial.h>
 #include "SongLoader.h"
 #include "knobs.h"
 #include "picture.h"
@@ -40,7 +41,6 @@ void setup() {
 	log("Audio success", false);	
 	DisplayCore.clearAll();
 	Engine.init();
-
 }
 
 void loop() {

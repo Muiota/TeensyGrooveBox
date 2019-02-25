@@ -16,6 +16,8 @@
 
 // Input #0 is on pin 21 so connect a button or switch from there to ground
 
+
+
 Adafruit_MCP23017 mcpButtons;
 Adafruit_MCP23017 mcpLeds;
 Encoder enc_one(30, 29);
@@ -27,6 +29,9 @@ Encoder enc_three(26, 25);
 #define SDCARD_SCK_PIN   14
 
 
+const int RING_NUMLED = 16;
+const int RING_PIN = 8;// 5;
+
 void emptyEncoderCallback(int e, int x)
 {
 }
@@ -35,6 +40,17 @@ void emptyButtonCallback(bool pressed)
 {
 }
 
+byte drawingMemory[RING_NUMLED * 3];         //  3 bytes per LED
+DMAMEM byte displayMemory[RING_NUMLED * 12]; // 12 bytes per LED
+WS2812Serial ringLeds(RING_NUMLED, displayMemory, drawingMemory, RING_PIN, WS2812_GRB);
+
+/*#define RED    0xFF0000
+#define GREEN  0x00FF00
+#define BLUE   0x0000FF
+#define YELLOW 0xFFFF00
+#define PINK   0xFF1088
+#define ORANGE 0xE05800
+#define WHITE  0xFFFFFF */
 
 typedef struct {
 	int32_t lastValue = 0;
@@ -99,11 +115,11 @@ void HardwareCoreClass::init()
 	//pinMode(13, OUTPUT);  // use the p13 LED as debugging
 	pinMode(39, OUTPUT); // encoder 0 led
 	pinMode(15, OUTPUT); //encoder 2 led
-	pinMode(8, OUTPUT); //encoder 1 led
+	pinMode(5, OUTPUT); //encoder 1 led
 
 
 	//todo
-	pinMode(5, OUTPUT); //external port
+	pinMode(RING_PIN, OUTPUT); //external port
 
 
 	//seqLedWrite(13, LOW);
@@ -111,13 +127,20 @@ void HardwareCoreClass::init()
 	_sdCardInitialized = SD.begin(SDCARD_CS_PIN);
 
 
-	
+
+	ringLeds.begin();
+	Serial.println("Ring initialized");
+	_ringInitialized = true;
 
 }
 
-void HardwareCoreClass::setLedPin( bool state)
+void HardwareCoreClass::setRingLedColor(uint8_t led, int color)
 {
-	digitalWrite(5, state);
+	if (_ringInitialized)
+	{
+		ringLeds.setPixel(led, color);
+		ringLeds.show();
+	}
 }
 
 void HardwareCoreClass::resetButtons()
@@ -155,7 +178,7 @@ void HardwareCoreClass::setLedEncoder(uint8_t encoder, bool value)
 		digitalWrite(39, value);
 		break;
 	case 1:
-		digitalWrite(8, value);
+		digitalWrite(5, value);
 		break;
 	case 2:
 		digitalWrite(15, value);
@@ -333,6 +356,8 @@ void HardwareCoreClass::writeEncoder(uint8_t encoder, int32_t value)
 	}
 }
 
+bool HardwareCoreClass::_sdCardInitialized = false;
+bool HardwareCoreClass::_ringInitialized = false;
 
 HardwareCoreClass HardwareCore;
 

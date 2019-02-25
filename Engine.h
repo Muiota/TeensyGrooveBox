@@ -128,6 +128,13 @@ typedef struct
 } MixerSettings;
 
 
+typedef struct
+{
+	uint8_t stepsQnt = 16;
+	uint8_t currentStep = 0;
+	u_long shuffle = 20000;
+} PatternSettings;
+
 //Композиция
 typedef struct
 {
@@ -137,6 +144,7 @@ typedef struct
 	MixerSettings mixer;
 	String name;
 	String path;
+	PatternSettings pattern;
 } SongSettings;
 
 
@@ -144,8 +152,9 @@ class EngineClass
 {
 protected:
 	elapsedMillis _hardwareTimer;
+	elapsedMicros _midiTimer;
+	u_long _nextMidiShot;
 	uint8_t _tickCounter;
-	bool demoState;
 public:
 	//static void updateModeLinks();	
 	SongSettings songSettings;

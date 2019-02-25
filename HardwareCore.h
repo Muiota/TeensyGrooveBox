@@ -24,15 +24,17 @@ enum button_type {
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include <WS2812Serial.h>
 
 
 class HardwareCoreClass
 {
  protected:
-	 boolean _sdCardInitialized;
- public:
-	void init();
-	static void setLedPin(bool state);
+	 static bool _sdCardInitialized;
+	 static bool _ringInitialized;
+public:	
+	static void init();
+	static void setRingLedColor(uint8_t led, int color);
 	static void resetButtons();
 	static bool panelButtonRead(button_type button);
 	static bool seqButtonRead(uint8_t button_pin);

@@ -23,9 +23,22 @@ class DisplayCoreClass
 {
  protected:
 	 static uint16_t getMixerChannelXcoord(uint8_t channel);
-	static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
-
+	 static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
+	 static ILI9341_t3 _tft;
 public:
+	static uint16_t MAIN_COLOR;// 0xD320; //    /* 255, 165,   0 */
+	static uint16_t BORDER_COLOR ; //    /* 255, 165,   0 */
+	static uint16_t BORDER_COLOR_DARK; //    /* 255, 165,   0 */
+	static uint16_t OFF_COLOR;
+	static uint16_t INFO_COLOR;
+	static uint16_t SUCCESS_COLOR;
+	static uint16_t ACTIVE_COLOR;
+	static uint16_t DARK_PANEL_COLOR;
+	static uint16_t LIGHT_PANEL_COLOR;
+
+	static uint16_t NONE_COLOR_WAV;
+	static uint16_t UNSELECTED_COLOR_WAV;
+
 	static void init();
 	static void drawSequenceButton(uint8_t pin, bool value);
 	static void drawEncoder(uint8_t encoder, int32_t value, int32_t max, bool isBoth = false);
@@ -34,7 +47,7 @@ public:
 	static void drawMeterSide(float l, uint16_t x, uint16_t y);	
 	static void drawMixerMeter(uint16_t channel, float l, float r);
 	static void drawMixerMeterTitle(uint8_t channel, bool isActive);
-	static void drawMixerButtons(uint8_t channel, float volume, bool isActive);
+	static void drawMixerButtons(uint8_t channel, float volume, float balance, bool isActive);
 	static void printLn(const char* msg, bool isError);
 	static void drawUsage(double usage, uint16_t memory);
 	static void drawEqChart(uint16_t x, uint16_t y, double ymin, double ymax, uint16_t len, double fq, double* data);

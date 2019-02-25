@@ -10,7 +10,7 @@
 
 uint8_t _lastViewMode = 128;
 
-
+byte testbit1 = 0x01;
 //BaseSettings* _currenctSettings = &_songSettings.mixer.master;
 /*
 void EngineClass::updateModeLinks()
@@ -294,7 +294,6 @@ void EngineClass::init()
 	HardwareCore.setButtonParam(ENCODER1, changeEditType);
 	HardwareCore.setButtonParam(ENCODER0, muteMaster);
 	*/
-	
 }
 
 
@@ -510,6 +509,40 @@ void EngineClass::assignDefaultButtons()
 
 void EngineClass::update()
 {
+	
+
+	if (_midiTimer >= _nextMidiShot)
+	{
+
+		long shift = 0;
+		if (songSettings.pattern.shuffle != 0)
+		{
+			if (songSettings.pattern.currentStep & testbit1) //todo low bit check optimize
+			{
+				shift = songSettings.pattern.shuffle;
+			}
+			else
+			{
+				shift = - songSettings.pattern.shuffle;
+			}
+		}
+
+		_nextMidiShot = _midiTimer + 100000 + shift;
+		uint8_t proposed = songSettings.pattern.currentStep + 1;
+		if (proposed > 16)
+		{
+			proposed = proposed - 16;
+		}
+		HardwareCore.seqLedWrite(songSettings.pattern.currentStep, false);
+		HardwareCore.seqLedWrite(proposed, true);
+		songSettings.pattern.currentStep = proposed;	
+		HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(_nextMidiShot));
+		if (isValidScreen)
+		{
+			return;
+		}
+	}
+
 	if (_hardwareTimer >= 100) {
 		_hardwareTimer = 0;
 		if (_tickCounter++ >= 10 || !isValidScreen)
@@ -520,8 +553,6 @@ void EngineClass::update()
 			AudioProcessorUsageMaxReset();
 			AudioMemoryUsageMaxReset();
 			DisplayCore.drawUsage(usageCPU, usageMemory);
-			demoState = !demoState;
-			HardwareCore.setLedPin(demoState);
 		}
 		
 		HardwareCore.update(); //Обновить состояние кнопок

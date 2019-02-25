@@ -370,6 +370,24 @@ void AudioCoreClass::setBalancedVolume(uint8_t channel,  float vol, float balanc
 		break;
 	case 11: //EDIT_CHANNEL_MASTER
 		AudioCore.setMasterVolume(vol);
+
+		if (balance == 0)
+		{			
+			setupMixer(masterMixerL, 1);			
+			setupMixer(masterMixerR, 1);			
+		}
+		else if (balance > 0)
+		{
+			setupMixer(masterMixerL, 1);
+			setupMixer(masterMixerR, (1.0 - balance));		
+		}
+		else
+		{
+			setupMixer(masterMixerR, 1);			
+			setupMixer(masterMixerL, (1.0 + balance));			
+		}
+		masterMixerL.gain(3, 0);
+		masterMixerR.gain(3, 0);
 		break;
 	default:;
 	}
@@ -541,4 +559,5 @@ void AudioCoreClass::stopRecording() {
 
 
 AudioCoreClass AudioCore;
+
 

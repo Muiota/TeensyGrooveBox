@@ -20,6 +20,7 @@ public:
 	static void encoder2press(bool pressed);
 	static void subMenuShow(bool pressed);
 	static void setChannelVolume(int encoder, int value);
+	static void setChannelBalance(int encoder, int value);
 };
 extern MixerClass Mixer;
 

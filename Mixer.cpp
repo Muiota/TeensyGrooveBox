@@ -24,6 +24,7 @@ void MixerClass::onShow()
 	HardwareCore.setButtonParam(ENCODER2, encoder2press);	
 	HardwareCore.setEncoderParam(0, selectChanel, "selectChannel", 0, 11, 1, Engine.songSettings.currentChannel);
 	HardwareCore.setEncoderParam(1, setChannelVolume, "VOLUME", 0, 1, 0.02, Engine.curentSettings->volume);
+	HardwareCore.setEncoderParam(2, setChannelBalance, "VOLUME", -1, 1, 0.05, Engine.curentSettings->balance);
 }
 
 void MixerClass::selectChanel(int encoder, int value)
@@ -31,6 +32,7 @@ void MixerClass::selectChanel(int encoder, int value)
 	Engine.songSettings.currentChannel = static_cast<edit_channel>(value / 100);
 	Engine.selectChannel();
 	HardwareCore.setEncoderValue(1, Engine.curentSettings->volume);
+	HardwareCore.setEncoderValue(2, Engine.curentSettings->balance);
 
 	
 }
@@ -88,6 +90,7 @@ void MixerClass::encoder2press(bool pressed)
 void MixerClass::subMenuShow(bool pressed)
 {	
 	HardwareCore.setLedEncoder(0, pressed);
+	HardwareCore.setLedEncoder(1, pressed);
 	if (_subMenuPressed != pressed)
 	{
 		_subMenuPressed = pressed;
@@ -107,9 +110,17 @@ void MixerClass::setChannelVolume(int encoder, int value)
 {
 	Engine.curentSettings->volume = static_cast<float>(value) / 100;	
 	ChannelSettings* channel = Engine.getChannelByNum(static_cast<edit_channel>(Engine.songSettings.currentChannel));
-	DisplayCore.drawMixerButtons(Engine.songSettings.currentChannel, channel->volume, true);
+	DisplayCore.drawMixerButtons(Engine.songSettings.currentChannel, channel->volume, channel->balance, true);
 	AudioCore.setBalancedVolume(Engine.songSettings.currentChannel, channel->volume, channel->balance);
+}
 
+
+void MixerClass::setChannelBalance(int encoder, int value)
+{
+	Engine.curentSettings->balance = static_cast<float>(value) / 100;
+	ChannelSettings* channel = Engine.getChannelByNum(static_cast<edit_channel>(Engine.songSettings.currentChannel));
+	DisplayCore.drawMixerButtons(Engine.songSettings.currentChannel, channel->volume, channel->balance, true);
+	AudioCore.setBalancedVolume(Engine.songSettings.currentChannel, channel->volume, channel->balance);
 }
 
 void MixerClass::handle()
@@ -232,7 +243,7 @@ void MixerClass::handle()
 				auto is_active = Engine.songSettings.currentChannel == i;
 				DisplayCore.drawMixerMeterTitle(i, is_active);
 				ChannelSettings* channel = Engine.getChannelByNum(static_cast<edit_channel>(i));
-				DisplayCore.drawMixerButtons(i, channel->volume, is_active);
+				DisplayCore.drawMixerButtons(i, channel->volume, channel->balance, is_active);
 			}
 
 			_lastCurrentMode = Engine.songSettings.currentChannel;

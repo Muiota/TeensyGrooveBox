@@ -10,8 +10,7 @@ String songs[64];
 uint8_t WAVES_COUNT = 0;
 uint8_t _lastWavPage = 0;
 uint8_t _currentWave = 0;
-uint16_t SELECTED_COLOR_WAV = 0xF487;
-uint16_t UNSELECTED_COLOR_WAV = 0x4A28;
+
 
 void LooperChanelClass::handle()
 {
@@ -47,6 +46,10 @@ void LooperChanelClass::loadWaves()
 {
 	if (WAVES_COUNT == 0)
 	{
+
+		songs[WAVES_COUNT] = "NONE.WAV";
+		WAVES_COUNT++;
+
 		Serial.println("Load songs");
 		File rootdir = SD.open("/DATA/TRACKS/");
 		while (1) {
@@ -105,7 +108,7 @@ void LooperChanelClass::selectSong(int encoder, int value)
 
 void LooperChanelClass::startTrack()
 {
-	if (!AudioCore.wavIsPlaying())
+	if (!AudioCore.wavIsPlaying() && _currentWave > 0)
 	{
 		loadWaves();
 		Serial.print("Start");
@@ -147,15 +150,20 @@ void LooperChanelClass::drawTexts()
 		String itemString = (String(1000 + i).substring(1, 4)) + " " + songName.substring(0, songName.length() - 4);
 
 		uint16_t color;
-		if (i == _currentWave)
+
+		 if (i == _currentWave)
 		{
-			color = SELECTED_COLOR_WAV;
+			color = DisplayCore.MAIN_COLOR;
+		}
+		else if (i == 0)
+		{
+			color = DisplayCore.NONE_COLOR_WAV;
 		}
 		else
 		{
-			color = UNSELECTED_COLOR_WAV;
+			color = DisplayCore.UNSELECTED_COLOR_WAV;
 		}
-
+		 
 		DisplayCore.drawTextOpacity(itemString, 16, 30 + (i - start) * 16, color);
 	}
 	if (_lastWavPage != page)
