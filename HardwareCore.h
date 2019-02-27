@@ -26,13 +26,19 @@ enum button_type {
 #include <SerialFlash.h>
 #include <WS2812Serial.h>
 
-
 class HardwareCoreClass
 {
  protected:
-	 static bool _sdCardInitialized;
-	 static bool _ringInitialized;
+	 static bool _sdCardInitialized;	 	 
+	 static Adafruit_MCP23017 _mcpButtons;
+	 static Adafruit_MCP23017 _mcpLeds;
+	 static Encoder _encOne;
+	 static Encoder _encTwo;
+	 static Encoder _encThree;
+	 static bool _lastLedStates[16];
+
 public:	
+	static bool ledStates[16];
 	static void init();
 	static void setRingLedColor(uint8_t led, int color);
 	static void resetButtons();
@@ -47,7 +53,8 @@ public:
 	static void setButtonParam(uint8_t button, ButtonCallback callback);
 	static void update();
 	static int32_t readEncoder(uint8_t encoder);
-	static void writeEncoder(uint8_t encoder, int32_t value);	
+	static void writeEncoder(uint8_t encoder, int32_t value);
+	static void updateLeds();
 };
 
 extern HardwareCoreClass HardwareCore;

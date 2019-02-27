@@ -8,9 +8,8 @@
 
 // Load drivers
 
-uint8_t _lastViewMode = 128;
 
-byte testbit1 = 0x01;
+
 //BaseSettings* _currenctSettings = &_songSettings.mixer.master;
 /*
 void EngineClass::updateModeLinks()
@@ -294,6 +293,7 @@ void EngineClass::init()
 	HardwareCore.setButtonParam(ENCODER1, changeEditType);
 	HardwareCore.setButtonParam(ENCODER0, muteMaster);
 	*/
+	_midiClock.begin(checkMidiEvent, 100000);
 }
 
 
@@ -456,7 +456,7 @@ void EngineClass::setReverbVolume(int encoder, int value)
 
 */
 
-void EngineClass::drawTopPanel() const
+void EngineClass::drawTopPanel()
 {
 	 DisplayCore.drawText(songSettings.name, 8, 3);
 }
@@ -507,46 +507,30 @@ void EngineClass::assignDefaultButtons()
 	HardwareCore.setButtonParam(BROWN, backToMixer);
 }
 
+
+void EngineClass::checkMidiEvent() {
+	uint8_t proposed = songSettings.pattern.currentStep + 1;
+	if (proposed > 16)
+	{
+		proposed = proposed - 16;
+	}
+	HardwareCore.ledStates[songSettings.pattern.currentStep] = false;
+	HardwareCore.ledStates[proposed] = true;	
+	songSettings.pattern.currentStep = proposed;
+	HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(proposed));
+	//AudioCore.drum2On();
+}
+
 void EngineClass::update()
 {
-	
-
-	if (_midiTimer >= _nextMidiShot)
-	{
-
-		long shift = 0;
-		if (songSettings.pattern.shuffle != 0)
-		{
-			if (songSettings.pattern.currentStep & testbit1) //todo low bit check optimize
-			{
-				shift = songSettings.pattern.shuffle;
-			}
-			else
-			{
-				shift = - songSettings.pattern.shuffle;
-			}
-		}
-
-		_nextMidiShot = _midiTimer + 100000 + shift;
-		uint8_t proposed = songSettings.pattern.currentStep + 1;
-		if (proposed > 16)
-		{
-			proposed = proposed - 16;
-		}
-		HardwareCore.seqLedWrite(songSettings.pattern.currentStep, false);
-		HardwareCore.seqLedWrite(proposed, true);
-		songSettings.pattern.currentStep = proposed;	
-		HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(_nextMidiShot));
-		if (isValidScreen)
-		{
-			return;
-		}
-	}
-
-	if (_hardwareTimer >= 100) {
-		_hardwareTimer = 0;
+	if (_hardwareTimer >= _nextUpdateTick) {
+		
 		if (_tickCounter++ >= 10 || !isValidScreen)
 		{
+			if (_hardwareTimer > 1000000)
+			{
+				_hardwareTimer = 0;
+			}
 			_tickCounter = 0;
 			auto usageCPU = AudioProcessorUsageMax();
 			uint16_t usageMemory = AudioMemoryUsageMax();
@@ -602,7 +586,7 @@ void EngineClass::update()
 			DisplayCore.drawText("Not implemented " + songSettings.viewMode, 3 , 3);
 			break;
 		}
-
+	//	DisplayCore.update();
 		//	Serial.print(seqButtonRead(24));
 		//	Serial.println("----------");
 
@@ -611,7 +595,14 @@ void EngineClass::update()
 			drawTopPanel();
 		}
 
-
+		long _watchProposed = _hardwareTimer;
+		if (_watchProposed > _watchTest)
+		{
+			_watchTest = _watchProposed;			
+		}		
+		HardwareCore.updateLeds();
+		_nextUpdateTick =_hardwareTimer + 100;
+		
 	}
 	//AudioCore.continueRecording();
 }
@@ -636,5 +627,15 @@ void EngineClass::backToMixer(bool pressed)
 	}
 }
 
+long EngineClass::_watchTest = 0;
+elapsedMillis EngineClass::_hardwareTimer;
+long EngineClass::_nextUpdateTick = 0;
+uint8_t EngineClass::_tickCounter;
+
+ SongSettings EngineClass::songSettings;
+ ChannelSettings* EngineClass::curentSettings;
+ bool EngineClass::isValidScreen = false;
+ IntervalTimer EngineClass::_midiClock;
+ uint8_t EngineClass::_lastViewMode = 128;
 EngineClass Engine;
 

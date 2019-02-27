@@ -16,21 +16,32 @@
 
 // Input #0 is on pin 21 so connect a button or switch from there to ground
 
-
-
-Adafruit_MCP23017 mcpButtons;
-Adafruit_MCP23017 mcpLeds;
-Encoder enc_one(30, 29);
-Encoder enc_two(28, 27);
-Encoder enc_three(26, 25);
-
 #define SDCARD_CS_PIN    10
 #define SDCARD_MOSI_PIN  7
 #define SDCARD_SCK_PIN   14
 
+#define ENCODER1_PIN_1  30
+#define ENCODER1_PIN_2  29
+#define ENCODER2_PIN_1  28
+#define ENCODER2_PIN_2  27
+#define ENCODER3_PIN_1	26
+#define ENCODER3_PIN_2	25
 
-const int RING_NUMLED = 16;
-const int RING_PIN = 8;// 5;
+#define RING_PIN		8
+#define RING_NUMLED		16
+
+
+byte _drawingMemory[RING_NUMLED * 3];         //  3 bytes per LED
+DMAMEM byte _displayMemory[RING_NUMLED * 12]; // 12 bytes per LED
+WS2812Serial _ringLeds(RING_NUMLED, _displayMemory, _drawingMemory, RING_PIN, WS2812_GRB);;
+
+/*#define RED    0xFF0000
+#define GREEN  0x00FF00
+#define BLUE   0x0000FF
+#define YELLOW 0xFFFF00
+#define PINK   0xFF1088
+#define ORANGE 0xE05800
+#define WHITE  0xFFFFFF */
 
 void emptyEncoderCallback(int e, int x)
 {
@@ -40,17 +51,7 @@ void emptyButtonCallback(bool pressed)
 {
 }
 
-byte drawingMemory[RING_NUMLED * 3];         //  3 bytes per LED
-DMAMEM byte displayMemory[RING_NUMLED * 12]; // 12 bytes per LED
-WS2812Serial ringLeds(RING_NUMLED, displayMemory, drawingMemory, RING_PIN, WS2812_GRB);
 
-/*#define RED    0xFF0000
-#define GREEN  0x00FF00
-#define BLUE   0x0000FF
-#define YELLOW 0xFFFF00
-#define PINK   0xFF1088
-#define ORANGE 0xE05800
-#define WHITE  0xFFFFFF */
 
 typedef struct {
 	int32_t lastValue = 0;
@@ -72,26 +73,25 @@ HardwareEncoder _currentEncoder[3];
 HardwareButton _currentButton[7];
 
 
-
 void HardwareCoreClass::init()
 {
-	mcpButtons.begin(0);      // use default address 0
-	mcpLeds.begin(1);
+	_mcpButtons.begin(0);      // use default address 0
+	_mcpLeds.begin(1);
 
 
 	for (int i = 0; i <= 15; i++) {
-		mcpButtons.pinMode(i, INPUT);
-		mcpButtons.pullUp(i, HIGH);  // turn on a 100K pullup internally
+		_mcpButtons.pinMode(i, INPUT);
+		_mcpButtons.pullUp(i, HIGH);  // turn on a 100K pullup internally
 	}
 
 
 	for (int i = 0; i <= 15; i++) {
-		mcpLeds.pinMode(i, OUTPUT);
+		_mcpLeds.pinMode(i, OUTPUT);
 	}
 
-	mcpLeds.pullUp(0, HIGH);  // turn on a 100K pullup internally
+	_mcpLeds.pullUp(0, HIGH);  // turn on a 100K pullup internally
 
-	enc_three.write(0.6 * 400);
+	_encThree.write(0.6 * 400);
 
 
 	SPI.setMOSI(SDCARD_MOSI_PIN);
@@ -128,19 +128,14 @@ void HardwareCoreClass::init()
 
 
 
-	ringLeds.begin();
+	_ringLeds.begin();
 	Serial.println("Ring initialized");
-	_ringInitialized = true;
-
 }
 
 void HardwareCoreClass::setRingLedColor(uint8_t led, int color)
-{
-	if (_ringInitialized)
-	{
-		ringLeds.setPixel(led, color);
-		ringLeds.show();
-	}
+{	
+	_ringLeds.setPixel(led, color);
+	_ringLeds.show();	
 }
 
 void HardwareCoreClass::resetButtons()
@@ -161,12 +156,12 @@ bool HardwareCoreClass::panelButtonRead(button_type button)
 
 bool HardwareCoreClass::seqButtonRead(uint8_t button_pin)
 {
-	return mcpButtons.digitalRead(button_pin < 8 ? 7 - button_pin : 23 - button_pin) == 0;	
+	return _mcpButtons.digitalRead(button_pin < 8 ? 7 - button_pin : 23 - button_pin) == 0;	
 }
 
 void HardwareCoreClass::seqLedWrite(uint8_t led_pin, bool value)
 {
-	mcpLeds.digitalWrite(15 - led_pin, value);
+	_mcpLeds.digitalWrite(15 - led_pin, value);
 }
 
 
@@ -327,11 +322,11 @@ int32_t HardwareCoreClass::readEncoder(uint8_t encoder)
 	switch (encoder)
 	{
 	case 0:
-		return enc_one.read();
+		return _encOne.read();
 	case 1:
-		return enc_two.read();
+		return _encTwo.read();
 	case 2:
-		return enc_three.read();
+		return _encThree.read();
 	default: 
 		return 0;
 	}
@@ -343,21 +338,40 @@ void HardwareCoreClass::writeEncoder(uint8_t encoder, int32_t value)
 	switch (encoder)
 	{
 	case 0:
-		enc_one.write(value);
+		_encOne.write(value);
 		break;
 	case 1:
-		enc_two.write(value);
+		_encTwo.write(value);
 		break;
 	case 2:
-		enc_three.write(value);
+		_encThree.write(value);
 		break;
 	default: 
 		break;
 	}
 }
 
+void HardwareCoreClass::updateLeds()
+{
+	for (int i = 0; i <= 15; i++) {
+		auto value = ledStates[i];
+		if (_lastLedStates[i] != value)
+		{
+			seqLedWrite(i, value);
+			_lastLedStates[i] = value;
+		}		
+	}
+}
+
 bool HardwareCoreClass::_sdCardInitialized = false;
-bool HardwareCoreClass::_ringInitialized = false;
+
+Adafruit_MCP23017 HardwareCoreClass::_mcpButtons = Adafruit_MCP23017();
+Adafruit_MCP23017 HardwareCoreClass::_mcpLeds = Adafruit_MCP23017();
+Encoder HardwareCoreClass::_encOne = Encoder(ENCODER1_PIN_1, ENCODER1_PIN_2);
+Encoder HardwareCoreClass::_encTwo = Encoder(ENCODER2_PIN_1, ENCODER2_PIN_2);
+Encoder HardwareCoreClass::_encThree = Encoder(ENCODER3_PIN_1, ENCODER3_PIN_2);
+bool HardwareCoreClass::ledStates[16];
+bool HardwareCoreClass::_lastLedStates[16];
 
 HardwareCoreClass HardwareCore;
 

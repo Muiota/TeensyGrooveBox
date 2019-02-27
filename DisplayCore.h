@@ -25,7 +25,9 @@ class DisplayCoreClass
 	 static uint16_t getMixerChannelXcoord(uint8_t channel);
 	 static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
 	 static ILI9341_t3 _tft;
+	 static String EQ_TYPES[7];
 public:
+	static const uint16_t METER_HEIGHT = 64;
 	static uint16_t MAIN_COLOR;// 0xD320; //    /* 255, 165,   0 */
 	static uint16_t BORDER_COLOR ; //    /* 255, 165,   0 */
 	static uint16_t BORDER_COLOR_DARK; //    /* 255, 165,   0 */

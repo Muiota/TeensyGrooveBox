@@ -15,15 +15,8 @@
 
 
 
-const uint16_t METER_HEIGHT = 64;
 
-String EQ_TYPES[7] = { "LOW PASS",
-"HIGH PASS",
-"BAND PASS",
-"NOTCH",
-"PEAK",
-"LOW SHELF",
-"HIGH SHELF"};
+
 //0xFD80, 0x5A65
 
 
@@ -32,12 +25,13 @@ void DisplayCoreClass::init()
 {
 	_tft.begin();
 	_tft.setRotation(1);
-	_tft.invertDisplay(false);
+	//_tft.invertDisplay(false);
 	_tft.fillScreen(ILI9341_BLACK);
 
 	_tft.setFont(Arial_9);
 	//_tft.setTextSize(3);
 	_tft.setScroll(0);
+	
 
 }
 
@@ -46,6 +40,7 @@ void DisplayCoreClass::drawSequenceButton(uint8_t pin, bool value)
 	_tft.drawRect(0 + 32 + pin * 18, 240 - 20, 16, 16, BORDER_COLOR);
 	_tft.fillRect(2 + 32 + pin * 18, 240 - 18, 12, 12, value ? MAIN_COLOR : OFF_COLOR);
 }
+
 
 
 void DisplayCoreClass::drawEncoderTitle(uint8_t encoder, String title, bool isActive)
@@ -561,6 +556,7 @@ void DisplayCoreClass::drawMuteMaster(bool isMute)
 
 void DisplayCoreClass::clearAll()
 {
+	Serial.println("Clear screen");
 	_tft.fillScreen(ILI9341_BLACK);	
 }
 
@@ -770,6 +766,13 @@ uint16_t DisplayCoreClass::LIGHT_PANEL_COLOR = 0x9CD3;
 uint16_t DisplayCoreClass::NONE_COLOR_WAV = 0x4A18;
 uint16_t DisplayCoreClass::UNSELECTED_COLOR_WAV = 0x4A28;
 
+String DisplayCoreClass::EQ_TYPES[7] = { "LOW PASS",
+"HIGH PASS",
+"BAND PASS",
+"NOTCH",
+"PEAK",
+"LOW SHELF",
+"HIGH SHELF" };
 
 
 DisplayCoreClass DisplayCore;

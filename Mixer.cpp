@@ -200,7 +200,6 @@ void MixerClass::handle()
 	DisplayCore.drawMixerMeter(EDIT_CHANNEL_MASTER, AudioCore.getPeakL(), AudioCore.getPeakR());
 	DisplayCore.drawMixerMeter(EDIT_CHANNEL_SEND_FX_REVERB, AudioCore.getReverbFxPeakL(), AudioCore.getReverbFxPeakR());
 
-
 	auto wavPeakL = AudioCore.getWavPeakL();
 
 	bool isWavPeakLed = wavPeakL > 0.2;
@@ -235,7 +234,6 @@ void MixerClass::handle()
 
 
 	DisplayCore.drawSongStatus(AudioCore.wavIsPlaying());
-		
 	if (_lastCurrentMode != Engine.songSettings.currentChannel || _fullRedraw)
 	{
 		for (uint8_t i = 0; i <= 11; i++) {
@@ -244,6 +242,7 @@ void MixerClass::handle()
 				DisplayCore.drawMixerMeterTitle(i, is_active);
 				ChannelSettings* channel = Engine.getChannelByNum(static_cast<edit_channel>(i));
 				DisplayCore.drawMixerButtons(i, channel->volume, channel->balance, is_active);
+		
 			}
 
 			_lastCurrentMode = Engine.songSettings.currentChannel;

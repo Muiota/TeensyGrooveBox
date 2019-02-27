@@ -151,25 +151,28 @@ typedef struct
 class EngineClass
 {
 protected:
-	elapsedMillis _hardwareTimer;
-	elapsedMicros _midiTimer;
-	u_long _nextMidiShot;
-	uint8_t _tickCounter;
+	static elapsedMillis _hardwareTimer;	
+	static uint8_t _tickCounter;
+	static long _watchTest;
+	static IntervalTimer _midiClock;
+	static uint8_t _lastViewMode;
+	static long _nextUpdateTick;
 public:
 	//static void updateModeLinks();	
-	SongSettings songSettings;
-	ChannelSettings* curentSettings;
-	bool isValidScreen;	
+	static SongSettings songSettings;
+	static ChannelSettings* curentSettings;
+	static bool isValidScreen;
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting);
 
 	static void saveSettings(bool pressed);
 	static void loadSettings(bool pressed);
 	static void calcBiquad(ChannelSettings& setting, int* coef);
 	static void init();
-    void drawTopPanel() const;
+	static void drawTopPanel();
 	static ChannelSettings* getChannelByNum(edit_channel channel);
-	void selectChannel();
+	static void selectChannel();
 	static void assignDefaultButtons();
+	static void checkMidiEvent();
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, Efeect1Settings& setting);
 	//static void changeMode();
@@ -195,8 +198,8 @@ public:
 	static void setReverbVolume(int encoder, int value); */
 	static void startTrack(bool pressed);
 	static void stopTrack(bool pressed);
-	void update();
-	void switchWindow(current_view_mode current_view_mode);	
+	static void update();
+	static void switchWindow(current_view_mode current_view_mode);
 	static void backToMixer(bool pressed);
 };
 
