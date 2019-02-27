@@ -29,6 +29,12 @@ float WAVESHAPE_EXAMPLE[17] = {
 
 
 
+#include <Audio.h>
+#include <i2c_t3.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
+
 // GUItool: begin automatically generated code
 AudioPlaySdWav           playSdWavA;     //xy=66.5,1820.4452514648438
 AudioInputI2S            audioInput;     //xy=105.22221374511719,2865.5556640625
@@ -48,14 +54,18 @@ AudioFilterBiquad        biquadFm;        //xy=581.4285714285713,2365.7142857142
 AudioFilterBiquad        biquadPiano;        //xy=590,2308.5714285714284
 AudioFilterBiquad        biquadString;        //xy=595.7142857142857,2235.7142857142853
 AudioFilterBiquad        biquadInputL;   //xy=693.7777099609375,2847.0001220703125
+AudioPlaySerialflashRaw  playFlashRaw1;  //xy=699.571533203125,1432.857177734375
 AudioFilterBiquad        biquadInputR;   //xy=694,2896.666748046875
+AudioPlaySerialflashRaw  playFlashRaw2;  //xy=702.5714721679688,1470.857177734375
+AudioPlaySerialflashRaw  playFlashRaw3;  //xy=703,1512.2857666015625
+AudioPlaySerialflashRaw  playFlashRaw4;  //xy=705.1429443359375,1553.428466796875
 AudioSynthSimpleDrum     drum4;          //xy=729.7779541015625,1758.555419921875
 AudioSynthSimpleDrum     drum3;          //xy=730.8888244628906,1713.4446411132812
 AudioSynthSimpleDrum     drum2;          //xy=733.4442749023438,1676.0000915527344
 AudioSynthSimpleDrum     drum1;          //xy=734.333251953125,1632.6670532226562
 AudioAnalyzePeak         peakAudioInputR; //xy=981.5555419921875,2983.6663818359375
 AudioAnalyzePeak         peakAudioInputL; //xy=982.0001220703125,2937.8892211914062
-AudioMixer4              mixer1;         //xy=1022.4443359375,1657.8890991210938
+AudioMixer8              mixerDrums;       //xy=1015,1483
 AudioFilterBiquad        biquadfreeverbs; //xy=1016.77783203125,3220.666748046875
 AudioEffectFreeverbStereo fxfreeverbs;    //xy=1175.444580078125,3219.5552978515625
 AudioFilterBiquad        biquadDrums;        //xy=1212.857177734375,1727.1428833007812
@@ -99,35 +109,40 @@ AudioConnection          patchCord23(biquadString, 0, mixerGroupR1, 2);
 AudioConnection          patchCord24(biquadInputL, peakAudioInputL);
 AudioConnection          patchCord25(biquadInputL, 0, mixerGroupL0, 0);
 AudioConnection          patchCord26(biquadInputL, 0, mixerGroupR0, 0);
-AudioConnection          patchCord27(biquadInputR, peakAudioInputR);
-AudioConnection          patchCord28(biquadInputR, 0, mixerGroupL0, 1);
-AudioConnection          patchCord29(biquadInputR, 0, mixerGroupR0, 1);
-AudioConnection          patchCord30(biquadInputR, biquadfreeverbs);
-AudioConnection          patchCord31(drum4, 0, mixer1, 3);
-AudioConnection          patchCord32(drum3, 0, mixer1, 2);
-AudioConnection          patchCord33(drum2, 0, mixer1, 1);
-AudioConnection          patchCord34(drum1, 0, mixer1, 0);
-AudioConnection          patchCord35(mixer1, peakAudio01);
-AudioConnection          patchCord36(mixer1, biquadDrums);
-AudioConnection          patchCord37(biquadfreeverbs, fxfreeverbs);
-AudioConnection          patchCord38(fxfreeverbs, 0, mixerGroupL1, 0);
-AudioConnection          patchCord39(fxfreeverbs, 0, peakfreeverbsL, 0);
-AudioConnection          patchCord40(fxfreeverbs, 1, mixerGroupR1, 0);
-AudioConnection          patchCord41(fxfreeverbs, 1, peakfreeverbsR, 0);
-AudioConnection          patchCord42(biquadDrums, 0, mixerGroupL0, 2);
-AudioConnection          patchCord43(biquadDrums, 0, mixerGroupR0, 2);
-AudioConnection          patchCord44(mixerGroupL0, 0, masterMixerL, 0);
-AudioConnection          patchCord45(mixerGroupL1, 0, masterMixerL, 1);
-AudioConnection          patchCord46(mixerGroupL2, 0, masterMixerL, 2);
-AudioConnection          patchCord47(mixerGroupR0, 0, masterMixerR, 0);
-AudioConnection          patchCord48(mixerGroupR1, 0, masterMixerR, 1);
-AudioConnection          patchCord49(mixerGroupR2, 0, masterMixerR, 2);
-AudioConnection          patchCord50(masterMixerL, 0, audioOutput, 0);
-AudioConnection          patchCord51(masterMixerL, peakAudioOutputL);
-AudioConnection          patchCord52(masterMixerR, 0, audioOutput, 1);
-AudioConnection          patchCord53(masterMixerR, peakAudioOutputR);
+AudioConnection          patchCord27(playFlashRaw1, 0, mixerDrums, 0);
+AudioConnection          patchCord28(biquadInputR, peakAudioInputR);
+AudioConnection          patchCord29(biquadInputR, 0, mixerGroupL0, 1);
+AudioConnection          patchCord30(biquadInputR, 0, mixerGroupR0, 1);
+AudioConnection          patchCord31(biquadInputR, biquadfreeverbs);
+AudioConnection          patchCord32(playFlashRaw2, 0, mixerDrums, 1);
+AudioConnection          patchCord33(playFlashRaw3, 0, mixerDrums, 2);
+AudioConnection          patchCord34(playFlashRaw4, 0, mixerDrums, 3);
+AudioConnection          patchCord35(drum4, 0, mixerDrums, 7);
+AudioConnection          patchCord36(drum3, 0, mixerDrums, 6);
+AudioConnection          patchCord37(drum2, 0, mixerDrums, 5);
+AudioConnection          patchCord38(drum1, 0, mixerDrums, 4);
+AudioConnection          patchCord39(mixerDrums, peakAudio01);
+AudioConnection          patchCord40(mixerDrums, biquadDrums);
+AudioConnection          patchCord41(biquadfreeverbs, fxfreeverbs);
+AudioConnection          patchCord42(fxfreeverbs, 0, mixerGroupL1, 0);
+AudioConnection          patchCord43(fxfreeverbs, 0, peakfreeverbsL, 0);
+AudioConnection          patchCord44(fxfreeverbs, 1, mixerGroupR1, 0);
+AudioConnection          patchCord45(fxfreeverbs, 1, peakfreeverbsR, 0);
+AudioConnection          patchCord46(biquadDrums, 0, mixerGroupL0, 2);
+AudioConnection          patchCord47(biquadDrums, 0, mixerGroupR0, 2);
+AudioConnection          patchCord48(mixerGroupL0, 0, masterMixerL, 0);
+AudioConnection          patchCord49(mixerGroupL1, 0, masterMixerL, 1);
+AudioConnection          patchCord50(mixerGroupL2, 0, masterMixerL, 2);
+AudioConnection          patchCord51(mixerGroupR0, 0, masterMixerR, 0);
+AudioConnection          patchCord52(mixerGroupR1, 0, masterMixerR, 1);
+AudioConnection          patchCord53(mixerGroupR2, 0, masterMixerR, 2);
+AudioConnection          patchCord54(masterMixerL, 0, audioOutput, 0);
+AudioConnection          patchCord55(masterMixerL, peakAudioOutputL);
+AudioConnection          patchCord56(masterMixerR, 0, audioOutput, 1);
+AudioConnection          patchCord57(masterMixerR, peakAudioOutputR);
 AudioControlSGTL5000     audioShield;    //xy=1905.33349609375,2532.444580078125
 										 // GUItool: end automatically generated code
+
 
 
 

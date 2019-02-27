@@ -26,6 +26,7 @@ enum button_type {
 #include <SerialFlash.h>
 #include <WS2812Serial.h>
 
+
 class HardwareCoreClass
 {
  protected:

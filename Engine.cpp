@@ -518,7 +518,24 @@ void EngineClass::checkMidiEvent() {
 	HardwareCore.ledStates[proposed] = true;	
 	songSettings.pattern.currentStep = proposed;
 	HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(proposed));
-	//AudioCore.drum2On();
+
+	switch (songSettings.pattern.currentStep % 4)
+	{
+	case 0:
+		AudioCore.drum1On();
+		break;
+	case 1:
+		AudioCore.drum2On();
+		break;
+	case 2:
+		AudioCore.drum3On();
+		break;
+	case 3:
+		AudioCore.drum4On();
+		break;
+		
+	}
+	AudioCore.drum2On();
 }
 
 void EngineClass::update()

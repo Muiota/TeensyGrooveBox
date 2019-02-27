@@ -130,6 +130,9 @@ void HardwareCoreClass::init()
 
 	_ringLeds.begin();
 	Serial.println("Ring initialized");
+	Serial.print("KINETISK:");
+	Serial.println(KINETISK);	
+
 }
 
 void HardwareCoreClass::setRingLedColor(uint8_t led, int color)
