@@ -22,8 +22,8 @@ http://www.rinkydinkelectronics.com/t_imageconverter565.php -- создание иконок
 //todo назначение wav барабана на дорожку
 //todo секвенсор расположения паттернов
 //todo переходы туда обратно
-//todo 12 mixer optimize
-//
+//todo 12 mixer optimize 
+//todo
 
 
 fixed:
