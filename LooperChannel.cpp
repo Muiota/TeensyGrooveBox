@@ -1,5 +1,5 @@
 
-#include "LooperChanel.h"
+#include "LooperChannel.h"
 #include "DisplayCore.h"
 #include "HardwareCore.h"
 #include "Engine.h"
@@ -12,7 +12,7 @@ uint8_t _lastWavPage = 0;
 uint8_t _currentWave = 0;
 
 
-void LooperChanelClass::handle()
+void LooperChannelClass::handle()
 {
 	switch (Engine.songSettings.currentView)
 	{
@@ -42,7 +42,7 @@ void LooperChanelClass::handle()
 }
 
 
-void LooperChanelClass::loadWaves()
+void LooperChannelClass::loadWaves()
 {
 	if (WAVES_COUNT == 0)
 	{
@@ -70,7 +70,7 @@ void LooperChanelClass::loadWaves()
 }
 
 
-void LooperChanelClass::onShow()
+void LooperChannelClass::onShow()
 {
 	Engine.assignDefaultButtons();
 	loadWaves();
@@ -92,7 +92,7 @@ void LooperChanelClass::onShow()
 	//HardwareCore.setButtonParam(ENCODER0, switchToSongLoader);
 }
 
-void LooperChanelClass::selectSong(int encoder, int value)
+void LooperChannelClass::selectSong(int encoder, int value)
 {
 	bool needRedraw = _currentWave == 0;
 	_currentWave = -static_cast<int>(value / 100);
@@ -106,7 +106,7 @@ void LooperChanelClass::selectSong(int encoder, int value)
 
 
 
-void LooperChanelClass::startTrack()
+void LooperChannelClass::startTrack()
 {
 	if (!AudioCore.wavIsPlaying() && _currentWave > 0)
 	{
@@ -117,7 +117,7 @@ void LooperChanelClass::startTrack()
 	}
 }
 
-void LooperChanelClass::stopTrack()
+void LooperChannelClass::stopTrack()
 {
 	if (AudioCore.wavIsPlaying())
 	{
@@ -135,7 +135,7 @@ void LooperChanelClass::stopTrack()
 	}
 }
 
-void LooperChanelClass::drawTexts()
+void LooperChannelClass::drawTexts()
 {
 	uint8_t page = (_currentWave) / 13;
 	uint8_t start = page * 13;

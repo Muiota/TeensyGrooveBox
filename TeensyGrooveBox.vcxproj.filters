@@ -25,6 +25,12 @@
     <Filter Include="Header Files\System">
       <UniqueIdentifier>{e222838e-3e9b-4aa2-b337-c80cd2855a86}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Channels">
+      <UniqueIdentifier>{aa63ab1f-f025-4651-a906-d8d87929cf52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Channels">
+      <UniqueIdentifier>{68c76035-6277-4620-bafd-f440900eee13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="TeensyGrooveBox.ino" />
@@ -57,11 +63,14 @@
     <ClInclude Include="SongLoader.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="LooperChanel.h">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Equalizer.h">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DrumChannel.h">
+      <Filter>Header Files\Channels</Filter>
+    </ClInclude>
+    <ClInclude Include="LooperChannel.h">
+      <Filter>Header Files\Channels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,11 +107,14 @@
     <ClCompile Include="SongLoader.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="LooperChanel.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Equalizer.cpp">
       <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DrumChannel.cpp">
+      <Filter>Source Files\Channels</Filter>
+    </ClCompile>
+    <ClCompile Include="LooperChannel.cpp">
+      <Filter>Source Files\Channels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

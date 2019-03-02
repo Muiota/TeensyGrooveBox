@@ -4,7 +4,7 @@
 #define _LOOPERCHANNEL_h
 
 
-class LooperChanelClass
+class LooperChannelClass
 {
 public:
 	static void handle();	
@@ -16,7 +16,7 @@ protected:
 	static void selectSong(int encoder, int value);
 	static void drawTexts();
 };
-extern LooperChanelClass LooperChanel;
+extern LooperChannelClass LooperChannel;
 
 
 #endif

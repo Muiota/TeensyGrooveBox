@@ -46,7 +46,9 @@ void MixerClass::switchToChannel()
 			break;
 		case EDIT_CHANNEL_INPUT_MIC: break;
 		case EDIT_CHANNEL_INPUT_GUITAR: break;
-		case EDIT_CHANNEL_DRUMS: break;
+		case EDIT_CHANNEL_DRUMS:
+			Engine.switchWindow(VIEW_MODE_EDIT_DRUM_PATTERN);			
+		break;
 		case EDIT_CHANNEL_BASS: break;
 		case EDIT_CHANNEL_STRINGS: break;
 		case EDIT_CHANNEL_PIANO: break;

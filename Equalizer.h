@@ -1,4 +1,4 @@
-// Mixer.h
+
 
 #ifndef _EQUALIZER_h
 #define _EQUALIZER_h

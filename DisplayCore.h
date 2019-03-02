@@ -10,6 +10,7 @@
 #include "knobs.c" 
 #include "buttons.c" 
 #include "Engine.h"
+#include "Engine.h"
 
 
 enum song_load_buttons
@@ -67,10 +68,12 @@ public:
 	static void drawFileloadPanel(bool withField, uint8_t selectedPart);
 	static void drawFileloadButtons(song_load_buttons type);
 	static void drawMixerBackground();
+	static void drawDrumPatternBackground();
 	static void disaplaySubMenu();
 	static void disaplayLooperTape(uint8_t channel);
 	static void drawTapeFrame(uint8_t l, uint8_t r);
 	static void drawEqType(uint8_t equalizer);
+	static void drawDrumPattern(uint8_t data[16][8]);
 };
 
 extern DisplayCoreClass DisplayCore;

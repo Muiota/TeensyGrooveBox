@@ -56,6 +56,11 @@ typedef struct : BaseSettings
 } ChannelSettings;
 
 
+typedef struct 
+{
+	uint8_t shots[16][8];
+} DrumPattern;
+
 typedef struct : ChannelSettings
 {
 } MasterSettings;
@@ -101,10 +106,12 @@ enum current_view_mode
 {
 	VIEW_MODE_MAIN_MIXER = 0, //Режим микшера
 	VIEW_MODE_EDIT_PARAMETERS = 1, //Настройки канала
-	VIEW_MODE_EDIT_LOOPER_CHANNEL = 2, //Редактирование инструмента,
+	VIEW_MODE_EDIT_LOOPER_CHANNEL = 2, //Редактирование инструмента,	
 	VIEW_MODE_SEQUENCER = 3, //Редактирование песни
 	VIEW_MODE_OPEN_SONG = 4, //Открыть сохраненный файл,
-	VIEW_MODE_EQUALIZER = 5 //Открыть сохраненный файл
+	VIEW_MODE_EQUALIZER = 5, //Открыть сохраненный файл
+	VIEW_MODE_EDIT_DRUM_PATTERN = 6, //Редактирование барабанов,	
+
 };
 
 
@@ -145,6 +152,7 @@ typedef struct
 	String name;
 	String path;
 	PatternSettings pattern;
+	DrumPattern drumPattern;
 } SongSettings;
 
 
@@ -161,6 +169,7 @@ public:
 	//static void updateModeLinks();	
 	static SongSettings songSettings;
 	static ChannelSettings* curentSettings;
+	static DrumPattern* currentDrumPattern;
 	static bool isValidScreen;
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting);
 

@@ -3,8 +3,9 @@
 // 
 
 #include "Engine.h"
-#include "LooperChanel.h"
+#include "LooperChannel.h"
 #include "Equalizer.h"
+#include "DrumChannel.h"
 
 // Load drivers
 
@@ -138,12 +139,12 @@ void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName,
 
 void EngineClass::startTrack(bool pressed)
 {
-	LooperChanel.startTrack();
+	LooperChannel.startTrack();
 }
 
 void EngineClass::stopTrack(bool pressed)
 {
-	LooperChanel.stopTrack();
+	LooperChannel.stopTrack();
 }
 
 void EngineClass::saveSettings(bool pressed)
@@ -294,6 +295,9 @@ void EngineClass::init()
 	HardwareCore.setButtonParam(ENCODER0, muteMaster);
 	*/
 	_midiClock.begin(checkMidiEvent, 100000);
+
+
+	currentDrumPattern = &songSettings.drumPattern;
 }
 
 
@@ -569,7 +573,10 @@ void EngineClass::update()
 				SongLoader.onShow();
 				break;
 			case VIEW_MODE_EDIT_LOOPER_CHANNEL:
-				LooperChanel.onShow();
+				LooperChannel.onShow();
+				break;
+			case VIEW_MODE_EDIT_DRUM_PATTERN:
+				DrumChannel.onShow();
 				break;
 			case VIEW_MODE_EQUALIZER:
 				Equalizer.onShow();
@@ -593,10 +600,13 @@ void EngineClass::update()
 			SongLoader.handle();
 			break;
 		case VIEW_MODE_EDIT_LOOPER_CHANNEL:
-			LooperChanel.handle();
+			LooperChannel.handle();
 			break;
 		case VIEW_MODE_EQUALIZER:
 			Equalizer.handle();
+			break;
+		case VIEW_MODE_EDIT_DRUM_PATTERN:
+			DrumChannel.handle();
 			break;
 		default:
 			DisplayCore.clearAll();
@@ -654,5 +664,8 @@ uint8_t EngineClass::_tickCounter;
  bool EngineClass::isValidScreen = false;
  IntervalTimer EngineClass::_midiClock;
  uint8_t EngineClass::_lastViewMode = 128;
+
+ DrumPattern* EngineClass::currentDrumPattern;
+
 EngineClass Engine;
 

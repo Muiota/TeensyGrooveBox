@@ -14,6 +14,7 @@ enum button_type {
 	ENCODER0 = 4,
 	ENCODER1 = 5,
 	ENCODER2 = 6,
+	SEQUENCER = 7,
 
 };
 

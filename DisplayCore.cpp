@@ -708,6 +708,13 @@ void DisplayCoreClass::drawMixerBackground()
 	_tft.print(16); */
 }
 
+
+void DisplayCoreClass::drawDrumPatternBackground()
+{
+	//Панель микшера снизу (метры)
+	_tft.fillRect(8, 98, 320, 128, DARK_PANEL_COLOR);	
+}
+
 void DisplayCoreClass::disaplaySubMenu()
 {
 	_tft.fillRect(8, 20, 308, 74, LIGHT_PANEL_COLOR);
@@ -748,6 +755,26 @@ void DisplayCoreClass::drawEqType(uint8_t equalizer)
 		_tft.setTextColor(isActive ? MAIN_COLOR : BORDER_COLOR_DARK);
 		_tft.print(EQ_TYPES[i]);
 	}
+}
+
+void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8] )
+{
+	for (uint8_t s = 0; s < 16; s++) {	
+		auto x = 56 + (s << 4);
+		auto line = data[s];
+		for (uint8_t d = 0; d < 8; d++) {			
+			_tft.writeRect(x, 98 + (d << 4), 16, 8, line[d] > 0 ? const_cast<uint16_t*>(leds[5]) : const_cast<uint16_t*>(leds[4]));
+		}
+	}
+
+
+	for (uint8_t d = 0; d < 8; d++) {
+		auto y = 98 + d * 16;
+		auto string = data[d];
+		for (uint8_t s = 0; s < 16; s++) {			
+			_tft.writeRect(56 + (s << 4), y, 16, 8, string[s] > 0 ? (uint16_t*)leds[5] : (uint16_t*)leds[4]);
+		}
+	}	
 }
 
 ILI9341_t3 DisplayCoreClass::_tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
