@@ -2,12 +2,16 @@
 
 
 
-
 void DrumChannelClass::onShow()
 {
 	Engine.assignDefaultButtons();
+	HardwareCore.setSeqButtonParam(seqPressedHandler);
+}
 
-///	HardwareCore.panelButtonRead()
+
+void DrumChannelClass::seqPressedHandler(bool pressed, int button)
+{
+	Engine.currentDrumPattern->shots[button][0] = pressed;
 }
 
 void DrumChannelClass::handle()

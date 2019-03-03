@@ -51,6 +51,9 @@ void emptyButtonCallback(bool pressed)
 {
 }
 
+void emptySequenceButtonCallback(bool pressed, int button)
+{
+}
 
 
 typedef struct {
@@ -69,9 +72,14 @@ typedef struct {
 	ButtonCallback callback = emptyButtonCallback;
 } HardwareButton;
 
+typedef struct {	
+	bool pressed[16];
+	SeqButtonCallback callback = emptySequenceButtonCallback;
+} HardwareSeqButton;
+
 HardwareEncoder _currentEncoder[3];
 HardwareButton _currentButton[7];
-
+HardwareSeqButton _currentSeqButton;
 
 void HardwareCoreClass::init()
 {
@@ -98,19 +106,19 @@ void HardwareCoreClass::init()
 	SPI.setSCK(SDCARD_SCK_PIN);
 
 	pinMode(31, INPUT_PULLUP); //black button
-	_currentButton[BLACK].pin = 31;
+	_currentButton[BTN_BLACK].pin = 31;
 	pinMode(32, INPUT_PULLUP); //brown button
-	_currentButton[BROWN].pin = 32;
+	_currentButton[BTN_BROWN].pin = 32;
 	pinMode(33, INPUT_PULLUP); //green button
-	_currentButton[GREEN].pin = 33;
+	_currentButton[BTN_GREEN].pin = 33;
 	pinMode(34, INPUT_PULLUP); //red button
-	_currentButton[RED].pin = 34;
+	_currentButton[BTN_RED].pin = 34;
 	pinMode(35, INPUT_PULLUP); //encoder 0 button
-	_currentButton[ENCODER0].pin = 35;
+	_currentButton[BTN_ENCODER0].pin = 35;
 	pinMode(36, INPUT_PULLUP); //encoder 2 button
-	_currentButton[ENCODER2].pin = 36;
+	_currentButton[BTN_ENCODER2].pin = 36;
 	pinMode(24, INPUT_PULLUP);  //encoder 1 button
-	_currentButton[ENCODER1].pin = 24;
+	_currentButton[BTN_ENCODER1].pin = 24;
 
 	//pinMode(13, OUTPUT);  // use the p13 LED as debugging
 	pinMode(39, OUTPUT); // encoder 0 led
@@ -143,13 +151,15 @@ void HardwareCoreClass::setRingLedColor(uint8_t led, int color)
 
 void HardwareCoreClass::resetButtons()
 {
-	setButtonParam(BLACK, emptyButtonCallback);
-	setButtonParam(BROWN, emptyButtonCallback);
-	setButtonParam(GREEN, emptyButtonCallback);
-	setButtonParam(RED, emptyButtonCallback);
-	setButtonParam(ENCODER0, emptyButtonCallback);
-	setButtonParam(ENCODER1, emptyButtonCallback);
-	setButtonParam(ENCODER2, emptyButtonCallback);
+	setButtonParam(BTN_BLACK, emptyButtonCallback);
+	setButtonParam(BTN_BROWN, emptyButtonCallback);
+	setButtonParam(BTN_GREEN, emptyButtonCallback);
+	setButtonParam(BTN_RED, emptyButtonCallback);
+	setButtonParam(BTN_ENCODER0, emptyButtonCallback);
+	setButtonParam(BTN_ENCODER1, emptyButtonCallback);
+	setButtonParam(BTN_ENCODER2, emptyButtonCallback);
+
+	setSeqButtonParam(emptySequenceButtonCallback);
 }
 
 bool HardwareCoreClass::panelButtonRead(button_type button)
@@ -252,6 +262,12 @@ void HardwareCoreClass::setButtonParam(uint8_t button, ButtonCallback callback)
 	Serial.println(item->pin);	
 }
 
+void HardwareCoreClass::setSeqButtonParam(SeqButtonCallback callback)
+{
+	_currentSeqButton.callback = callback;
+	Serial.println("set seq callback");
+}
+
 //Tick of update cycle
 void HardwareCoreClass::update()
 {
@@ -317,6 +333,18 @@ void HardwareCoreClass::update()
 		}
 	}
 
+	for (int i = 0; i < 16; i++) {
+		
+		bool proposed = seqButtonRead(i);
+		if (_currentSeqButton.pressed[i] != proposed)
+		{
+			_currentSeqButton.pressed[i] = proposed;
+			Serial.print("seq pin ");
+			Serial.print(i);
+			Serial.println(proposed ? " down" : " up");
+			_currentSeqButton.callback(proposed, i);
+		}
+	}
 }
 
 

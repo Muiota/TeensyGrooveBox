@@ -18,10 +18,10 @@ bool _subMenuPressed;
 void MixerClass::onShow()
 {
 	Engine.assignDefaultButtons();
-	HardwareCore.setButtonParam(BROWN, subMenuShow);
-	HardwareCore.setButtonParam(ENCODER0, encoder0press);
-	HardwareCore.setButtonParam(ENCODER1, encoder1press);
-	HardwareCore.setButtonParam(ENCODER2, encoder2press);	
+	HardwareCore.setButtonParam(BTN_BROWN, subMenuShow);
+	HardwareCore.setButtonParam(BTN_ENCODER0, encoder0press);
+	HardwareCore.setButtonParam(BTN_ENCODER1, encoder1press);
+	HardwareCore.setButtonParam(BTN_ENCODER2, encoder2press);	
 	HardwareCore.setEncoderParam(0, selectChanel, "selectChannel", 0, 11, 1, Engine.songSettings.currentChannel);
 	HardwareCore.setEncoderParam(1, setChannelVolume, "VOLUME", 0, 1, 0.02, Engine.curentSettings->volume);
 	HardwareCore.setEncoderParam(2, setChannelBalance, "VOLUME", -1, 1, 0.05, Engine.curentSettings->balance);
@@ -140,7 +140,7 @@ void MixerClass::handle()
 		Engine.isValidScreen = true;
 	}
 
-/*	bool brownButtonPressed = HardwareCore.panelButtonRead(BROWN);
+/*	bool brownButtonPressed = HardwareCore.panelButtonRead(BTN_BROWN);
 	
 	if (_lastBrownButtonPressed != brownButtonPressed)
 	{		

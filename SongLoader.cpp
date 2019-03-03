@@ -127,9 +127,9 @@ void SongLoaderClass::onShow()
 	isCreatingSong = false;
 	isRewriting = false;
 	Engine.assignDefaultButtons();
-	HardwareCore.setButtonParam(BLACK, switchPart);
-	HardwareCore.setButtonParam(ENCODER0, pressEncoder0);
-	HardwareCore.setButtonParam(ENCODER1, pressEncoder1);
+	HardwareCore.setButtonParam(BTN_BLACK, switchPart);
+	HardwareCore.setButtonParam(BTN_ENCODER0, pressEncoder0);
+	HardwareCore.setButtonParam(BTN_ENCODER1, pressEncoder1);
 	loadSongs();
 }
 

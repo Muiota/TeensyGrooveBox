@@ -286,13 +286,13 @@ void EngineClass::init()
 
 	/*
 
-	HardwareCore.setButtonParam(BROWN, changeWavTrack);
+	HardwareCore.setButtonParam(BTN_BROWN, changeWavTrack);
 	*/
-	HardwareCore.setButtonParam(RED, saveSettings);
+	HardwareCore.setButtonParam(BTN_RED, saveSettings);
 	/*
-	HardwareCore.setButtonParam(ENCODER2, changeMode);
-	HardwareCore.setButtonParam(ENCODER1, changeEditType);
-	HardwareCore.setButtonParam(ENCODER0, muteMaster);
+	HardwareCore.setButtonParam(BTN_ENCODER2, changeMode);
+	HardwareCore.setButtonParam(BTN_ENCODER1, changeEditType);
+	HardwareCore.setButtonParam(BTN_ENCODER0, muteMaster);
 	*/
 	_midiClock.begin(checkMidiEvent, 100000);
 
@@ -506,9 +506,9 @@ void EngineClass::selectChannel()
 
 void EngineClass::assignDefaultButtons()
 {
-	HardwareCore.setButtonParam(GREEN, startTrack);
-	HardwareCore.setButtonParam(BLACK, stopTrack);
-	HardwareCore.setButtonParam(BROWN, backToMixer);
+	HardwareCore.setButtonParam(BTN_GREEN, startTrack);
+	HardwareCore.setButtonParam(BTN_BLACK, stopTrack);
+	HardwareCore.setButtonParam(BTN_BROWN, backToMixer);
 }
 
 

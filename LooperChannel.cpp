@@ -89,7 +89,7 @@ void LooperChannelClass::onShow()
 		break;
 	}
 
-	//HardwareCore.setButtonParam(ENCODER0, switchToSongLoader);
+	//HardwareCore.setButtonParam(BTN_ENCODER0, switchToSongLoader);
 }
 
 void LooperChannelClass::selectSong(int encoder, int value)

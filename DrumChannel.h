@@ -9,6 +9,7 @@ class DrumChannelClass
 {
 private:
 	static uint8_t currentLine;
+	static void seqPressedHandler(bool pressed, int button);
 public:
 	static void onShow();
 	static void handle();

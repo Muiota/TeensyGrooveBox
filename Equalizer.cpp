@@ -28,7 +28,7 @@ void EqualizerClass::onShow()
 	//HardwareCore.setEncoderParam(1, setQ, "Q", 100, 10000, 100, settings->eqQ);
 	HardwareCore.setEncoderParam(1, setQ, "Slope", 0, 1, 0.05, Engine.curentSettings->eqSlope);
 	HardwareCore.setEncoderParam(2, setGain, "Gain (dB)", -30, 30, 1, Engine.curentSettings->eqGain);
-	HardwareCore.setButtonParam(ENCODER0, pressEncoder0);
+	HardwareCore.setButtonParam(BTN_ENCODER0, pressEncoder0);
 }
 
 void EqualizerClass::pressEncoder0(bool pressed)

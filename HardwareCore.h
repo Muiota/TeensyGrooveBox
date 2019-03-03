@@ -5,16 +5,17 @@
 
 typedef void(*EncoderCallback) (int, int);
 typedef void(*ButtonCallback) (bool);
+typedef void(*SeqButtonCallback) (bool, int);
 
 enum button_type {
-	BROWN = 0,
-	BLACK = 1,
-	GREEN = 2,
-	RED = 3,
-	ENCODER0 = 4,
-	ENCODER1 = 5,
-	ENCODER2 = 6,
-	SEQUENCER = 7,
+	BTN_BROWN = 0,
+	BTN_BLACK = 1,
+	BTN_GREEN = 2,
+	BTN_RED = 3,
+	BTN_ENCODER0 = 4,
+	BTN_ENCODER1 = 5,
+	BTN_ENCODER2 = 6,
+	BTN_SEQUENCER = 7,
 
 };
 
@@ -53,6 +54,7 @@ public:
 		String title, float min, float max, float step, float currenctValue);
 	static void setEncoderValue(uint8_t encoder, float currentValue);
 	static void setButtonParam(uint8_t button, ButtonCallback callback);
+	static void setSeqButtonParam(SeqButtonCallback callback);
 	static void update();
 	static int32_t readEncoder(uint8_t encoder);
 	static void writeEncoder(uint8_t encoder, int32_t value);
