@@ -13,6 +13,7 @@ private:
 public:
 	static void onShow();
 	static void handle();
+	static void midiUpdate();
 };
 
 extern DrumChannelClass DrumChannel;

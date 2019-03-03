@@ -27,6 +27,7 @@ class DisplayCoreClass
 	 static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
 	 static ILI9341_t3 _tft;
 	 static String EQ_TYPES[7];
+	 static uint8_t drumPatternCache[16][8];
 public:
 	static const uint16_t METER_HEIGHT = 64;
 	static uint16_t MAIN_COLOR;// 0xD320; //    /* 255, 165,   0 */
@@ -73,7 +74,7 @@ public:
 	static void disaplayLooperTape(uint8_t channel);
 	static void drawTapeFrame(uint8_t l, uint8_t r);
 	static void drawEqType(uint8_t equalizer);
-	static void drawDrumPattern(uint8_t data[16][8]);
+	static void drawDrumPattern(uint8_t data[16][8], bool fullRedraw);
 };
 
 extern DisplayCoreClass DisplayCore;

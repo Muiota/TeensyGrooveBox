@@ -558,6 +558,15 @@ void DisplayCoreClass::clearAll()
 {
 	Serial.println("Clear screen");
 	_tft.fillScreen(ILI9341_BLACK);	
+
+	//clear drum pattern cache
+	for (uint8_t s = 0; s < 16; s++) {
+		uint8_t* line = drumPatternCache[s];		
+		for (uint8_t d = 0; d < 8; d++) {
+			line[d] = false;
+		}
+	}
+
 }
 
 void DisplayCoreClass::drawStandartBackground()
@@ -757,22 +766,21 @@ void DisplayCoreClass::drawEqType(uint8_t equalizer)
 	}
 }
 
-void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8] )
+void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8], bool fullRedraw)
 {
 	for (uint8_t s = 0; s < 16; s++) {	
-		auto x = 56 + (s << 4);
-		auto line = data[s];
-		for (uint8_t d = 0; d < 8; d++) {			
-			_tft.writeRect(x, 98 + (d << 4), 16, 8, line[d] > 0 ? const_cast<uint16_t*>(leds[5]) : const_cast<uint16_t*>(leds[4]));
-		}
-	}
-
-
-	for (uint8_t d = 0; d < 8; d++) {
-		auto y = 98 + d * 16;
-		auto string = data[d];
-		for (uint8_t s = 0; s < 16; s++) {			
-			_tft.writeRect(56 + (s << 4), y, 16, 8, string[s] > 0 ? (uint16_t*)leds[5] : (uint16_t*)leds[4]);
+		uint8_t* proposedLine = data[s];
+		uint8_t* previousLine = drumPatternCache[s];
+		auto x = 56 + (s << 4);	
+		for (uint8_t d = 0; d < 8; d++) {
+			uint8_t proposedValue = proposedLine[d];
+			uint8_t previousValue = previousLine[d];
+			if (fullRedraw || proposedValue != previousValue)
+			{
+				auto pcolors = proposedValue > 0 ? const_cast<uint16_t*>(leds[5]) : const_cast<uint16_t*>(leds[4]);
+				_tft.writeRect(x, 98 + (d << 4), 16, 8, pcolors);
+				previousLine[d] = proposedValue;
+			}
 		}
 	}	
 }
@@ -801,6 +809,7 @@ String DisplayCoreClass::EQ_TYPES[7] = { "LOW PASS",
 "LOW SHELF",
 "HIGH SHELF" };
 
+uint8_t DisplayCoreClass::drumPatternCache[16][8];
 
 DisplayCoreClass DisplayCore;
 
