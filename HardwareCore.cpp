@@ -160,6 +160,11 @@ void HardwareCoreClass::resetButtons()
 	setButtonParam(BTN_ENCODER2, emptyButtonCallback);
 
 	setSeqButtonParam(emptySequenceButtonCallback);
+
+	for (int i = 0; i <= 15; i++) {
+		HardwareCore._lastLedStates[i] = true;
+		HardwareCore.ledStates[i] = false;
+	}
 }
 
 bool HardwareCoreClass::panelButtonRead(button_type button)

@@ -14,6 +14,8 @@ public:
 	static void onShow();
 	static void handle();
 	static void midiUpdate();
+	static void refreshSeqLeds();
+	static void setCurrentLine(int encoder, int value);
 };
 
 extern DrumChannelClass DrumChannel;

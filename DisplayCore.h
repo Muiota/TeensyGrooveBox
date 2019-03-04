@@ -27,6 +27,7 @@ class DisplayCoreClass
 	 static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
 	 static ILI9341_t3 _tft;
 	 static String EQ_TYPES[7];
+	 static String DRUM_TYPES[8];
 	 static uint8_t drumPatternCache[16][8];
 public:
 	static const uint16_t METER_HEIGHT = 64;
@@ -70,11 +71,12 @@ public:
 	static void drawFileloadButtons(song_load_buttons type);
 	static void drawMixerBackground();
 	static void drawDrumPatternBackground();
+	static void drawDrumPatternTitles(uint8_t currentLine);
 	static void disaplaySubMenu();
 	static void disaplayLooperTape(uint8_t channel);
 	static void drawTapeFrame(uint8_t l, uint8_t r);
 	static void drawEqType(uint8_t equalizer);
-	static void drawDrumPattern(uint8_t data[16][8], bool fullRedraw);
+	static void drawDrumPattern(uint8_t data[16][8], uint8_t currentLine, bool fullRedraw);
 };
 
 extern DisplayCoreClass DisplayCore;

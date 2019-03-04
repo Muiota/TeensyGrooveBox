@@ -224,6 +224,13 @@ void AudioCoreClass::init()
 	noiseGateL.threshold(0.008);
 	//https://github.com/MarkzP/AudioEffectDynamics/blob/master/effect_dynamics.h
 //	AudioInterrupts(); //swith on library
+
+
+	if (!SerialFlash.begin())
+	{
+		Serial.println("Unable to access SPI Flash chip");
+	}
+
 }
 /*
 void AudioCoreClass::setReverbRoom(float damping, float roomsize)
@@ -508,6 +515,123 @@ void AudioCoreClass::playWav(const char * song)
 {	
 	playSdWavA.play(song);
 }
+
+void AudioCoreClass::playRawDrum(const char *song, uint8_t channel)
+{
+	switch (channel)
+	{
+	case 0:
+		playFlashRaw1.play(song);
+		break;
+	case 1:
+		playFlashRaw2.play(song);
+		break;
+	case 2:
+		playFlashRaw3.play(song);
+		break;
+	case 3:
+		playFlashRaw4.play(song);
+		break;
+	default: ;
+	}	
+}
+
+bool compareFiles(File &file, SerialFlashFile &ffile) {
+	file.seek(0);
+	ffile.seek(0);
+	unsigned long count = file.size();
+	while (count > 0) {
+		char buf1[128], buf2[128];
+		unsigned long n = count;
+		if (n > 128) n = 128;
+		file.read(buf1, n);
+		ffile.read(buf2, n);
+		if (memcmp(buf1, buf2, n) != 0) return false; // differ
+		count = count - n;
+	}
+	return true;  // all data identical
+}
+
+void AudioCoreClass::loadRaw(const char* song)
+{
+	File f = SD.open(song);
+	if (!f) { return; }
+	const char* filename = f.name();
+	Serial.print(filename);
+	Serial.print(" prepare ");
+	unsigned long length = f.size();
+	Serial.println(length);
+
+	// check if this file is already on the Flash chip
+	if (SerialFlash.exists(filename))
+	{
+		Serial.println("  already exists on the Flash chip");
+		SerialFlashFile ff = SerialFlash.open(filename);
+		if (ff && ff.size() == f.size())
+		{
+			Serial.println("  size is the same, comparing data...");
+			if (compareFiles(f, ff) == true)
+			{
+				Serial.println("  files are identical :)");
+				f.close();
+				ff.close();
+				return; // advance to next file
+			}
+			else
+			{
+				Serial.println("  files are different");
+			}
+		}
+		else
+		{
+			Serial.print("  size is different, ");
+			Serial.print(ff.size());
+			Serial.println(" bytes");
+		}
+		// delete the copy on the Flash chip, if different
+		Serial.println("  delete file from Flash chip");
+		SerialFlash.remove(filename);
+	}
+
+	// create the file on the Flash chip and copy data
+	if (SerialFlash.create(filename, length))
+	{
+		SerialFlashFile ff = SerialFlash.open(filename);
+		if (ff)
+		{
+			Serial.print("  copying");
+			// copy data loop
+			unsigned long count = 0;
+			unsigned char dotcount = 9;
+			while (count < length)
+			{
+				char buf[256];
+				unsigned int n;
+				n = f.read(buf, 256);
+				ff.write(buf, n);
+				count = count + n;
+				Serial.print(".");
+				if (++dotcount > 100)
+				{
+					Serial.println();
+					dotcount = 0;
+				}
+			}
+			ff.close();
+			if (dotcount > 0) Serial.println();
+		}
+		else
+		{
+			Serial.println("  error opening freshly created file!");
+		}
+	}
+	else
+	{
+		Serial.println("  unable to create file");
+	}
+	f.close();
+}
+
 
 void AudioCoreClass::playLastRecorderInputRaw()
 {

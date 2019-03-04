@@ -11,7 +11,7 @@ http://www.rinkydinkelectronics.com/t_imageconverter565.php -- создание иконок
 
 //todo несколько эквалйзеров в цепи
 //todo отображение спектрограммы в эквалайзере
-//todo исправление графиков эквалайзера (добавить PEAK и проверить формулы отсальных)
+//todo исправление графиков эквалайзера (добавить PEAK и проверить формулы остальных)
 
 //todo dubstep wooble
 
@@ -23,7 +23,8 @@ http://www.rinkydinkelectronics.com/t_imageconverter565.php -- создание иконок
 //todo секвенсор расположения паттернов
 //todo переходы туда обратно
 //todo 12 mixer optimize 
-//todo
+//todo shuffle (-30 to +30)
+//todo humanizer for drums (on-off, level 0 - 100%)
 
 
 fixed:

@@ -721,7 +721,19 @@ void DisplayCoreClass::drawMixerBackground()
 void DisplayCoreClass::drawDrumPatternBackground()
 {
 	//Панель микшера снизу (метры)
-	_tft.fillRect(8, 98, 320, 128, DARK_PANEL_COLOR);	
+	_tft.fillRect(8, 94, 320, 132, DARK_PANEL_COLOR);	
+
+}
+
+void DisplayCoreClass::drawDrumPatternTitles(uint8_t currentLine)
+{
+	for (uint8_t i = 0; i < 8; i++)
+	{
+		_tft.setCursor(11, 98 + 16 * i);
+		auto isActive = currentLine == i;
+		_tft.setTextColor(isActive ? MAIN_COLOR : BORDER_COLOR_DARK);
+		_tft.print(DRUM_TYPES[i]);
+	}
 }
 
 void DisplayCoreClass::disaplaySubMenu()
@@ -743,15 +755,15 @@ void DisplayCoreClass::disaplaySubMenu()
 void DisplayCoreClass::disaplayLooperTape(uint8_t channel)
 {
 	_tft.fillRect(8, 100, 308, 121, DARK_PANEL_COLOR);
-	_tft.writeRect(16, 103, 214, 115, (uint16_t*)tape_back);
+	_tft.writeRect(16, 103, 214, 115, const_cast<uint16_t*>(tape_back));
 	uint16_t x = getMixerChannelXcoord(channel);
 	drawChannelIcon(channel, true, x);
 }
 
 void DisplayCoreClass::drawTapeFrame(uint8_t l, uint8_t r)
 {
-	_tft.writeRect(59, 152, 26, 26, (uint16_t*)tape_frames[l]);
-	_tft.writeRect(162, 152, 26, 26, (uint16_t*)tape_frames[r]);
+	_tft.writeRect(59, 152, 26, 26, const_cast<uint16_t*>(tape_frames[l]));
+	_tft.writeRect(162, 152, 26, 26, const_cast<uint16_t*>(tape_frames[r]));
 }
 
 void DisplayCoreClass::drawEqType(uint8_t equalizer)
@@ -766,19 +778,34 @@ void DisplayCoreClass::drawEqType(uint8_t equalizer)
 	}
 }
 
-void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8], bool fullRedraw)
+void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8], uint8_t currentPosition,  bool fullRedraw)
 {
 	for (uint8_t s = 0; s < 16; s++) {	
+		bool isCurrent = currentPosition == s;
 		uint8_t* proposedLine = data[s];
 		uint8_t* previousLine = drumPatternCache[s];
-		auto x = 56 + (s << 4);	
+		auto x = 58 + (s << 4);	
 		for (uint8_t d = 0; d < 8; d++) {
 			uint8_t proposedValue = proposedLine[d];
+			auto isActive = proposedValue > 0;
+			if (isCurrent)
+			{
+				proposedValue = proposedValue << 4;
+			}
+
 			uint8_t previousValue = previousLine[d];
 			if (fullRedraw || proposedValue != previousValue)
-			{
-				auto pcolors = proposedValue > 0 ? const_cast<uint16_t*>(leds[5]) : const_cast<uint16_t*>(leds[4]);
-				_tft.writeRect(x, 98 + (d << 4), 16, 8, pcolors);
+			{			
+				uint16_t* pcolors;
+				if (isActive)
+				{
+					pcolors = isCurrent ? const_cast<uint16_t*>(leds[1]) : const_cast<uint16_t*>(leds[5]);
+				}
+				else
+				{
+					pcolors = const_cast<uint16_t*>(leds[4]);
+				}
+				_tft.writeRect(x, 100 + (d << 4), 16, 8, pcolors);
 				previousLine[d] = proposedValue;
 			}
 		}
@@ -808,6 +835,15 @@ String DisplayCoreClass::EQ_TYPES[7] = { "LOW PASS",
 "PEAK",
 "LOW SHELF",
 "HIGH SHELF" };
+
+ String DisplayCoreClass::DRUM_TYPES[8] ={ "BASS",
+"SNARE",
+"HIHAT",
+"CRASH",
+"FX 1",
+"FX 2",
+"FX 3",
+"FX 4" };;
 
 uint8_t DisplayCoreClass::drumPatternCache[16][8];
 

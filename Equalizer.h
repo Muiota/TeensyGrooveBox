@@ -14,6 +14,7 @@ public:
 	static void pressEncoder0(bool pressed);
 
 
+
 protected:
 	static void setFc(int encoder, int value);
 	static void setQ(int encoder, int value);

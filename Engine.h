@@ -12,7 +12,6 @@
 #include "WavePlayer.h"
 #include "Equalizer.h"
 
-
 typedef struct
 {
 	float balance = 0.0f;
@@ -138,7 +137,7 @@ typedef struct
 typedef struct
 {
 	uint8_t stepsQnt = 16;
-	uint8_t currentStep = 0;
+	volatile uint8_t currentStep = 0;
 	u_long shuffle = 20000;
 } PatternSettings;
 
@@ -165,17 +164,21 @@ protected:
 	static IntervalTimer _midiClock;
 	static uint8_t _lastViewMode;
 	static long _nextUpdateTick;
+	static long _nextMidiTick;
+    static bool midiShotFired;
 public:
 	//static void updateModeLinks();	
 	static SongSettings songSettings;
 	static ChannelSettings* curentSettings;
 	static DrumPattern* currentDrumPattern;
 	static bool isValidScreen;
+	static void spiShotsHandler();
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting);
 
 	static void saveSettings(bool pressed);
 	static void loadSettings(bool pressed);
 	static void calcBiquad(ChannelSettings& setting, int* coef);
+	static void initSerialFlashToDo();
 	static void init();
 	static void drawTopPanel();
 	static ChannelSettings* getChannelByNum(edit_channel channel);

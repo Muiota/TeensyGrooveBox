@@ -51,7 +51,9 @@ class AudioCoreClass
 	static uint16_t getMaxRecordedTracks(uint8_t songNum);
 	static void stopRecording();
 	
-	static void playWav(const char * song);
+	static void playWav(const char *song);
+	static void playRawDrum(const char *song, uint8_t channel);
+	static void loadRaw(const char* song);
 	static void stopWav();
 
 	static void playLastRecorderInputRaw();

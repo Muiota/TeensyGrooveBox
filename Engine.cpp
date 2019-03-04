@@ -119,6 +119,23 @@ void EngineClass::updateModeLinks()
 
 }
 */
+
+void EngineClass::spiShotsHandler()
+{
+	if (_hardwareTimer >= _nextMidiTick) {		
+			_nextMidiTick = _hardwareTimer+ 100;
+			volatile uint8_t proposed = songSettings.pattern.currentStep + 1;
+			if (proposed >= 16)
+			{
+				proposed = proposed - 16;
+			}
+			songSettings.pattern.currentStep = proposed;
+		HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(12)); //todo
+		DrumChannel.midiUpdate();
+	}
+}
+
+
 JsonObject& EngineClass::saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting)
 {
 	JsonObject& channel = mixer.createNestedObject(channelName);
@@ -259,6 +276,64 @@ void EngineClass::calcBiquad(ChannelSettings& setting, int *coef)
 		setting.eqFc, setting.eqGain, setting.eqSlope, coef);
 }
 
+float eraseBytesPerSecond(const unsigned char *id) {
+	if (id[0] == 0x20) return 152000.0; // Micron
+	if (id[0] == 0x01) return 500000.0; // Spansion
+	if (id[0] == 0xEF) return 419430.0; // Winbond
+	if (id[0] == 0xC2) return 279620.0; // Macronix
+	return 320000.0; // guess?
+}
+
+void EngineClass::initSerialFlashToDo()
+{
+	unsigned long startMillis = millis();
+	unsigned char id[5];
+	SerialFlash.readID(id);
+	unsigned long size = SerialFlash.capacity(id);
+
+	if (size > 0) {
+		Serial.print("Flash Memory has ");
+		Serial.print(size);
+		Serial.println(" bytes.");
+		Serial.println("Erasing ALL Flash Memory:");
+		// Estimate the (lengthy) wait time.
+		Serial.print("  estimated wait: ");
+		int seconds = (float)size / eraseBytesPerSecond(id) + 0.5;
+		Serial.print(seconds);
+		Serial.println(" seconds.");
+		Serial.println("  Yes, full chip erase is SLOW!");
+		SerialFlash.eraseAll();
+		unsigned long dotMillis = millis();
+		unsigned char dotcount = 0;
+		while (SerialFlash.ready() == false) {
+			if (millis() - dotMillis > 1000) {
+				dotMillis = dotMillis + 1000;
+				Serial.print(".");
+				dotcount = dotcount + 1;
+				if (dotcount >= 60) {
+					Serial.println();
+					dotcount = 0;
+				}
+			}
+		}
+		if (dotcount > 0) Serial.println();
+		Serial.println("Erase completed");
+		unsigned long elapsed = millis() - startMillis;
+		Serial.print("  actual wait: ");
+		Serial.print(elapsed / 1000ul);
+		Serial.println(" seconds.");
+	}
+
+	const char* const string = "/LIBS/DRUMS/ACC_CLS/CL_HH_01.RAW";
+	AudioCore.loadRaw(string);
+
+	const char* const string2 = "/LIBS/DRUMS/ACC_CLS/BD_01.RAW";
+	AudioCore.loadRaw(string2);
+
+	const char* const string3 = "/LIBS/DRUMS/ACC_CLS/SN_01.RAW";
+	AudioCore.loadRaw(string3);
+}
+
 void EngineClass::init()
 {
 	loadSettings(true);
@@ -293,12 +368,21 @@ void EngineClass::init()
 	HardwareCore.setButtonParam(BTN_ENCODER2, changeMode);
 	HardwareCore.setButtonParam(BTN_ENCODER1, changeEditType);
 	HardwareCore.setButtonParam(BTN_ENCODER0, muteMaster);
-	*/
-	_midiClock.begin(checkMidiEvent, 100000);
-
-
+	*/	
+//	_midiClock.begin(checkMidiEvent, 100000);
 	currentDrumPattern = &songSettings.drumPattern;
+
+	if (false)
+	{
+		initSerialFlashToDo();
+	}
+
+
+	SPI.callback = spiShotsHandler;
+
 }
+
+
 
 
 
@@ -513,21 +597,13 @@ void EngineClass::assignDefaultButtons()
 
 
 void EngineClass::checkMidiEvent() {
-	uint8_t proposed = songSettings.pattern.currentStep + 1;
-	if (proposed >= 16)
-	{
-		proposed = proposed - 16;
-	}
-	HardwareCore.ledStates[songSettings.pattern.currentStep] = false;
-	HardwareCore.ledStates[proposed] = true;	
-	songSettings.pattern.currentStep = proposed;
-	HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(proposed));
-
-	DrumChannel.midiUpdate();
+	
+	midiShotFired = true;
 }
 
 void EngineClass::update()
 {
+	spiShotsHandler();
 	if (_hardwareTimer >= _nextUpdateTick) {
 		
 		if (_tickCounter++ >= 10 || !isValidScreen)
@@ -612,6 +688,10 @@ void EngineClass::update()
 			_watchTest = _watchProposed;			
 		}		
 		HardwareCore.updateLeds();
+		//long song = _hardwareTimer - _nextUpdateTick;
+		//DisplayCore.drawText(song , 80, 3, true);
+		//DisplayCore.drawText(spiShots, 100, 3);
+		//spiShots = 0;
 		_nextUpdateTick =_hardwareTimer + 100;
 		
 	}
@@ -637,10 +717,11 @@ void EngineClass::backToMixer(bool pressed)
 		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);		
 	}
 }
-
+bool EngineClass::midiShotFired = false;
 long EngineClass::_watchTest = 0;
 elapsedMillis EngineClass::_hardwareTimer;
 long EngineClass::_nextUpdateTick = 0;
+long EngineClass::_nextMidiTick = 0;
 uint8_t EngineClass::_tickCounter;
 
  SongSettings EngineClass::songSettings;
