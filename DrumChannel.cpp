@@ -61,22 +61,23 @@ void DrumChannelClass::midiUpdate()
 
 	if (drums[0] > 0)
 	{
-		
-		AudioCore.playRawDrum(string, 0);
+		float velocity = Engine.songSettings.pattern.isAccent ? 1.0 : random(150)/200.0 + 0.2; //todo humanizer		
+		AudioCore.playRawDrum(string, velocity,  0);
 	}
 	if (drums[1] > 0)
 	{
-		
-		AudioCore.playRawDrum(string2, 1);
+		float velocity = Engine.songSettings.pattern.isAccent ? 1.0 : random(150) / 200.0 + 0.2;
+		AudioCore.playRawDrum(string2, velocity,  1);
 	}
 	if (drums[2] > 0)
 	{
-		
-		AudioCore.playRawDrum(string3, 2);
+		float velocity = Engine.songSettings.pattern.isAccent ? 1.0 : random(150) / 200.0 + 0.2;
+		AudioCore.playRawDrum(string3, velocity, 2);
 	}
 
 	if (drums[4] > 0)
 	{		
+		
 		AudioCore.drum1On();
 	}
 	if (drums[5] > 0)

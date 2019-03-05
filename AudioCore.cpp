@@ -35,6 +35,12 @@ float WAVESHAPE_EXAMPLE[17] = {
 #include <SD.h>
 #include <SerialFlash.h>
 
+#include <Audio.h>
+#include <i2c_t3.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
+
 // GUItool: begin automatically generated code
 AudioPlaySdWav           playSdWavA;     //xy=66.5,1820.4452514648438
 AudioInputI2S            audioInput;     //xy=105.22221374511719,2865.5556640625
@@ -53,16 +59,20 @@ AudioFilterBiquad        biquadBass;        //xy=562.8571428571428,2138.57142857
 AudioFilterBiquad        biquadFm;        //xy=581.4285714285713,2365.7142857142853
 AudioFilterBiquad        biquadPiano;        //xy=590,2308.5714285714284
 AudioFilterBiquad        biquadString;        //xy=595.7142857142857,2235.7142857142853
+AudioPlaySerialflashRaw  playFlashRaw2;  //xy=646.5714721679688,1430.857177734375
+AudioPlaySerialflashRaw  playFlashRaw3;  //xy=647,1468.2857666015625
+AudioPlaySerialflashRaw  playFlashRaw1;  //xy=647.571533203125,1391.857177734375
+AudioPlaySerialflashRaw  playFlashRaw4;  //xy=647.1429443359375,1505.428466796875
 AudioFilterBiquad        biquadInputL;   //xy=693.7777099609375,2847.0001220703125
-AudioPlaySerialflashRaw  playFlashRaw1;  //xy=699.571533203125,1432.857177734375
 AudioFilterBiquad        biquadInputR;   //xy=694,2896.666748046875
-AudioPlaySerialflashRaw  playFlashRaw2;  //xy=702.5714721679688,1470.857177734375
-AudioPlaySerialflashRaw  playFlashRaw3;  //xy=703,1512.2857666015625
-AudioPlaySerialflashRaw  playFlashRaw4;  //xy=705.1429443359375,1553.428466796875
 AudioSynthSimpleDrum     drum4;          //xy=729.7779541015625,1758.555419921875
 AudioSynthSimpleDrum     drum3;          //xy=730.8888244628906,1713.4446411132812
 AudioSynthSimpleDrum     drum2;          //xy=733.4442749023438,1676.0000915527344
 AudioSynthSimpleDrum     drum1;          //xy=734.333251953125,1632.6670532226562
+AudioAmplifier           drumVelocity4;           //xy=821,1505
+AudioAmplifier           drumVelocity3;           //xy=822,1466
+AudioAmplifier           drumVelocity2;           //xy=823,1431
+AudioAmplifier           drumVelocity1;           //xy=824,1395
 AudioAnalyzePeak         peakAudioInputR; //xy=981.5555419921875,2983.6663818359375
 AudioAnalyzePeak         peakAudioInputL; //xy=982.0001220703125,2937.8892211914062
 AudioMixer8              mixerDrums;       //xy=1015,1483
@@ -106,42 +116,47 @@ AudioConnection          patchCord20(biquadPiano, 0, mixerGroupL1, 3);
 AudioConnection          patchCord21(biquadPiano, 0, mixerGroupR1, 3);
 AudioConnection          patchCord22(biquadString, 0, mixerGroupL1, 2);
 AudioConnection          patchCord23(biquadString, 0, mixerGroupR1, 2);
-AudioConnection          patchCord24(biquadInputL, peakAudioInputL);
-AudioConnection          patchCord25(biquadInputL, 0, mixerGroupL0, 0);
-AudioConnection          patchCord26(biquadInputL, 0, mixerGroupR0, 0);
-AudioConnection          patchCord27(playFlashRaw1, 0, mixerDrums, 0);
-AudioConnection          patchCord28(biquadInputR, peakAudioInputR);
-AudioConnection          patchCord29(biquadInputR, 0, mixerGroupL0, 1);
-AudioConnection          patchCord30(biquadInputR, 0, mixerGroupR0, 1);
-AudioConnection          patchCord31(biquadInputR, biquadfreeverbs);
-AudioConnection          patchCord32(playFlashRaw2, 0, mixerDrums, 1);
-AudioConnection          patchCord33(playFlashRaw3, 0, mixerDrums, 2);
-AudioConnection          patchCord34(playFlashRaw4, 0, mixerDrums, 3);
+AudioConnection          patchCord24(playFlashRaw2, drumVelocity2);
+AudioConnection          patchCord25(playFlashRaw3, drumVelocity3);
+AudioConnection          patchCord26(playFlashRaw1, drumVelocity1);
+AudioConnection          patchCord27(playFlashRaw4, drumVelocity4);
+AudioConnection          patchCord28(biquadInputL, peakAudioInputL);
+AudioConnection          patchCord29(biquadInputL, 0, mixerGroupL0, 0);
+AudioConnection          patchCord30(biquadInputL, 0, mixerGroupR0, 0);
+AudioConnection          patchCord31(biquadInputR, peakAudioInputR);
+AudioConnection          patchCord32(biquadInputR, 0, mixerGroupL0, 1);
+AudioConnection          patchCord33(biquadInputR, 0, mixerGroupR0, 1);
+AudioConnection          patchCord34(biquadInputR, biquadfreeverbs);
 AudioConnection          patchCord35(drum4, 0, mixerDrums, 7);
 AudioConnection          patchCord36(drum3, 0, mixerDrums, 6);
 AudioConnection          patchCord37(drum2, 0, mixerDrums, 5);
 AudioConnection          patchCord38(drum1, 0, mixerDrums, 4);
-AudioConnection          patchCord39(mixerDrums, peakAudio01);
-AudioConnection          patchCord40(mixerDrums, biquadDrums);
-AudioConnection          patchCord41(biquadfreeverbs, fxfreeverbs);
-AudioConnection          patchCord42(fxfreeverbs, 0, mixerGroupL1, 0);
-AudioConnection          patchCord43(fxfreeverbs, 0, peakfreeverbsL, 0);
-AudioConnection          patchCord44(fxfreeverbs, 1, mixerGroupR1, 0);
-AudioConnection          patchCord45(fxfreeverbs, 1, peakfreeverbsR, 0);
-AudioConnection          patchCord46(biquadDrums, 0, mixerGroupL0, 2);
-AudioConnection          patchCord47(biquadDrums, 0, mixerGroupR0, 2);
-AudioConnection          patchCord48(mixerGroupL0, 0, masterMixerL, 0);
-AudioConnection          patchCord49(mixerGroupL1, 0, masterMixerL, 1);
-AudioConnection          patchCord50(mixerGroupL2, 0, masterMixerL, 2);
-AudioConnection          patchCord51(mixerGroupR0, 0, masterMixerR, 0);
-AudioConnection          patchCord52(mixerGroupR1, 0, masterMixerR, 1);
-AudioConnection          patchCord53(mixerGroupR2, 0, masterMixerR, 2);
-AudioConnection          patchCord54(masterMixerL, 0, audioOutput, 0);
-AudioConnection          patchCord55(masterMixerL, peakAudioOutputL);
-AudioConnection          patchCord56(masterMixerR, 0, audioOutput, 1);
-AudioConnection          patchCord57(masterMixerR, peakAudioOutputR);
+AudioConnection          patchCord39(drumVelocity4, 0, mixerDrums, 3);
+AudioConnection          patchCord40(drumVelocity3, 0, mixerDrums, 2);
+AudioConnection          patchCord41(drumVelocity2, 0, mixerDrums, 1);
+AudioConnection          patchCord42(drumVelocity1, 0, mixerDrums, 0);
+AudioConnection          patchCord43(mixerDrums, peakAudio01);
+AudioConnection          patchCord44(mixerDrums, biquadDrums);
+AudioConnection          patchCord45(biquadfreeverbs, fxfreeverbs);
+AudioConnection          patchCord46(fxfreeverbs, 0, mixerGroupL1, 0);
+AudioConnection          patchCord47(fxfreeverbs, 0, peakfreeverbsL, 0);
+AudioConnection          patchCord48(fxfreeverbs, 1, mixerGroupR1, 0);
+AudioConnection          patchCord49(fxfreeverbs, 1, peakfreeverbsR, 0);
+AudioConnection          patchCord50(biquadDrums, 0, mixerGroupL0, 2);
+AudioConnection          patchCord51(biquadDrums, 0, mixerGroupR0, 2);
+AudioConnection          patchCord52(mixerGroupL0, 0, masterMixerL, 0);
+AudioConnection          patchCord53(mixerGroupL1, 0, masterMixerL, 1);
+AudioConnection          patchCord54(mixerGroupL2, 0, masterMixerL, 2);
+AudioConnection          patchCord55(mixerGroupR0, 0, masterMixerR, 0);
+AudioConnection          patchCord56(mixerGroupR1, 0, masterMixerR, 1);
+AudioConnection          patchCord57(mixerGroupR2, 0, masterMixerR, 2);
+AudioConnection          patchCord58(masterMixerL, 0, audioOutput, 0);
+AudioConnection          patchCord59(masterMixerL, peakAudioOutputL);
+AudioConnection          patchCord60(masterMixerR, 0, audioOutput, 1);
+AudioConnection          patchCord61(masterMixerR, peakAudioOutputR);
 AudioControlSGTL5000     audioShield;    //xy=1905.33349609375,2532.444580078125
-										 // GUItool: end automatically generated code
+// GUItool: end automatically generated code
+
 
 
 
@@ -516,20 +531,24 @@ void AudioCoreClass::playWav(const char * song)
 	playSdWavA.play(song);
 }
 
-void AudioCoreClass::playRawDrum(const char *song, uint8_t channel)
+void AudioCoreClass::playRawDrum(const char *song, float gain, uint8_t channel)
 {
 	switch (channel)
 	{
 	case 0:
+		drumVelocity1.gain(gain);
 		playFlashRaw1.play(song);
 		break;
 	case 1:
+		drumVelocity2.gain(gain);
 		playFlashRaw2.play(song);
 		break;
 	case 2:
+		drumVelocity3.gain(gain);
 		playFlashRaw3.play(song);
 		break;
 	case 3:
+		drumVelocity4.gain(gain);
 		playFlashRaw4.play(song);
 		break;
 	default: ;

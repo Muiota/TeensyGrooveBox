@@ -52,7 +52,7 @@ class AudioCoreClass
 	static void stopRecording();
 	
 	static void playWav(const char *song);
-	static void playRawDrum(const char *song, uint8_t channel);
+	static void playRawDrum(const char *song, float gain, uint8_t channel);
 	static void loadRaw(const char* song);
 	static void stopWav();
 

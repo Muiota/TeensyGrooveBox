@@ -129,19 +129,20 @@ void EngineClass::spiShotsHandler()
 
 
 			long shift = 0;
+			songSettings.pattern.isAccent = songSettings.pattern.currentStep & testbit1;
 			if (songSettings.pattern.shuffle != 0)
 			{
-				if (songSettings.pattern.currentStep & testbit1) //todo low bit check optimize
+				if (songSettings.pattern.isAccent) //todo low bit check optimize
 				{
-					shift = songSettings.pattern.shuffle;
+					shift = songSettings.pattern.shuffle;					
 				}
 				else
 				{
-					shift = -songSettings.pattern.shuffle;
+					shift = -songSettings.pattern.shuffle;					
 				}
 			}
 
-			_nextMidiTick = _hardwareTimer + 100+ shift;
+			_nextMidiTick = _hardwareTimer + 150+ shift;
 			volatile uint8_t proposed = songSettings.pattern.currentStep + 1;
 			if (proposed >= 16)
 			{
