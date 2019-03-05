@@ -119,19 +119,45 @@ void EngineClass::updateModeLinks()
 
 }
 */
+byte testbit1 = 0x01;
 
 void EngineClass::spiShotsHandler()
 {
-	if (_hardwareTimer >= _nextMidiTick) {		
-			_nextMidiTick = _hardwareTimer+ 100;
+	if (songSettings.isPlaying)
+	{
+		if (_hardwareTimer >= _nextMidiTick) {
+
+
+			long shift = 0;
+			if (songSettings.pattern.shuffle != 0)
+			{
+				if (songSettings.pattern.currentStep & testbit1) //todo low bit check optimize
+				{
+					shift = songSettings.pattern.shuffle;
+				}
+				else
+				{
+					shift = -songSettings.pattern.shuffle;
+				}
+			}
+
+			_nextMidiTick = _hardwareTimer + 100+ shift;
 			volatile uint8_t proposed = songSettings.pattern.currentStep + 1;
 			if (proposed >= 16)
 			{
 				proposed = proposed - 16;
 			}
 			songSettings.pattern.currentStep = proposed;
-		HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(12)); //todo
-		DrumChannel.midiUpdate();
+			HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(12)); //todo
+			DrumChannel.midiUpdate();
+		}
+	}
+	else
+	{
+		if (songSettings.pattern.currentStep < 15)
+		{
+			songSettings.pattern.currentStep = 15;
+		}
 	}
 }
 
@@ -155,13 +181,17 @@ void EngineClass::saveChannelPartFxReverb(JsonObject& mixer, String channelName,
 }
 
 void EngineClass::startTrack(bool pressed)
-{
-	LooperChannel.startTrack();
+{	
+	songSettings.isPlaying = true;
+	LooperChannel.updateStatus();
+	DrumChannel.updateStatus();
 }
 
 void EngineClass::stopTrack(bool pressed)
-{
-	LooperChannel.stopTrack();
+{	
+	songSettings.isPlaying = false;
+	LooperChannel.updateStatus();
+	DrumChannel.updateStatus();
 }
 
 void EngineClass::saveSettings(bool pressed)

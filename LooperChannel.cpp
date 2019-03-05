@@ -106,34 +106,37 @@ void LooperChannelClass::selectSong(int encoder, int value)
 
 
 
-void LooperChannelClass::startTrack()
+void LooperChannelClass::updateStatus()
 {
-	if (!AudioCore.wavIsPlaying() && _currentWave > 0)
+	if (Engine.songSettings.isPlaying)
 	{
-		loadWaves();
-		Serial.print("Start");
-		auto song = songs[_currentWave];
-		AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
+		if (!AudioCore.wavIsPlaying() && _currentWave > 0)
+		{
+			loadWaves();
+			Serial.print("Start");
+			auto song = songs[_currentWave];
+			AudioCore.playWav(("/DATA/TRACKS/" + song).c_str());
+		}
+	}
+	else
+	{
+		if (AudioCore.wavIsPlaying())
+		{
+			Serial.print("Stop");
+			AudioCore.stopWav();
+			//		switch (_recordStatus)
+			///	{
+			//case RECORD_STATUS_RECORD:
+			//	AudioCore.stopRecording();
+			//			break;
+			//	case RECORD_STATUS_PLAY:
+			//		AudioCore.stopLastRecorderInputRaw();
+			//		break;
+			//	}
+		}
 	}
 }
 
-void LooperChannelClass::stopTrack()
-{
-	if (AudioCore.wavIsPlaying())
-	{
-		Serial.print("Stop");
-		AudioCore.stopWav();
-		//		switch (_recordStatus)
-		///	{
-		//case RECORD_STATUS_RECORD:
-		//	AudioCore.stopRecording();
-		//			break;
-		//	case RECORD_STATUS_PLAY:
-		//		AudioCore.stopLastRecorderInputRaw();
-		//		break;
-		//	}
-	}
-}
 
 void LooperChannelClass::drawTexts()
 {

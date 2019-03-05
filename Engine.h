@@ -138,7 +138,7 @@ typedef struct
 {
 	uint8_t stepsQnt = 16;
 	volatile uint8_t currentStep = 0;
-	u_long shuffle = 20000;
+	u_long shuffle = 20;
 } PatternSettings;
 
 //Композиция
@@ -152,6 +152,7 @@ typedef struct
 	String path;
 	PatternSettings pattern;
 	DrumPattern drumPattern;
+	bool isPlaying = false;
 } SongSettings;
 
 

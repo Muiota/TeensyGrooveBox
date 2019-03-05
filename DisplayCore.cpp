@@ -778,7 +778,7 @@ void DisplayCoreClass::drawEqType(uint8_t equalizer)
 	}
 }
 
-void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8], uint8_t currentPosition,  bool fullRedraw)
+void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8], int8_t currentPosition,  bool fullRedraw)
 {
 	for (uint8_t s = 0; s < 16; s++) {	
 		bool isCurrent = currentPosition == s;

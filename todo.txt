@@ -25,7 +25,8 @@ http://www.rinkydinkelectronics.com/t_imageconverter565.php -- создание иконок
 //todo 12 mixer optimize 
 //todo shuffle (-30 to +30)
 //todo humanizer for drums (on-off, level 0 - 100%)
-
+//todo режим воспроизведения трек, паттерн, цикл
+//todo включить/выключить воспроизведение
 
 fixed:
 // Проигрывание wav
