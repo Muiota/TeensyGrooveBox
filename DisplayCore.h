@@ -77,6 +77,7 @@ public:
 	static void drawTapeFrame(uint8_t l, uint8_t r);
 	static void drawEqType(uint8_t equalizer);
 	static void drawDrumPattern(uint8_t data[16][8], int8_t currentLine, bool fullRedraw);
+	static void drawPatternPanel(uint8_t selectedPart);	
 };
 
 extern DisplayCoreClass DisplayCore;

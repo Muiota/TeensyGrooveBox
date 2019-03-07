@@ -6,7 +6,8 @@ void DrumChannelClass::onShow()
 {
 	Engine.assignDefaultButtons();
 	HardwareCore.setSeqButtonParam(seqPressedHandler);
-	HardwareCore.setEncoderParam(0, setCurrentLine, "Slope", 0, 7, 1, currentLine);
+	HardwareCore.setEncoderParam(0, setCurrentLine, "Line", 0, 7, 1, currentLine);
+	HardwareCore.setEncoderParam(1, setCurrentDrumPattern, "Line", 0, 15, 1, Engine.songSettings.currentDrumPattern);
 	refreshSeqLeds();
 
 
@@ -18,6 +19,14 @@ void DrumChannelClass::setCurrentLine(int encoder, int value)
 	currentLine = static_cast<uint8_t>(value / 100);
 	DisplayCore.drawDrumPatternTitles(currentLine);
 	refreshSeqLeds();
+}
+
+void DrumChannelClass::setCurrentDrumPattern(int encoder, int value)
+{
+	Engine.songSettings.currentDrumPattern = static_cast<uint8_t>(value / 100);	
+	currentDrumPattern = &Engine.songSettings.drumPattern[Engine.songSettings.currentDrumPattern];
+	DisplayCore.drawPatternPanel(Engine.songSettings.currentDrumPattern);
+	refreshSeqLeds();	
 
 }
 
@@ -27,8 +36,8 @@ void DrumChannelClass::updateStatus()
 }
 
 void DrumChannelClass::seqPressedHandler(bool pressed, int button)
-{
-	uint8_t* string = Engine.currentDrumPattern->shots[button];
+{	
+	uint8_t* string = currentDrumPattern->shots[button];
 	if (pressed)
 	{
 		string[currentLine] = !string[currentLine];		
@@ -43,11 +52,12 @@ void DrumChannelClass::handle()
 	{
 		DisplayCore.drawDrumPatternBackground();
 		DisplayCore.drawDrumPatternTitles(currentLine);
+		DisplayCore.drawPatternPanel(Engine.songSettings.currentDrumPattern);
 		_fullRedraw = true;
 		Engine.isValidScreen = true;
 	}	
 	
-	DisplayCore.drawDrumPattern(Engine.currentDrumPattern->shots, 
+	DisplayCore.drawDrumPattern(currentDrumPattern->shots,
 		Engine.songSettings.isPlaying ? Engine.songSettings.pattern.currentStep : -1, _fullRedraw);
 }
 const char* const string = "BD_01.RAW";
@@ -56,9 +66,7 @@ const char* const string3 = "CL_HH_01.RAW";
 void DrumChannelClass::midiUpdate()
 {
 
-	volatile uint8_t* drums =  Engine.currentDrumPattern->shots[Engine.songSettings.pattern.currentStep];
-
-
+	volatile uint8_t* drums = currentDrumPattern->shots[Engine.songSettings.pattern.currentStep];
 	if (drums[0] > 0)
 	{
 		float velocity = Engine.songSettings.pattern.isAccent ? 1.0 : random(150)/200.0 + 0.2; //todo humanizer		
@@ -106,8 +114,9 @@ void DrumChannelClass::midiUpdate()
 
 void DrumChannelClass::refreshSeqLeds()
 {
+	
 	for (int i = 0; i <= 15; i++) {
-		uint8_t* drums = Engine.currentDrumPattern->shots[i];
+		uint8_t* drums = currentDrumPattern->shots[i];
 		auto b = drums[currentLine] > 0;
 		cacheLedStates[i] = b;
 		HardwareCore.ledStates[i] = b;
@@ -116,5 +125,5 @@ void DrumChannelClass::refreshSeqLeds()
 }
 
 bool DrumChannelClass::cacheLedStates[16];
-
+DrumPattern* DrumChannelClass::currentDrumPattern = &Engine.songSettings.drumPattern[Engine.songSettings.currentDrumPattern];
 uint8_t DrumChannelClass::currentLine = 0;

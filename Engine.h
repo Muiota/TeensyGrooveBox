@@ -152,7 +152,8 @@ typedef struct
 	String name;
 	String path;
 	PatternSettings pattern;
-	DrumPattern drumPattern;
+	DrumPattern drumPattern[16];
+	uint8_t currentDrumPattern = 0;
 	bool isPlaying = false;
 } SongSettings;
 
@@ -172,7 +173,7 @@ public:
 	//static void updateModeLinks();	
 	static SongSettings songSettings;
 	static ChannelSettings* curentSettings;
-	static DrumPattern* currentDrumPattern;
+	
 	static bool isValidScreen;
 	static void spiShotsHandler();
 	static JsonObject& saveChannelPart(JsonObject& mixer, String channelName, ChannelSettings& setting);

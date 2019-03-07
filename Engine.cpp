@@ -401,8 +401,7 @@ void EngineClass::init()
 	HardwareCore.setButtonParam(BTN_ENCODER0, muteMaster);
 	*/	
 //	_midiClock.begin(checkMidiEvent, 100000);
-	currentDrumPattern = &songSettings.drumPattern;
-
+	
 	if (false)
 	{
 		initSerialFlashToDo();
@@ -760,8 +759,6 @@ uint8_t EngineClass::_tickCounter;
  bool EngineClass::isValidScreen = false;
  IntervalTimer EngineClass::_midiClock;
  uint8_t EngineClass::_lastViewMode = 128;
-
- DrumPattern* EngineClass::currentDrumPattern;
 
 EngineClass Engine;
 

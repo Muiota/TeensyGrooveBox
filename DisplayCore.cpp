@@ -597,7 +597,7 @@ void DisplayCoreClass::drawFileloadPanel(bool withField, uint8_t selectedPart)
 		for (uint8_t i = 0; i < 8; i++)
 		{
 			auto selected = selectedPart == i;
-			_tft.writeRect(132 + 18 * i, 102, 16, 16, (uint16_t*)buttons[selected ? 2 : 7]); //knob_full_top_left		
+			_tft.writeRect(132 + 18 * i, 102, 16, 16, const_cast<uint16_t*>(buttons[selected ? 2 : 7])); //knob_full_top_left		
 			_tft.setCursor(135 + 18 * i, 105);
 			_tft.setTextColor(selected ? ILI9341_BLACK : LIGHT_PANEL_COLOR);
 			_tft.print(char(65+ i));
@@ -810,6 +810,32 @@ void DisplayCoreClass::drawDrumPattern(uint8_t data[16][8], int8_t currentPositi
 			}
 		}
 	}	
+}
+
+void DisplayCoreClass::drawPatternPanel(uint8_t selectedPart)
+{
+	uint8_t selectedValue = selectedPart + 1;
+	for (uint8_t i = 1; i <= 8; i++)
+	{
+		auto selected = selectedValue == i;
+		_tft.writeRect(150 + 18 * i, 22, 16, 16, const_cast<uint16_t*>(buttons[selected ? 2 : 7])); //knob_full_top_left		
+		_tft.setCursor(155 + 18 * i, 25);
+		_tft.setTextColor(selected ? ILI9341_BLACK : LIGHT_PANEL_COLOR);
+		_tft.print(i);
+
+	}
+
+	for (uint8_t i = 9; i <= 16; i++)
+	{
+		auto selected = selectedValue == i;		
+		_tft.writeRect(6 + 18 * i, 40, 16, 16, const_cast<uint16_t*>(buttons[selected ? 2 : 7])); //knob_full_top_left		
+		uint8_t shift = i <= 9 ? 0 : 4;
+		_tft.setCursor(11 + 18 * i - shift, 43);
+		_tft.setTextColor(selected ? ILI9341_BLACK : LIGHT_PANEL_COLOR);
+		_tft.print(i);
+
+	}
+
 }
 
 ILI9341_t3 DisplayCoreClass::_tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
