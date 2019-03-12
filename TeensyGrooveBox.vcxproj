@@ -90,6 +90,7 @@
     <ClInclude Include="InputLeft.h" />
     <ClInclude Include="LooperChannel.h" />
     <ClInclude Include="Mixer.h" />
+    <ClInclude Include="SequencerClass.h" />
     <ClInclude Include="SongLoader.h" />
     <ClInclude Include="__vm\.TeensyGrooveBox.vsarduino.h" />
   </ItemGroup>
@@ -107,6 +108,7 @@
     <ClCompile Include="LooperChannel.cpp" />
     <ClCompile Include="Mixer.cpp" />
     <ClCompile Include="base.c" />
+    <ClCompile Include="SequencerClass.cpp" />
     <ClCompile Include="SongLoader.cpp" />
   </ItemGroup>
   <ItemGroup>

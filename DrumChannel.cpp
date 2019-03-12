@@ -3,11 +3,11 @@
 
 
 void DrumChannelClass::onShow()
-{
+{	
 	Engine.assignDefaultButtons();
 	HardwareCore.setSeqButtonParam(seqPressedHandler);
 	HardwareCore.setEncoderParam(0, setCurrentLine, "Line", 0, 7, 1, currentLine);
-	HardwareCore.setEncoderParam(1, setCurrentDrumPattern, "Line", 0, 15, 1, Engine.songSettings.currentDrumPattern);
+	HardwareCore.setEncoderParam(1, setCurrentDrumPattern, "Pattern", 0, 15, 1, Engine.songSettings.currentDrumPattern);
 	refreshSeqLeds();
 
 
@@ -32,7 +32,10 @@ void DrumChannelClass::setCurrentDrumPattern(int encoder, int value)
 
 void DrumChannelClass::updateStatus()
 {
-	refreshSeqLeds();
+	if (Engine.songSettings.viewMode == VIEW_MODE_EDIT_DRUM_PATTERN)
+	{
+		refreshSeqLeds();
+	}
 }
 
 void DrumChannelClass::seqPressedHandler(bool pressed, int button)
@@ -53,7 +56,7 @@ void DrumChannelClass::handle()
 		DisplayCore.drawDrumPatternBackground();
 		DisplayCore.drawDrumPatternTitles(currentLine);
 		DisplayCore.drawPatternPanel(Engine.songSettings.currentDrumPattern);
-		_fullRedraw = true;
+		_fullRedraw = true;		
 		Engine.isValidScreen = true;
 	}	
 	
@@ -101,13 +104,17 @@ void DrumChannelClass::midiUpdate()
 		AudioCore.drum4On();
 	}
 
-	for (int i = 0; i <= 15; i++) {		
-		bool _state = cacheLedStates[i];
-		if (Engine.songSettings.isPlaying && Engine.songSettings.pattern.currentStep == i)
-		{
-			_state = !_state;
+	if (Engine.songSettings.viewMode == VIEW_MODE_EDIT_DRUM_PATTERN)
+	{
+
+		for (int i = 0; i <= 15; i++) {
+			bool _state = cacheLedStates[i];
+			if (Engine.songSettings.isPlaying && Engine.songSettings.pattern.currentStep == i)
+			{
+				_state = !_state;
+			}
+			HardwareCore.ledStates[i] = _state;
 		}
-		HardwareCore.ledStates[i] = _state;
 	}
 	
 }

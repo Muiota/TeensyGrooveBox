@@ -24,7 +24,7 @@ class DisplayCoreClass
 {
  protected:
 	 static uint16_t getMixerChannelXcoord(uint8_t channel);
-	 static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x);
+	 static void drawChannelIcon(uint8_t channel, bool isActive, uint16_t x, uint16_t y);
 	 static ILI9341_t3 _tft;
 	 static String EQ_TYPES[7];
 	 static String DRUM_TYPES[8];
@@ -77,7 +77,9 @@ public:
 	static void drawTapeFrame(uint8_t l, uint8_t r);
 	static void drawEqType(uint8_t equalizer);
 	static void drawDrumPattern(uint8_t data[16][8], int8_t currentLine, bool fullRedraw);
-	static void drawPatternPanel(uint8_t selectedPart);	
+	static void drawPatternPanel(uint8_t selectedPart);
+	static void drawSequencerBackground();
+	static void drawSequencerIcons(uint8_t channel);
 };
 
 extern DisplayCoreClass DisplayCore;

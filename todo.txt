@@ -20,13 +20,17 @@ http://www.rinkydinkelectronics.com/t_imageconverter565.php -- создание иконок
 //todo настройка темпа
 //todo паттерн едитор для барабанов (8 штук), громкости, шафл
 //todo назначение wav барабана на дорожку
-//todo секвенсор расположения паттернов
+
 //todo переходы туда обратно
 //todo 12 mixer optimize 
 //todo shuffle (-30 to +30)
 //todo humanizer for drums (on-off, level 0 - 100%)
+
+//todo секвенсор расположения паттернов
 //todo режим воспроизведения трек, паттерн, цикл
-//todo включить/выключить воспроизведение
+
+//todo включить/выключить воспроизведение (led)
+//todo refresh leds when enter in drum pattern
 
 fixed:
 // Проигрывание wav

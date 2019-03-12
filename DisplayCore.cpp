@@ -294,35 +294,35 @@ uint16_t DisplayCoreClass::getMixerChannelXcoord(uint8_t channel)
 	return x;
 }
 
-void DisplayCoreClass::drawChannelIcon(uint8_t channel, bool isActive, uint16_t x)
+void DisplayCoreClass::drawChannelIcon(uint8_t channel, bool isActive, uint16_t x, uint16_t y)
 {
 	if (channel == 1)
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[3] : (uint16_t*)channels[2]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[3]) : const_cast<uint16_t*>(channels[2]));
 	}
 	else if (channel == 0)
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[1] : (uint16_t*)channels[0]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[1]) : const_cast<uint16_t*>(channels[0]));
 	}
 	else if (channel == 2)
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[13] : (uint16_t*)channels[12]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[13]) : const_cast<uint16_t*>(channels[12]));
 	}
 	else if (channel >=8 && channel <= 10)
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[7] : (uint16_t*)channels[6]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[7]) : const_cast<uint16_t*>(channels[6]));
 	}
 	else if (channel == 11)
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[9] : (uint16_t*)channels[8]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[9]) : const_cast<uint16_t*>(channels[8]));
 	}
 	else if (channel == 7)
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[11] : (uint16_t*)channels[10]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[11]) : const_cast<uint16_t*>(channels[10]));
 	}
 	else
 	{
-		_tft.writeRect(x + 2, 221, 16, 16, isActive ? (uint16_t*)channels[5] : (uint16_t*)channels[4]);
+		_tft.writeRect(x + 2, y, 16, 16, isActive ? const_cast<uint16_t*>(channels[5]) : const_cast<uint16_t*>(channels[4]));
 	}
 }
 
@@ -335,7 +335,7 @@ void DisplayCoreClass::drawMixerMeterTitle(uint8_t channel, bool isActive)
 	_tft.drawRect(x, y, 20, METER_HEIGHT, isActive ? ACTIVE_COLOR : BORDER_COLOR);
 
 
-	drawChannelIcon(channel, isActive, x);
+	drawChannelIcon(channel, isActive, x, 221);
 
 
 	
@@ -349,8 +349,8 @@ void DisplayCoreClass::drawMixerButtons(uint8_t channel, float volume, float bal
 	uint16_t ix = x + 2;
 	//_tft.writeRect(ix, 102, 16, 8, true ? (uint16_t*)leds[1] : (uint16_t*)leds[0]);
 	//_tft.writeRect(ix, 102 + 9, 16, 8, true ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
-	_tft.writeRect(ix, 122, 16, 8, isActive ? (uint16_t*)leds[5] : (uint16_t*)leds[4]);
-	_tft.writeRect(ix, 131, 16, 8, false ? (uint16_t*)leds[3] : (uint16_t*)leds[2]);
+	_tft.writeRect(ix, 122, 16, 8, isActive ? const_cast<uint16_t*>(leds[5]) : const_cast<uint16_t*>(leds[4]));
+	_tft.writeRect(ix, 131, 16, 8, false ? const_cast<uint16_t*>(leds[3]) : const_cast<uint16_t*>(leds[2]));
 	//_tft.writeRect(ix, 52, 16, 8, (uint16_t*)encoder_linear[3]);
 	uint16_t level = volume * 60;
 
@@ -365,7 +365,7 @@ void DisplayCoreClass::drawMixerButtons(uint8_t channel, float volume, float bal
 	}
 
 	//_tft.writeRect(ix, 22, 16, 8, (uint16_t*)encoder_linear[3]);
-	_tft.writeRect(ix, 82 - level, 16, 8, (uint16_t*)encoder_linear[sliderIndex]);
+	_tft.writeRect(ix, 82 - level, 16, 8, const_cast<uint16_t*>(encoder_linear[sliderIndex]));
 	auto lineColor = (isActive ? 0x3186 : 0x4A69);
 	auto topHeight = 59 - level;
 	if (topHeight > 0)
@@ -389,13 +389,13 @@ void DisplayCoreClass::drawMixerButtons(uint8_t channel, float volume, float bal
 	
 	if (balance == 0)
 	{
-		_tft.writeRect(ix, 102, 16, 16, (uint16_t*)small_knob_center);
+		_tft.writeRect(ix, 102, 16, 16, const_cast<uint16_t*>(small_knob_center));
 	} else if (balance < 0)
 	{
-		_tft.writeRect(ix, 102, 16, 16, (uint16_t*)small_knob_negative[static_cast<uint8_t>(- balance * 9)]);
+		_tft.writeRect(ix, 102, 16, 16, const_cast<uint16_t*>(small_knob_negative[static_cast<uint8_t>(- balance * 9)]));
 	} else
 	{
-		_tft.writeRect(ix, 102, 16, 16, (uint16_t*)small_knob_positive[static_cast<uint8_t>(balance * 9)]);
+		_tft.writeRect(ix, 102, 16, 16, const_cast<uint16_t*>(small_knob_positive[static_cast<uint8_t>(balance * 9)]));
 	}
 
 	
@@ -742,12 +742,12 @@ void DisplayCoreClass::disaplaySubMenu()
 
 	for (uint8_t i = 0; i <= 2; i++) {
 		uint8_t i1 = i * 80;
-		_tft.writeRect(16 + i1, 26, 64, 64, (uint16_t*)encoder_background);
+		_tft.writeRect(16 + i1, 26, 64, 64, const_cast<uint16_t*>(encoder_background));
 		bool active = i <2 ;
-		_tft.writeRect(18 + i1, 28, 8, 8, (uint16_t*)led_small[active ? 1 : 0]);
+		_tft.writeRect(18 + i1, 28, 8, 8, const_cast<uint16_t*>(led_small[active ? 1 : 0]));
 		if (active)
 		{
-			_tft.writeRect(16 + i1 + 16, 42, 32, 32, (uint16_t*)button_icons[i]);
+			_tft.writeRect(16 + i1 + 16, 42, 32, 32, const_cast<uint16_t*>(button_icons[i]));
 		} 
 	}
 }
@@ -757,7 +757,7 @@ void DisplayCoreClass::disaplayLooperTape(uint8_t channel)
 	_tft.fillRect(8, 100, 308, 121, DARK_PANEL_COLOR);
 	_tft.writeRect(16, 103, 214, 115, const_cast<uint16_t*>(tape_back));
 	uint16_t x = getMixerChannelXcoord(channel);
-	drawChannelIcon(channel, true, x);
+	drawChannelIcon(channel, true, x, 221);
 }
 
 void DisplayCoreClass::drawTapeFrame(uint8_t l, uint8_t r)
@@ -836,6 +836,19 @@ void DisplayCoreClass::drawPatternPanel(uint8_t selectedPart)
 
 	}
 
+}
+
+void DisplayCoreClass::drawSequencerBackground()
+{
+	_tft.fillRect(8, 100, 300, 130, DARK_PANEL_COLOR);
+}
+
+void DisplayCoreClass::drawSequencerIcons(uint8_t channel)
+{
+	for (uint8_t i = 2; i <= 7; i++)
+	{		
+		drawChannelIcon(i, channel == i, 8, 70 + i * 18);
+	}
 }
 
 ILI9341_t3 DisplayCoreClass::_tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);

@@ -56,7 +56,9 @@ void MixerClass::switchToChannel()
 		case EDIT_CHANNEL_SEND_FX_REVERB: break;
 		case EDIT_CHANNEL_SEND_FX_CHORUS: break;
 		case EDIT_CHANNEL_SEND_FX_DELAY: break;
-		case EDIT_CHANNEL_MASTER: break;
+		case EDIT_CHANNEL_MASTER: 
+			Engine.switchWindow(VIEW_MODE_SEQUENCER);
+		break;
 	}
 }
 

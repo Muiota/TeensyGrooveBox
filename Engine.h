@@ -139,6 +139,9 @@ typedef struct
 	uint8_t stepsQnt = 16;
 	volatile uint8_t currentStep = 0;
 	u_long shuffle = 40;
+	uint8_t drumTrack[256];
+	uint8_t startTrack = 0;
+	uint8_t endTrack = 3;
 	bool isAccent;
 } PatternSettings;
 
@@ -167,8 +170,7 @@ protected:
 	static IntervalTimer _midiClock;
 	static uint8_t _lastViewMode;
 	static long _nextUpdateTick;
-	static long _nextMidiTick;
-    static bool midiShotFired;
+	static long _nextMidiTick;    
 public:
 	//static void updateModeLinks();	
 	static SongSettings songSettings;
@@ -187,7 +189,7 @@ public:
 	static ChannelSettings* getChannelByNum(edit_channel channel);
 	static void selectChannel();
 	static void assignDefaultButtons();
-	static void checkMidiEvent();
+	
 
 	static void saveChannelPartFxReverb(JsonObject& mixer, String channelName, Efeect1Settings& setting);
 	//static void changeMode();

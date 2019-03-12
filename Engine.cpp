@@ -6,6 +6,7 @@
 #include "LooperChannel.h"
 #include "Equalizer.h"
 #include "DrumChannel.h"
+#include "SequencerClass.h"
 
 // Load drivers
 
@@ -150,7 +151,9 @@ void EngineClass::spiShotsHandler()
 			}
 			songSettings.pattern.currentStep = proposed;
 			HardwareCore.setRingLedColor(songSettings.pattern.currentStep, static_cast<int>(12)); //todo
-			DrumChannel.midiUpdate();
+
+			//DrumChannel.midiUpdate();
+			Sequencer.midiUpdate();
 		}
 	}
 	else
@@ -186,6 +189,7 @@ void EngineClass::startTrack(bool pressed)
 	songSettings.isPlaying = true;
 	LooperChannel.updateStatus();
 	DrumChannel.updateStatus();
+	Sequencer.updateStatus();
 }
 
 void EngineClass::stopTrack(bool pressed)
@@ -193,6 +197,7 @@ void EngineClass::stopTrack(bool pressed)
 	songSettings.isPlaying = false;
 	LooperChannel.updateStatus();
 	DrumChannel.updateStatus();
+	Sequencer.updateStatus();
 }
 
 void EngineClass::saveSettings(bool pressed)
@@ -626,10 +631,6 @@ void EngineClass::assignDefaultButtons()
 }
 
 
-void EngineClass::checkMidiEvent() {
-	
-	midiShotFired = true;
-}
 
 void EngineClass::update()
 {
@@ -665,6 +666,9 @@ void EngineClass::update()
 			case VIEW_MODE_EDIT_LOOPER_CHANNEL:
 				LooperChannel.onShow();
 				break;
+			case VIEW_MODE_SEQUENCER:
+				Sequencer.onShow();
+				break;
 			case VIEW_MODE_EDIT_DRUM_PATTERN:
 				DrumChannel.onShow();
 				break;
@@ -697,6 +701,9 @@ void EngineClass::update()
 			break;
 		case VIEW_MODE_EDIT_DRUM_PATTERN:
 			DrumChannel.handle();
+			break;
+		case VIEW_MODE_SEQUENCER:
+			Sequencer.handle();
 			break;
 		default:
 			DisplayCore.clearAll();
@@ -747,7 +754,7 @@ void EngineClass::backToMixer(bool pressed)
 		Engine.switchWindow(VIEW_MODE_MAIN_MIXER);		
 	}
 }
-bool EngineClass::midiShotFired = false;
+
 long EngineClass::_watchTest = 0;
 elapsedMillis EngineClass::_hardwareTimer;
 long EngineClass::_nextUpdateTick = 0;
